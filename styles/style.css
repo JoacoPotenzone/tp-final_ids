@@ -1,0 +1,29 @@
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: wheat;
+}
+header { 
+    background: blue;
+    color: white;
+    padding: 200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+.nav-item {
+    color:white;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: bold;
+
+}
+.banner {
+
+    background:lineal-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url("../recursos/fondo_trionda.jpeg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
