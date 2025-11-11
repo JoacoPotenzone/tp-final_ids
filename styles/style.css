@@ -2,11 +2,11 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: wheat;
+    background: rgba(96, 209, 175, 0.637);
 }
 header { 
-    background: blue;
-    color: white;
+    background: rgb(0, 0, 255);
+    color: rgb(0, 132, 255);
     padding: 20px;
     display: flex;
     justify-content: space-between;
@@ -14,7 +14,7 @@ header {
 
 }
 .nav-item {
-    color:white;
+    color:rgb(0, 140, 255);
     margin-left: 20px;
     text-decoration: none;
     font-weight: bold;
