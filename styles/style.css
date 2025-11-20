@@ -2,17 +2,15 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: rgba(96, 209, 175, 0.637);
+    background: rgb(255, 255, 255);
 }
 header { 
-    background: rgb(0, 0, 255);
-    color: rgb(0, 132, 255);
+    background: rgb(1, 96, 204);
+    color: #0084ff;
     padding: 20px;
-    display: flex;
     justify-content: space-between;
     align-items: center;
-
-}
+} 
 .nav-item {
     color:rgb(0, 140, 255);
     margin-left: 20px;
@@ -22,7 +20,7 @@ header {
 }
 .banner {
 
-    background:lineal-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url("../recursos/fondo_trionda.jpeg");
+    background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url("../recursos/fondo_trionda.jpeg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -30,7 +28,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    color:white;
+    color:rgb(0, 0, 255);
     text-align: center;
     padding: 20px;
 
@@ -38,7 +36,7 @@ header {
 .container {
     padding: 30px;
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(300px,lfr));
+    grid-template-columns: repeat(auto-fit,minmax(300px, 1fr));
     gap: 20px;
 
 }
@@ -51,12 +49,13 @@ header {
 }
 .card h3 {
     margin-top: 0;
-    color:blue;
+    color:rgba(1, 96, 204);
 
 }
 footer{
     background:blue;
     color:white;
     text-align:center;
+    padding: 15px;
     margin-top: 30px;
 }
