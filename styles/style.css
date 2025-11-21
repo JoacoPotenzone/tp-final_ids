@@ -36,7 +36,7 @@ header {
 .container {
     padding: 30px;
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit,minmax(300px, lfr));
     gap: 20px;
 
 }
@@ -45,11 +45,19 @@ header {
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 10px black
-
+→ 
 }
 .card h3 {
     margin-top: 0;
     color:rgba(1, 96, 204);
+
+}
+.vuelo-card {
+   background: rgb(195, 193, 193);
+    grid-template-columns: repart(auto-fit,minmax(300px, lfr));
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px black
 
 }
 footer{
