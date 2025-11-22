@@ -22,8 +22,44 @@
                     </div>
                 </nav>
         </header>
-        <main>
-
+        <main class="container mt-5">
+            <div class="d-flex justify-content-center">
+                <div class="col-12 col-md-8 p-4 rounded bg-white shadow-lg">
+                    <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pills-vuelos-comunes-tab" data-bs-toggle="pill" data-bs-target="#pills-vuelos-comunes" type="button" role="tab" aria-controls="pills-vuelos-comunes" aria-selected="true">
+                          Vuelos Comunes 🌍
+                        </button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-mundial-tab" data-bs-toggle="pill" data-bs-target="#pills-mundial" type="button" role="tab" aria-controls="pills-mundial" aria-selected="false">
+                          Vuelos Mundial 2026 ⚽
+                        </button>
+                      </li>
+                    </ul>          
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-vuelos-comunes" role="tabpanel" aria-labelledby="pills-vuelos-comunes-tab">
+                        <h3 class="mb-4">Busca tu vuelo</h3>
+                        <form>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="origen" class="form-label">Origen</label>
+                                    <input type="text" class="form-control" id="origen" placeholder="Ciudad de Origen">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="destino" class="form-label">Destino</label>
+                                    <input type="text" class="form-control" id="destino" placeholder="Ciudad de Destino">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-4">Buscar Vuelos</button>
+                        </form>
+                </div>
+                    <div class="tab-pane fade" id="pills-mundial" role="tabpanel" aria-labelledby="pills-mundial-tab">
+                        <p>Próximamente: Opciones especiales para el Mundial 2026...</p>
+                    </div>
+                </div>
+              </div>
+            </div>
         </main>
         <footer>
 
