@@ -43,18 +43,30 @@
                 <div class="tab-content" id="pills-tabContent">
                     <div class="tab-pane fade show active" id="pills-vuelos-comunes" role="tabpanel" aria-labelledby="pills-vuelos-comunes-tab">
                         <h3 class="mb-4">Busca tu vuelo</h3>
-                        <form>
+                        <form action="./pages/resultados.html" method="GET">
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="origen" class="form-label">Origen</label>
-                                    <input type="text" class="form-control" id="origen" placeholder="Ciudad de Origen">
+                                    <input type="text" class="form-control" id="origen" name="origen" placeholder="Ciudad de Origen" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="destino" class="form-label">Destino</label>
-                                    <input type="text" class="form-control" id="destino" placeholder="Ciudad de Destino">
+                                    <input type="text" class="form-control" id="destino" name="destino" placeholder="Ciudad de Destino" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="fecha" class="form-label">Fecha de Salida</label>
+                                    <input type="date" class="form-control" id="fecha" name="fecha" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="pasajeros" class="form-label">Pasajeros</label>
+                                    <input type="number" class="form-control" id="pasajeros" name="pasajeros" min="1" max="9" value="1" required>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary mt-4">Buscar Vuelos</button>
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg px-5">
+                                    <i class="bi bi-search"></i> Buscar Vuelos
+                                </button>
+                            </div>
                         </form>
                 </div>
                     <div class="tab-pane fade" id="pills-mundial" role="tabpanel" aria-labelledby="pills-mundial-tab">
