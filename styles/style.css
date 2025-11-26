@@ -2,3 +2,37 @@
     --f-background-color: #ffffff;
     --s-background-color: #efe4c7;
 }
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: rgb(255, 255, 255);
+}
+
+.nav-item {
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: bold;
+
+}
+.banner {
+    background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url("../sources/fondo_trionda.jpeg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    color:rgb(0, 0, 255);
+    text-align: center;
+}
+
+.card {
+    background:white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px black
+
+}
+
