@@ -1,5 +1,6 @@
 let mapa = null;
 let capaRuta = null;
+let marcadores = L.featureGroup();
 
 const equiposData = {
     "Argentina": {
@@ -9,6 +10,10 @@ const equiposData = {
     "Brasil": {
         descripcion: "Su camino comienza en Toronto, sigue en Miami y luego a Seattle. Reserva tus vuelos con anticipación.",
         paradas: ["Toronto, Canada", "Miami, FL", "Seattle, WA"]
+    },
+    "México": {
+        descripcion: "Juega en Ciudad de México y Monterrey, con un posible cruce en Vancouver.",
+        paradas: ["Ciudad de México", "Guadalajara, México", "Vancouver, Canada"]
     },
 };
 
@@ -26,6 +31,31 @@ const sedesCoordenadas = {
 
 const selector = document.getElementById('equipo-selector');
 const rutaInfo = document.getElementById('ruta-info');
+const tabMundial = document.getElementById('pills-mundial-tab');
+
+
+function initializeMap() {
+    const containerId = 'mapa-leaflet-container';
+    
+    mapa = L.map(containerId).setView([40, -100], 3);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(mapa);
+    
+    marcadores.addTo(mapa);
+}
+
+if (tabMundial) {
+    tabMundial.addEventListener('shown.bs.tab', function (e) {
+        if (mapa === null) {
+            initializeMap();
+        } else {
+            mapa.invalidateSize();
+        }
+    });
+}
+
 
 function llenarSelector() {
     const equiposOrdenados = Object.keys(equiposData).sort();
@@ -56,29 +86,63 @@ function mostrarRuta() {
             <h3>🌟 Ruta Recomendada para ${equipoSeleccionado} 🌟</h3>
             <p>${data.descripcion}</p>
             <button onclick="verRutaEnMapa('${equipoSeleccionado}')">Vea la mejor ruta aquí</button>
-            <div id="mapa-leaflet-container"></div>
         `;
         rutaInfo.classList.add('active');
     }
 }
 
-llenarSelector();
-selector.addEventListener('change', mostrarRuta);
-
-
 function verRutaEnMapa(equipo) {
     const data = equiposData[equipo];
     const paradasNombres = data.paradas;
-    const mapaContainerId = 'mapa-leaflet-container'
+    const mapaContainerIdString = 'mapa-leaflet-container';
+
+    if (mapa === null) {
+         initializeMap();
+    }
     
-    if (mapa == null){
-        mapa = L.map(mapaContainerId).setView([40, -100], 3);
-        L.tileLayer('http://googleusercontent.com/tile.openstreetmap.org/1{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+    mapa.invalidateSize();
+    
+    if (capaRuta) {
+        mapa.removeLayer(capaRuta);
+    }
+    marcadores.clearLayers();
+    
+    let rutaCoordenadas = [];
+    
+    paradasNombres.forEach((ciudadNombre, index) => {
+        const coords = sedesCoordenadas[ciudadNombre]; 
+        
+        if (coords) {
+            rutaCoordenadas.push(coords);
+            
+            const isOrigen = index === 0;
+            const colorRelleno = isOrigen ? '#FFD700' : '#D81B60'; 
+            
+            L.circleMarker(coords, {
+                radius: isOrigen ? 12 : 8,
+                color: '#333',
+                weight: 2,
+                fillColor: colorRelleno,
+                fillOpacity: 0.9
+            })
+            .bindPopup(`<b>${ciudadNombre}</b> (${isOrigen ? 'Inicio' : 'Parada ' + index})`)
+            .addTo(marcadores); 
+        }
+    });
+
+    if (rutaCoordenadas.length > 1) {
+        capaRuta = L.polyline(rutaCoordenadas, {
+            color: '#D81B60',
+            weight: 5,
+            opacity: 0.9,
+            dashArray: '10, 10'
         }).addTo(mapa);
-    } else {
-        mapa.invalidateSize();
-    }; 
+        
+        mapa.fitBounds(capaRuta.getBounds(), { padding: [50, 50] });
+    }
     
+    document.getElementById(mapaContainerIdString).scrollIntoView({ behavior: 'smooth' });
 }
 
+llenarSelector();
+selector.addEventListener('change', mostrarRuta);
