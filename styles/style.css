@@ -4,26 +4,14 @@
     --s-background-color: #efe4c7;
 }
 
-
-
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     background: rgb(255, 255, 255);
 }
 
-
-
-header { 
-    background: rgb(1, 96, 204);
-    color: #0084ff;
-    padding: 20px;
-    justify-content: space-between;
-    align-items: center;
-} 
 .nav-item {
     color:rgb(0, 140, 255);
-
     margin-left: 20px;
     text-decoration: none;
     font-weight: bold;
@@ -31,7 +19,7 @@ header {
 }
 .banner {
 
-    background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url("../sources/fondo_trionda.jpeg");
+    background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url("../sources/fondo_trionda_2.png");
 
     background-size: cover;
     background-position: center;
