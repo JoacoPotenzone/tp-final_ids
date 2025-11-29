@@ -1,0 +1,50 @@
+/* ... (Estilos previos) ... */
+
+#mapa-interactivo-container {
+    margin-top: 25px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f7f7f7;
+}
+
+.mapa-titulo {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #4a4a4a;
+}
+
+.mapa-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 15px;
+    background-color: #4CAF50; /* Color de acción (verde) */
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+}
+
+.mapa-link:hover {
+    background-color: #45a049;
+}
+
+button {
+    background-color: #007bff; /* Color del botón (azul) */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
