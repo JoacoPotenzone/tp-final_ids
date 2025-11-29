@@ -32,7 +32,7 @@
                     <p>Contenido no disponible intente recargando la pagina</p>
             </section>
             <div class="d-flex justify-content-center">
-                <div class="col-12 col-md-8 p-4 rounded bg-white shadow-lg">
+                <div class="col-12 col-md-8 p-4 m-3 rounded bg-white shadow-lg">
                     <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
                       <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="pills-vuelos-comunes-tab" data-bs-toggle="pill" data-bs-target="#pills-vuelos-comunes" type="button" role="tab" aria-controls="pills-vuelos-comunes" aria-selected="true">
@@ -75,7 +75,17 @@
                         </form>
                 </div>
                     <div class="tab-pane fade" id="pills-mundial" role="tabpanel" aria-labelledby="pills-mundial-tab">
-                        <p>Próximamente: Opciones especiales para el Mundial 2026...</p>
+                        <div class="container">
+                            <h2>Selecciona tu Equipo para el Mundial 2026</h1>
+
+                            <label for="equipo-selector">Elige un equipo:</label>
+                            <select id="equipo-selector">
+                                </select>
+                            
+                            <div id="ruta-info" class="ruta-display">
+                                Selecciona un equipo para ver la mejor ruta para alentarlos.
+                            </div>
+                        </div>
                     </div>
                 </div>
               </div>
@@ -86,5 +96,6 @@
         </footer>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script src="./sripts/equipos.js"></script>
     </body>
 </html>

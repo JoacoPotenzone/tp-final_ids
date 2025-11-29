@@ -16,6 +16,64 @@ body {
     text-decoration: none;
     font-weight: bold;
 
+}body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+}
+
+.container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+
+h1 {
+    color: #004a99;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+#equipo-selector {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    appearance: none; /* Oculta el estilo por defecto en algunos navegadores */
+    background-color: #eee;
+}
+
+.ruta-display {
+    padding: 20px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    margin-top: 30px;
+    min-height: 100px;
+    text-align: left;
+    transition: all 0.3s ease-in-out;
+}
+
+.ruta-display.active {
+    border-color: #00aaff; /* Borde más llamativo al tener información */
+    background-color: #e6f7ff;
+}
+
+.nota {
+    font-size: 0.8em;
+    color: #777;
+    margin-top: 15px;
 }
 .banner {
 
@@ -33,13 +91,6 @@ body {
     text-align: center;
 }
 
-.card {
-    background:white;
-    color:rgb(0, 0, 255);
-    text-align: center;
-    padding: 20px;
-
-}
 .container {
     padding: 30px;
     display: grid;
@@ -52,7 +103,6 @@ body {
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 10px black
-→ 
 }
 .card h3 {
     margin-top: 0;
