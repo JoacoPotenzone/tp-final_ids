@@ -16,7 +16,7 @@ body {
 
 }
 .banner {
-    background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url("../sources/fondo_trionda.jpeg");
+    background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url("../sources/fondo_trionda_2.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
