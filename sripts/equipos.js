@@ -1,3 +1,6 @@
+let mapa = null;
+let capaRuta = null;
+
 const equiposData = {
     "Argentina": {
         descripcion: "Viaja a Dallas, luego a Nueva York para la fase de grupos. ¡El camino a la final es en Los Ángeles!",
@@ -10,12 +13,15 @@ const equiposData = {
 };
 
 const sedesCoordenadas = {
-    "Dallas, TX": { x: 450, y: 380 },
-    "New York, NY": { x: 700, y: 250 },
-    "Los Angeles, CA": { x: 250, y: 350 },
-    "Toronto, Canada": { x: 650, y: 150 },
-    "Miami, FL": { x: 600, y: 550 },
-    "Seattle, WA": { x: 300, y: 100 },
+    "Dallas, TX": [32.7767, -96.7970],
+    "New York, NY": [40.7128, -74.0060],
+    "Los Angeles, CA": [34.0522, -118.2437],
+    "Toronto, Canada": [43.6532, -79.3832],
+    "Miami, FL": [25.7617, -80.1918],
+    "Seattle, WA": [47.6062, -122.3321],
+    "Ciudad de México": [19.4326, -99.1332],
+    "Vancouver, Canada": [49.2827, -123.1207],
+    "Guadalajara, México": [20.6597, -103.3496]
 };
 
 const selector = document.getElementById('equipo-selector');
@@ -50,7 +56,7 @@ function mostrarRuta() {
             <h3>🌟 Ruta Recomendada para ${equipoSeleccionado} 🌟</h3>
             <p>${data.descripcion}</p>
             <button onclick="verRutaEnMapa('${equipoSeleccionado}')">Vea la mejor ruta aquí</button>
-            <div id="mapa-interactivo-container"></div>
+            <div id="mapa-leaflet-container"></div>
         `;
         rutaInfo.classList.add('active');
     }
@@ -62,30 +68,17 @@ selector.addEventListener('change', mostrarRuta);
 
 function verRutaEnMapa(equipo) {
     const data = equiposData[equipo];
-    const paradas = data.paradas;
-    const mapaContainer = document.getElementById('mapa-interactivo-container');
+    const paradasNombres = data.paradas;
+    const mapaContainerId = 'mapa-leaflet-container'
     
-    const baseUrl = "https://www.google.com/maps/dir/";
-    const mapQuery = paradas.join('/');
+    if (mapa == null){
+        mapa = L.map(mapaContainerId).setView([40, -100], 3);
+        L.tileLayer('http://googleusercontent.com/tile.openstreetmap.org/1{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(mapa);
+    } else {
+        mapa.invalidateSize();
+    }; 
     
-    const fullMapsUrl = `${baseUrl}${mapQuery}`;
-    const embedUrl = `https://maps.google.com/maps?q=${paradas.join('+to+')}&output=embed`;
-
-    mapaContainer.innerHTML = `
-        <div class="mapa-titulo">📍 Trayecto de ${equipo} en el Mundial</div>
-        <iframe
-            width="100%" 
-            height="450" 
-            frameborder="0" 
-            style="border:0; margin-top: 15px;"
-            src="${embedUrl}" 
-            allowfullscreen>
-        </iframe>
-        <a href="${fullMapsUrl}" target="_blank" class="mapa-link">
-            Abrir ruta detallada en Google Maps (Nueva Pestaña)
-        </a>
-    `;
-    
-    mapaContainer.scrollIntoView({ behavior: 'smooth' });
 }
 
