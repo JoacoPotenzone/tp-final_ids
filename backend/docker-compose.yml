@@ -1,0 +1,11 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWOED: postgres
+      POSTGRES_DB: matchairlines_db
+    volumes:
+      - ./.volumes/postgres/data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
