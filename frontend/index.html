@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>MatchAirlines</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+        <link rel="stylesheet" href="./styles/style.css">
+        <link rel="stylesheet" href="./styles/mapa.css">
+    </head>
+    <body>
+        <header>
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="./index.html">MatchAirlines</a>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto"> 
+                            <li class="nav-item">
+                                <a class="nav-link" href="./pages/login.html">Login/Register</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="./pages/usuario.html"><img src="./sources/user_icon_143482.svg" alt="icono-usuario"></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <section class="banner d-flex flex-column justify-content-center align-items-center text-center text-white">
+                    <h2>Gestiona tus vuelos y conoce todo sobre el Mundial</h2>
+                    <p>Contenido no disponible intente recargando la pagina</p>
+            </section>
+            <div class="d-flex justify-content-center">
+                <div class="col-12 col-md-8 p-4 m-3 rounded bg-white shadow-lg">
+                    <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pills-vuelos-comunes-tab" data-bs-toggle="pill" data-bs-target="#pills-vuelos-comunes" type="button" role="tab" aria-controls="pills-vuelos-comunes" aria-selected="true">
+                          Vuelos Comunes 🌍
+                        </button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-mundial-tab" data-bs-toggle="pill" data-bs-target="#pills-mundial" type="button" role="tab" aria-controls="pills-mundial" aria-selected="false">
+                          Vuelos Mundial 2026 ⚽
+                        </button>
+                      </li>
+                    </ul>          
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-vuelos-comunes" role="tabpanel" aria-labelledby="pills-vuelos-comunes-tab">
+                        <h3 class="mb-4">Busca tu vuelo</h3>
+                        <form action="./pages/vuelos.html" method="GET">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="origen" class="form-label">Origen</label>
+                                    <input type="text" class="form-control" id="origen" name="origen" placeholder="Ciudad de Origen" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="destino" class="form-label">Destino</label>
+                                    <input type="text" class="form-control" id="destino" name="destino" placeholder="Ciudad de Destino" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="fecha" class="form-label">Fecha de Salida</label>
+                                    <input type="date" class="form-control" id="fecha" name="fecha" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="pasajeros" class="form-label">Pasajeros</label>
+                                    <input type="number" class="form-control" id="pasajeros" name="pasajeros" min="1" max="9" value="1" required>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg px-5">
+                                    <i class="bi bi-search"></i> Buscar Vuelos
+                                </button>
+                            </div>
+                        </form>
+                </div>
+                    <div class="tab-pane fade" id="pills-mundial" role="tabpanel" aria-labelledby="pills-mundial-tab">
+                        <div class="container">
+                            <h2>Selecciona tu Equipo para el Mundial 2026</h1>
+
+                            <label for="equipo-selector">Elige un equipo:</label>
+                            <select id="equipo-selector"></select>
+                            <div id="ruta-info" class="ruta-display">
+                                Selecciona un equipo para ver la mejor ruta para alentarlos.
+                            </div>
+                            <div id="mapa-leaflet-container"></div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </main>
+        <footer class="bg-dark text-center text-white p-3">
+            <p>2025 MatchAirlines — tp_Final Introducción al desarrollo de software (Camejo) </p>
+        </footer>
+
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script src="./scripts/equipos.js"></script>
+    </body>
+</html>
