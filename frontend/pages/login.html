@@ -25,72 +25,57 @@
                 </div>
             </nav>
         </header>
-        <div class="container">
-            <div class="row justify-content-center mt-5">
+        <div class="container my-5 flex-grow-1">
+            <div class="row justify-content-center">
                 <div class="col-lg-6 col-md-8">
-                    <main>
-                        <ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-panel" type="button" role="tab" aria-controls="login-panel" aria-selected="true">
-                                    Iniciar Sesión
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register-panel" type="button" role="tab" aria-controls="register-panel" aria-selected="false">
-                                Registrarse
-                            </button>
-                            </li>
-                        </ul>
+                    <main class="card text-center">
+                        <div class="tabs">
+                            <button class="tab-button active" id="btn-login" onclick="showForm('login')">Iniciar Sesión</button>
+                            <button class="tab-button" id="btn-register" onclick="showForm('register')">Registrarse</button>
+                        </div>
                         <div class="tab-content" id="myTabContent">
                             <!-- form inicio de sesión -->
-                            <div class="tab-pane fade show active" id="login-panel" role="tabpanel" aria-labelledby="login-tab">
-                                <form action="/login" method="POST" class="mt-4">
+                                <form id="login-form" class="form-content active">
                                     <div class="mb-3">
-                                        <label for="loginEmail" class="form-label">Email:</label>
-                                        <input type="email" class="form-control" id="loginEmail" name="email" required>
+                                        <label for="email" >Email:</label>
+                                        <input type="email" id="email" name="email" required placeholder="tu.correo@ejemplo.com">
                                     </div>
                                     <div class="mb-3">
-                                        <label for="loginPassword" class="form-label">Contraseña:</label>
-                                        <input type="password" class="form-control" id="loginPassword" name="password" required>
+                                        <label for="password" class="form-label">Contraseña:</label>
+                                        <input type="password" id="password" name="password" required placeholder="••••••••">
                                     </div>
                                     <div class="text-center mb-3">
-                                        <a href="#" class="form-text">¿Olvidaste tu contraseña?</a>
+                                        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
                                     </div>  
                                     <div class="d-grid">
-                                    <button type="submit" class="btn btn-secondary btn-lg">Ingresar</button>
+                                    <button type="submit" class="btn btn-primary-dark">Ingresar</button>
                                     </div>
                                 </form>
-                            </div>
                             <!-- form registro -->
-                            <div class="tab-pane fade" id="register-panel" role="tabpanel" aria-labelledby="register-tab">
-                                <form action="/register" method="POST" class="mt-4">
-                                    <div class="mb-3">
-                                        <label for="regUsername" class="form-label">Nombre de Usuario:</label>
-                                        <input type="text" class="form-control" id="regUsername" name="username" required>
+                                <form id="register-form" class="form-content hidden">
+                                    <label for="regUsername">Nombre de Usuario:</label>
+                                    <input type="text" id="regUsername" name="username" required>
+
+                                    <label for="regEmail">Email:</label>
+                                    <input type="email" id="regEmail" name="email" required placeholder="tu.correo@ejemplo.com">
+
+                                    <label for="regPassword">Contraseña:</label>
+                                    <input type="password" id="regPassword" name="password" required placeholder="Crea una contraseña segura">
+
+                                    <div class="checkbox-container">
+                                        <input type="checkbox" id="termsCheck" required style="margin-right: 8px;">
+                                        <label for="termsCheck" style="margin-top: 10px; font-weight: normal; font-size: 14px; display: inline;">
+                                            Acepto los términos y condiciones
+                                        </label>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="regEmail" class="form-label">Email:</label>
-                                        <input type="email" class="form-control" id="regEmail" name="email" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="regPassword" class="form-label">Contraseña:</label>
-                                        <input type="password" class="form-control" id="regPassword" name="password" required>
-                                    </div>
-                                    <div class="mb-3 form-check">
-                                        <input type="checkbox" class="form-check-input" id="termsCheck" required>
-                                        <label class="form-check-label" for="termsCheck">Acepto los términos y condiciones</label>
-                                    </div>
-                                    <div class="d-grid">
-                                        <button type="submit" class="btn btn-secondary btn-lg">Crear Cuenta</button>
-                                    </div>                                    
+                                    <button type="submit" class="btn btn-primary-dark">Crear Cuenta</button>
                                 </form>
-                            </div>
                         </div>
                     </main>
                 </div>
             </div>
         </div>
-        
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script src="../scripts/login.js"></script>
     </body>
 </html>
