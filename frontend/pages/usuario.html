@@ -41,10 +41,9 @@
 
             <section class="col-12 col-md-8">
               <div class="card p-4">
-                <ul class="nav nav-tabs mb-3" id="userTab" role="tablist">
-                  <li class="nav-item" role="presentation">
+                <div class="nav nav-tabs mb-3" id="userTab" role="tablist">
                     <button
-                      class="nav-link active"
+                      class="tab-button active"
                       id="datos-tab"
                       data-bs-toggle="tab"
                       data-bs-target="#datos-panel"
@@ -55,10 +54,8 @@
                     >
                       Datos personales
                     </button>
-                  </li>
-                  <li class="nav-item" role="presentation">
                     <button
-                      class="nav-link"
+                      class="tab-button"
                       id="vuelos-tab"
                       data-bs-toggle="tab"
                       data-bs-target="#vuelos-panel"
@@ -69,10 +66,8 @@
                     >
                       Mis vuelos
                     </button>
-                  </li>
-                  <li class="nav-item" role="presentation">
                     <button
-                      class="nav-link"
+                      class="tab-button "
                       id="config-tab"
                       data-bs-toggle="tab"
                       data-bs-target="#config-panel"
@@ -83,8 +78,8 @@
                     >
                       Configuración
                     </button>
-                  </li>
-                </ul>
+
+                </div>
                 <div class="tab-content" id="userTabContent">
                   <div class="tab-pane fade show active" id="datos-panel" role="tabpanel" aria-labelledby="datos-tab">
                     <form>
@@ -100,7 +95,9 @@
                         <label for="pais" class="form-label">País</label>
                         <input type="text" class="form-control" id="pais"/>
                       </div>
-                      <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                      <div class="text-center">
+                      <button type="submit" class="btn btn-primary-dark">Guardar cambios</button>
+                      </div>
                     </form>
                   </div>
                   <div class="tab-pane fade" id="vuelos-panel" role="tabpanel" aria-labelledby="vuelos-tab">
@@ -109,15 +106,19 @@
                     <!-- Más adelante cuando conectemos con el backend aca tendriamos que traer vuelos reservados por usuarios -->
                   </div>
                   <div class="tab-pane fade" id="config-panel" role="tabpanel" aria-labelledby="config-tab">
-                    <h5>Preferencias</h5>
-                    <div class="form-check form-switch mb-2">
-                      <input class="form-check-input" type="checkbox" id="notificacionesEmail"checked/>
-                      <label class="form-check-label" for="notificacionesEmail">Recibir notificaciones por email</label>
-                    </div>
-                    <h5>Seguridad</h5>
-                    <div class="d-flex gap-2 mt-2">
-                      <button class="btn btn-outline-secondary">Cambiar contraseña</button>
-                      <button class="btn btn-outline-danger">Eliminar cuenta</button>
+                    <h3>Preferencias</h3>
+                    <div>
+                      <div class="form-check form-switch mb-2">
+                        <input class="form-check-input w-5" type="checkbox" id="notificacionesEmail"checked/>
+                        <label class="form-check-label mt-2 my-3" for="notificacionesEmail">Recibir notificaciones por email</label>
+                      </div>
+                      <h4>Seguridad</h4>
+                      <div class="text-center">
+                        <div class="d-flex gap-5 mx-5 px-4 ">
+                          <button class="btn btn-outline-secondary">Cambiar contraseña</button>
+                          <button class="btn btn-outline-danger">Eliminar cuenta</button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -126,5 +127,5 @@
           </div>
         </main>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    </body>
+      </body>
 </html>
