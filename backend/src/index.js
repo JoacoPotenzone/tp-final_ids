@@ -17,7 +17,6 @@ app.listen(PORT, () => {
 });
 
 
-
 app.get("/usuarios", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM usuarios");
@@ -30,6 +29,76 @@ app.get("/usuarios", async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}/usuarios`);
+});
+
+app.get("/aerolinea", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM aerolinea");
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "DB error" });
+    }
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}/aerolinea`);
+});
+
+app.get("/aeropuertos", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM aeropuertos");
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "DB error" });
+    }
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}/aeropuertos`);
+});
+
+app.get("/vuelos", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM vuelos");
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "DB error" });
+    }
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}/vuelos`);
+});
+
+app.get("/reservas", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM reservas");
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "DB error" });
+    }
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}/reservas`);
+});
+
+app.get("/estadios", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM estadios");
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "DB error" });
+    }
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}/estadios`);
 });
 
 { path: '.env' }
