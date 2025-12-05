@@ -1,4 +1,4 @@
-.PHONY: db run start stop deps
+.PHONY: db run start stop deps levantar
 
 db:
 	docker compose up -d
@@ -14,6 +14,8 @@ stop:
 deps:
 	npm install
 
+levantar: 
+	docker exec -i backend-db-1 psql -U postgres -d matchairlines_db < db/matchairlines_db.sql
 
 
 
