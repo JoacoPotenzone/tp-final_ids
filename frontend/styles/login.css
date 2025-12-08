@@ -1,0 +1,216 @@
+:root {
+    --color-bg-page: #F7F7F7; 
+    --color-bg-card: #FFFFFF; 
+    --color-text-dark: #212529; 
+    --color-text-black: #000000;
+    --color-text-medium: #6C757D; 
+    --color-border: #CED4DA; 
+    --color-button-base: #495057; 
+    --color-button-hover: #343A40; 
+}
+.nav-item {
+    color:rgb(0, 140, 255);
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: bold;
+
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--color-bg-card);
+    margin: 0;
+}
+
+.container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 1000px;
+    text-align: center;
+}
+
+h1 {
+    color: #004a99;
+    margin-bottom: 25px;
+}
+
+#equipo-selector {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    appearance: none; 
+    background-color: #eee;
+}
+
+.ruta-display {
+    padding: 20px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    margin-top: 30px;
+    min-height: 100px;
+    text-align: left;
+    transition: all 0.3s ease-in-out;
+}
+
+.ruta-display.active {
+    border-color: #00aaff;
+    background-color: #e6f7ff;
+}
+
+.nota {
+    font-size: 0.8em;
+    color: #777;
+    margin-top: 15px;
+}
+.banner {
+    background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url("../sources/fondo_trionda_2.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    color:rgb(0, 0, 255);
+    text-align: center;
+}
+
+.card {
+    background:white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px black
+}
+.card h3 {
+    margin-top: 0;
+    color:rgba(1, 96, 204);
+
+}
+.vuelo-card {
+   background: rgb(195, 193, 193);
+    grid-template-columns: repart(auto-fit,minmax(300px, lfr));
+    padding: 10px;
+
+    border-radius: 12px;
+    box-shadow: 0 4px 10px black
+
+}
+footer{
+    background:blue;
+    color:white;
+    text-align:center;
+    padding: 15px;
+    margin-top: 30px;
+}
+.form-card {
+    background-color: var(--color-bg-card);
+    padding: 40px;
+    border-radius: 12px;
+    width: 360px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.3s ease;
+}   
+.form-content {
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+.form-content.hidden {
+    display: none;
+}
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ECEFF1; 
+}
+.tab-button {
+    flex-grow: 1;
+    padding: 10px 15px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-dark);
+    transition: color 0.3s, background-color 0.2s, border-bottom 0.2s;
+}
+.tab-button.active {
+    color: var(--color-text-medium);
+    border-bottom: 3px solid var(--color-primary-dark); 
+    background-color: var(--color-primary-base); 
+}
+.tab-button:not(.active):hover {
+    color: var(--color-text-dark);
+    background-color: var(--color-text-medium);
+}
+label {
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 600;
+}
+input {
+    padding: 12px;
+    border: 2px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+input:focus {
+    border-color: var(--color-primary-dark);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(33, 37, 41, 0.1); 
+}
+.forgot-password {
+    align-self: flex-end;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--color-text-black);
+    text-decoration: none;
+    transition: color 0.3s, text-decoration 0.3s;
+}
+.forgot-password:hover {
+    color: var(--color-text-dark);
+    text-decoration: underline;
+}
+.btn {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.btn-primary-dark {
+    border: none;
+    background-color: var(--color-primary-dark); 
+    color: var(--color-text-black); 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+}
+.btn-primary-dark:hover {
+    background-color: #000000; 
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+.checkbox-container{
+    margin-top: 15px;
+    display: inline;
+    justify-content: center;
+}
+.checkbox-container label{
+    margin-top: 10px; 
+    font-weight: normal; 
+    font-size: 14px; 
+    display: inline;
+}
+.checkbox-container label:hover{
+    color: var(--color-text-dark);
+    text-decoration: underline;
+}
