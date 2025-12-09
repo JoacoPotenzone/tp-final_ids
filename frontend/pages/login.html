@@ -34,7 +34,6 @@
                             <button class="tab-button" id="btn-register" onclick="showForm('register')">Registrarse</button>
                         </div>
                         <div class="tab-content" id="myTabContent">
-                            <!-- form inicio de sesión -->
                                 <form id="login-form" class="form-content active">
                                     <div class="mb-3">
                                         <label for="email" class="mx-4">Email:</label>
@@ -46,7 +45,8 @@
                                     </div>
                                     <div class="text-center mb-3">
                                         <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
-                                    </div>  
+                                    </div>
+                                    <div id="loginError" class="text-danger mb-2"></div>  
                                     <div class="d-grid">
                                     <button type="submit" class="btn btn-primary-dark">Ingresar</button>
                                     </div>
@@ -68,6 +68,7 @@
                                             Acepto los términos y condiciones
                                         </label>
                                     </div>
+                                    <div id="registerError" class="text-danger mb-2"></div>
                                     <button type="submit" class="btn btn-primary-dark">Crear Cuenta</button>
                                 </form>
                         </div>
@@ -77,5 +78,6 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script src="../scripts/login.js"></script>
+        <script src="../scripts/auth.js"></script>
     </body>
 </html>
