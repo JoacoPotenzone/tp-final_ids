@@ -313,5 +313,127 @@ app.put("/api/user", authMiddleware, async (req, res) => {
   }
 });
 
+app.post("/api/user/flights", authMiddleware, async (req, res) => {
+  const userId = req.user.id_usuario;
+
+  const {
+    airline_name,
+    airline_code,
+    origin_name,
+    origin_city,
+    origin_country,
+    origin_code,
+    dest_name,
+    dest_city,
+    dest_country,
+    dest_code,
+    departure,   
+    capacity,
+    price,
+    seat
+  } = req.body;
+
+  if (
+    !airline_name || !airline_code ||
+    !origin_name || !origin_city || !origin_country || !origin_code ||
+    !dest_name   || !dest_city   || !dest_country   || !dest_code   ||
+    !departure   || !price       || !seat
+  ) {
+    return res.status(400).json({ error: "Faltan datos del vuelo" });
+  }
+
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const airlineResult = await client.query(
+      `
+      INSERT INTO aerolinea (nombre_aerolinea, codigo_iata)
+      VALUES ($1, $2)
+      ON CONFLICT (codigo_iata)
+      DO UPDATE SET nombre_aerolinea = EXCLUDED.nombre_aerolinea
+      RETURNING id_aerolinea;
+      `,
+      [airline_name, airline_code]
+    );
+    const id_aerolinea = airlineResult.rows[0].id_aerolinea;
+
+    const originResult = await client.query(
+      `
+      INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (codigo_iata)
+      DO UPDATE SET nombre_aeropuerto = EXCLUDED.nombre_aeropuerto,
+                    ciudad            = EXCLUDED.ciudad,
+                    pais              = EXCLUDED.pais
+      RETURNING id_aeropuerto;
+      `,
+      [origin_name, origin_city, origin_country, origin_code]
+    );
+    const id_origen = originResult.rows[0].id_aeropuerto;
+
+    const destResult = await client.query(
+      `
+      INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (codigo_iata)
+      DO UPDATE SET nombre_aeropuerto = EXCLUDED.nombre_aeropuerto,
+                    ciudad            = EXCLUDED.ciudad,
+                    pais              = EXCLUDED.pais
+      RETURNING id_aeropuerto;
+      `,
+      [dest_name, dest_city, dest_country, dest_code]
+    );
+    const id_destino = destResult.rows[0].id_aeropuerto;
+
+    const vueloResult = await client.query(
+      `
+      INSERT INTO vuelos (
+        id_aerolinea,
+        id_aeropuerto_origen,
+        id_aeropuerto_destino,
+        fecha_salida,
+        capacidad,
+        precio
+      )
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING id_vuelo, fecha_salida, precio;
+      `,
+      [
+        id_aerolinea,
+        id_origen,
+        id_destino,
+        departure,
+        capacity || 180,
+        price
+      ]
+    );
+    const vuelo = vueloResult.rows[0];
+
+    const reservaResult = await client.query(
+      `
+      INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
+      VALUES ($1, $2, $3, NOW())
+      RETURNING id_reserva, asiento;
+      `,
+      [userId, vuelo.id_vuelo, seat]
+    );
+
+    await client.query("COMMIT");
+
+    res.status(201).json({
+      message: "Vuelo reservado correctamente",
+      reserva: reservaResult.rows[0],
+      vuelo: vuelo,
+    });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error en POST /api/user/flights", err);
+    res.status(500).json({ error: "Error al registrar el vuelo" });
+  } finally {
+    client.release();
+  }
+});
 
 { path: '.env' }
