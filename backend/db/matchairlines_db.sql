@@ -131,7 +131,7 @@ VALUES
 
 INSERT INTO vuelos (id_aerolinea, id_aeropuerto_origen, id_aeropuerto_destino, fecha_salida, fecha_llegada, capacidad, precio) 
 VALUES 
-     Vuelos Comunes (Bloque Original, IDs 1-5)
+    --Vuelos Comunes (Bloque Original, IDs 1-5)
     (1, 1, 6, '2026-01-01 10:00:00', '2026-01-01 12:45:00', 180, 250.00), -- 1: EZE a BOG (Estimado: 2h 45m)
     (2, 6, 7, '2026-02-02 15:30:00', '2026-02-02 18:00:00', 200, 300.00), -- 2: BOG a LIM (Estimado: 2h 30m)
     (3, 7, 8, '2026-04-03 08:45:00', '2026-04-03 12:30:00', 150, 220.00), -- 3: LIM a SCL (Estimado: 3h 45m)
