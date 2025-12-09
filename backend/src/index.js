@@ -144,14 +144,17 @@ app.listen(PORT, () => {
 { path: '.env' }
 
 app.get('/api/vuelos', async (req, res) => {
-    const { origen, destino, fecha } = req.query;
-    
-    const origenBusqueda = `%${origen.trim()}%`; 
-    const destinoBusqueda = `%${destino.trim()}%`; 
-    
-    if (!origen || !destino || !fecha) {
-         return res.status(400).json({ error: 'Faltan parámetros de búsqueda (origen, destino o fecha).' });
+    const { origen, destino, fecha } = req.query; 
+
+    if (!origen || !destino) {
+        return res.status(400).json({ error: 'Faltan parámetros de búsqueda (origen y destino son obligatorios).' });
     }
+
+    const origenBusqueda = origen.trim();
+    const destinoBusqueda = destino.trim();
+
+    let fechaFiltro = fecha ? fecha.trim() : null;
+    let fechaActual = new Date().toISOString(); 
 
     try {
         const query = `
@@ -160,28 +163,31 @@ app.get('/api/vuelos', async (req, res) => {
                 v.id_vuelo AS numero, 
                 TO_CHAR(v.fecha_salida, 'HH24:MI') AS salida, 
                 v.precio,
-                v.fecha_salida
+                v.fecha_salida,
+                apd.ciudad AS destino_ciudad
             FROM
                 vuelos v
-            INNER JOIN
-                aerolinea a ON v.id_aerolinea = a.id_aerolinea
-            INNER JOIN
-                aeropuertos apo ON v.id_aeropuerto_origen = apo.id_aeropuerto
-            INNER JOIN
-                aeropuertos apd ON v.id_aeropuerto_destino = apd.id_aeropuerto
+            INNER JOIN aerolinea a ON v.id_aerolinea = a.id_aerolinea
+            INNER JOIN aeropuertos apo ON v.id_aeropuerto_origen = apo.id_aeropuerto
+            INNER JOIN aeropuertos apd ON v.id_aeropuerto_destino = apd.id_aeropuerto
             WHERE
-                apo.ciudad ILIKE $1 
-                AND apd.ciudad ILIKE $2 
+                TRIM(apo.ciudad) ILIKE $1 
+                AND v.fecha_salida >= $3
             ORDER BY
-                (v.fecha_salida::DATE = $3::DATE) DESC,
+                (TRIM(apd.ciudad) ILIKE $2) DESC,
+                ($4::TIMESTAMP IS NOT NULL AND v.fecha_salida::DATE = $4::DATE) DESC,
                 v.fecha_salida ASC
         `;
         
-        const result = await pool.query(query, [origenBusqueda, destinoBusqueda, fecha]);
+        const result = await pool.query(query, [
+            `%${origenBusqueda}%`, 
+            `%${destinoBusqueda}%`,
+            fechaActual,
+            fechaFiltro 
+        ]);
         res.json(result.rows);
-
     } catch (err) {
-        console.error('Error al buscar vuelos:', err);
+        console.error('Error al ejecutar la consulta SQL:', err); 
         res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
     }
 });

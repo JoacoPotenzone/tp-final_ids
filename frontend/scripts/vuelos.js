@@ -1,5 +1,69 @@
 const API_BASE_URL = 'http://localhost:3001'; 
 
+function mostrarVuelosSimulados(vuelos) {
+    const container = document.getElementById('lista-vuelos');
+    container.innerHTML = ''; 
+
+    vuelos.forEach(vuelo => {
+        const precioNumero = parseFloat(vuelo.precio);
+        const vueloHTML = `
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body d-flex justify-content-between align-items-center p-3">
+                        <div class="flight-details">
+                            <h5 class="card-title mb-1">
+                                ${vuelo.aerolinea} <span class="badge bg-secondary">${vuelo.numero}</span>
+                            </h5>
+                            <p class="mb-0 text-muted">Destino: <strong>${vuelo.destino_ciudad}</strong></p> <p class="card-text mb-0">
+                                <i class="bi bi-clock me-1"></i> 
+                                Salida: <strong>${vuelo.salida}</strong> | Llegada: <strong>${vuelo.llegada || 'N/A'}</strong>
+                            </p>
+                        </div>
+                        <div class="flight-price text-end">
+                            <span class="d-block fs-4 text-primary fw-bold">$${precioNumero.toFixed(2)}</span>
+                            <button class="btn btn-sm btn-primary mt-1">Reservar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.innerHTML += vueloHTML;
+    });
+}
+
+
+async function buscarVuelosDesdeBackend(origen, destino, fecha) {
+    const listaVuelosContainer = document.getElementById('lista-vuelos');
+    listaVuelosContainer.innerHTML = 'Cargando opciones de vuelo...'; 
+    const params = new URLSearchParams({
+        origen: origen,
+        destino: destino,
+        fecha: fecha 
+    }).toString();
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/vuelos?${params}`);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            listaVuelosContainer.innerHTML = `<div class="col-12"><div class="alert alert-danger text-center" role="alert">Error al buscar vuelos: ${errorData.error}</div></div>`;
+            return;
+        }
+
+        const vuelos = await response.json();
+
+        if (vuelos.length === 0) {
+            listaVuelosContainer.innerHTML = `<div class="col-12"><div class="alert alert-info text-center" role="alert">No se encontraron vuelos para esta búsqueda.</div></div>`;
+        } else {
+            mostrarVuelosSimulados(vuelos);
+        }
+
+    } catch (error) {
+        console.error('Error en la comunicación con el backend:', error);
+        listaVuelosContainer.innerHTML = `<div class="col-12"><div class="alert alert-danger text-center" role="alert">Error de conexión: Verifica que tu servidor Node.js esté funcionando en ${API_BASE_URL}.</div></div>`;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const origen = params.get('origen');
@@ -27,72 +91,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-app.get('/api/vuelos', async (req, res) => {
-    const { origen, destino, fecha } = req.query; 
-
-    if (!origen || !destino || !fecha) {
-        return res.status(400).json({ error: 'Faltan parámetros de búsqueda.' });
-    }
-
-    const origenBusqueda = origen.trim();
-    const destinoBusqueda = destino.trim();
-
-    try {
-        const query = `
-            SELECT
-                a.nombre_aerolinea AS aerolinea,
-                v.id_vuelo AS numero, 
-                TO_CHAR(v.fecha_salida, 'HH24:MI') AS salida, 
-                v.precio,
-                v.fecha_salida 
-            FROM
-                vuelos v
-            INNER JOIN
-                aerolinea a ON v.id_aerolinea = a.id_aerolinea
-            INNER JOIN
-                aeropuertos apo ON v.id_aeropuerto_origen = apo.id_aeropuerto
-            INNER JOIN
-                aeropuertos apd ON v.id_aeropuerto_destino = apd.id_aeropuerto
-            WHERE
-                TRIM(apo.ciudad) ILIKE $1 
-                AND TRIM(apd.ciudad) ILIKE $2
-            ORDER BY
-                (v.fecha_salida::DATE = $3::DATE) DESC,
-                v.fecha_salida ASC
-        `;
-
-        const result = await pool.query(query, [origenBusqueda, destinoBusqueda, fecha]);
-        res.json(result.rows);
-
-    } catch (err) {
-        console.error('Error al ejecutar la consulta SQL:', err); 
-        res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
-    }
-});
-function mostrarVuelosSimulados(vuelos) {
-    const container = document.getElementById('lista-vuelos');
-    container.innerHTML = ''; 
-
-    vuelos.forEach(vuelo => {
-        const vueloHTML = `
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-body d-flex justify-content-between align-items-center p-3">
-                        <div class="flight-details">
-                            <h5 class="card-title mb-1">${vuelo.aerolinea} <span class="badge bg-secondary">${vuelo.numero}</span></h5>
-                            <p class="card-text mb-0">
-                                <i class="bi bi-clock me-1"></i> 
-                                Salida: <strong>${vuelo.salida}</strong> | Llegada: <strong>${vuelo.llegada}</strong>
-                            </p>
-                        </div>
-                        <div class="flight-price text-end">
-                            <span class="d-block fs-4 text-primary fw-bold">$${vuelo.precio.toFixed(2)}</span>
-                            <button class="btn btn-sm btn-primary mt-1">Reservar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        container.innerHTML += vueloHTML;
-    });
-}
