@@ -1,5 +1,6 @@
 const userJson = localStorage.getItem('user');
 const token = localStorage.getItem('token');
+const API_URL = 'http://localhost:3001'
 
 if (!userJson || !token) {
   window.location.href = './login.html';
@@ -40,7 +41,58 @@ const inputPais = document.getElementById('pais');
 
 if (inputNombre) inputNombre.value = user.nombre_usuario || '';
 if (inputEmail) inputEmail.value = user.email || '';
-if (inputPais) inputPais.value = user.pais || ''; 
+if (inputPais) inputPais.value = user.nacionalidad || ''; 
+
+const userForm = document.getElementById('user-form');
+
+if (userForm) {
+  userForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const nombreActualizado = inputNombre.value.trim();
+    const emailActualizado = inputEmail.value.trim();
+    const paisActualizado = inputPais.value.trim(); 
+
+    try {
+      const res = await fetch(`${API_URL}/api/user`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          nombre_usuario: nombreActualizado,
+          email: emailActualizado,
+          nacionalidad: paisActualizado,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || 'No se pudieron guardar los cambios');
+        return;
+      }
+
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('token', data.token);
+
+      if (nameEl) nameEl.textContent = data.user.nombre_usuario;
+      if (emailEl) emailEl.textContent = data.user.email;
+      if (avatarEl) {
+        avatarEl.textContent = getInitials(
+          data.user.nombre_usuario,
+          data.user.email
+        );
+      }
+
+      alert('Datos actualizados correctamente');
+    } catch (err) {
+      console.error(err);
+      alert('Error de conexión con el servidor');
+    }
+  });
+}
 
 const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
