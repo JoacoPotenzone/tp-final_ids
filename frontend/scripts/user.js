@@ -102,3 +102,122 @@ if (logoutBtn) {
     window.location.href = './login.html';
   });
 }
+
+const flightsContainer = document.getElementById('flights-container');
+
+async function loadFlights() {
+  if (!flightsContainer) return;
+
+  try {
+    const res = await fetch(`${API_URL}/api/user/flights`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      flightsContainer.classList.add('alert', 'alert-danger');
+      flightsContainer.textContent = data.error || 'Error al cargar los vuelos';
+      return;
+    }
+
+    if (!data.length) {
+      flightsContainer.className = 'flights-list alert alert-info';
+      flightsContainer.textContent = 'Todavía no tenés vuelos asociados a tu cuenta.';
+      return;
+    }
+
+    flightsContainer.className = 'flights-list';
+    flightsContainer.innerHTML = '';
+
+    data.forEach(f => {
+      const div = document.createElement('div');
+      div.className = 'flight-item';
+
+      const fechaLocal = new Date(f.fecha_salida).toLocaleString();
+
+      div.innerHTML = `
+        <strong>${f.nombre_aerolinea}</strong> – Asiento ${f.asiento}<br>
+        ${f.origen} → ${f.destino}<br>
+        ${fechaLocal} · USD ${Number(f.precio).toFixed(2)}
+      `;
+
+      flightsContainer.appendChild(div);
+    });
+  } catch (err) {
+    console.error(err);
+    flightsContainer.classList.add('alert', 'alert-danger');
+    flightsContainer.textContent = 'Error de conexión al cargar los vuelos';
+  }
+}
+
+loadFlights();
+
+const addFlightBtn = document.getElementById('add-flight-btn');
+const flightForm = document.getElementById('flight-form');
+
+if (addFlightBtn && flightForm) {
+
+  addFlightBtn.addEventListener('click', () => {
+    flightForm.classList.toggle('d-none');
+  });
+
+  
+  flightForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(flightForm);
+
+    const body = {
+      airline_name:    formData.get('airline_name').trim(),
+      airline_code:    formData.get('airline_code').trim().toUpperCase(),
+      origin_name:     formData.get('origin_name').trim(),
+      origin_city:     formData.get('origin_city').trim(),
+      origin_country:  formData.get('origin_country').trim(),
+      origin_code:     formData.get('origin_code').trim().toUpperCase(),
+      dest_name:       formData.get('dest_name').trim(),
+      dest_city:       formData.get('dest_city').trim(),
+      dest_country:    formData.get('dest_country').trim(),
+      dest_code:       formData.get('dest_code').trim().toUpperCase(),
+      departure:       formData.get('departure'),
+      seat:            formData.get('seat').trim(),
+      price:           Number(formData.get('price')),
+      capacity:        180  
+    };
+
+    if (!body.airline_name || !body.airline_code || !body.origin_name || !body.dest_name || !body.departure || !body.seat || !body.price) {
+      alert('Completá los campos obligatorios');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/user/flights`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || 'No se pudo guardar el vuelo');
+        return;
+      }
+
+      alert('Vuelo guardado correctamente');
+
+      flightForm.reset();
+      flightForm.classList.add('d-none');
+      
+      loadFlights();
+    } catch (err) {
+      console.error(err);
+      alert('Error de conexión al guardar el vuelo');
+    }
+  });
+}
