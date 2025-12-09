@@ -16,7 +16,7 @@ deps:
 	npm install
 
 levantar: 
-	docker exec -i backend-db-1 psql -U postgres -d matchairlines_db < db/matchairlines_db.sql
+	docker exec -i tp-final_ids-db-1 psql -U postgres -d matchairlines_db < backend/db/matchairlines_db.sql
 
 
 
