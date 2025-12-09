@@ -4,6 +4,7 @@ CREATE TABLE usuarios (
 	nombre_usuario VARCHAR(20) UNIQUE NOT NULL,
 	email VARCHAR(50) UNIQUE NOT NULL,
 	password_hash VARCHAR(60) NOT NULL,
+	nacionalidad VARCHAR(50),
 	rol VARCHAR(50) NOT NULL CHECK (rol IN ('admin', 'cliente')),
 	fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -62,14 +63,14 @@ CREATE TABLE estadios (
 	FOREIGN KEY (id_aeropuerto) REFERENCES aeropuertos (id_aeropuerto)
 );
 
-INSERT INTO usuarios (nombre_usuario, email, password_hash, rol)
+INSERT INTO usuarios (nombre_usuario, email, password_hash, nacionalidad, rol)
 VALUES
-  ('Ignacio Gracia', 'IG18@gmail.com', '$2a$10$mcBPd7Z2RLfbXZ1LpNu2J.1FWxSsar0aiD58JQ4olE5xcYBAuzGf6', 'admin'),
-  ('Joaquin Potenzone', 'J019@gmail.com', '$2a$10$9Lj3sGTNOGnLaxEoYHOZxeWAeUvL5mq4hCOmqymkTJhGvSTh7HAzq', 'admin'),
-  ('Paco Pozo', 'JP20@gmail.com', '$2a$10$dOiwjoolFzqsaGDXmJXJ3OxcI1RRTiLHAjgUCVphuul52/oIuSGj2', 'admin'),
-  ('Anakin Skywalker', 'Chosenone@gmail.com', '$2a$10$tqn7y7HgnhsC6Gt72xc8luY.fknuT8ELScB39qfEdqxOwLAKAvize', 'cliente'),
-  ('Obi Wan Kenobi', 'Benkenobi@gmail.com', '$2a$10$QSC298G/aJOWv63P3OG9D.wUOmDyJOaqejysh3pnlaBNi6aHVnY.y', 'cliente'),
-  ('Han Solo', 'Halonmilenario@gmail.com', '$2a$10$hYsOKkF/66RV2higwOYHtOpIS8hKkw.RE1IlAijm/2IGC9VssUl4q', 'cliente');
+  ('Ignacio Gracia', 'IG18@gmail.com', '$2a$10$mcBPd7Z2RLfbXZ1LpNu2J.1FWxSsar0aiD58JQ4olE5xcYBAuzGf6','Argentina','admin'),
+  ('Joaquin Potenzone', 'J019@gmail.com', '$2a$10$9Lj3sGTNOGnLaxEoYHOZxeWAeUvL5mq4hCOmqymkTJhGvSTh7HAzq','Argentina', 'admin'),
+  ('Paco Pozo', 'JP20@gmail.com', '$2a$10$dOiwjoolFzqsaGDXmJXJ3OxcI1RRTiLHAjgUCVphuul52/oIuSGj2','Argentina', 'admin'),
+  ('Anakin Skywalker', 'Chosenone@gmail.com', '$2a$10$tqn7y7HgnhsC6Gt72xc8luY.fknuT8ELScB39qfEdqxOwLAKAvize','Tatooine', 'cliente'),
+  ('Obi Wan Kenobi', 'Benkenobi@gmail.com', '$2a$10$QSC298G/aJOWv63P3OG9D.wUOmDyJOaqejysh3pnlaBNi6aHVnY.y','Stewjon', 'cliente'),
+  ('Han Solo', 'Halonmilenario@gmail.com', '$2a$10$hYsOKkF/66RV2higwOYHtOpIS8hKkw.RE1IlAijm/2IGC9VssUl4q','Corelia', 'cliente');
 
 INSERT INTO aerolinea (nombre_aerolinea, codigo_iata)
 VALUES
