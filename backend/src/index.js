@@ -439,4 +439,37 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
   }
 });
 
+app.get("/api/user/flights", authMiddleware, async (req, res) => {
+  const userId = req.user.id_usuario;
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT
+        r.id_reserva,
+        r.asiento,
+        v.fecha_salida,
+        v.fecha_llegada,
+        v.precio,
+        a.nombre_aerolinea,
+        apo.ciudad  || ' (' || apo.codigo_iata || ')' AS origen,
+        apd.ciudad  || ' (' || apd.codigo_iata || ')' AS destino
+      FROM reservas r
+      JOIN vuelos v          ON r.id_vuelo = v.id_vuelo
+      JOIN aerolinea a       ON v.id_aerolinea = a.id_aerolinea
+      JOIN aeropuertos apo   ON v.id_aeropuerto_origen  = apo.id_aeropuerto
+      JOIN aeropuertos apd   ON v.id_aeropuerto_destino = apd.id_aeropuerto
+      WHERE r.id_usuario = $1
+      ORDER BY v.fecha_salida DESC
+      `,
+      [userId]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error en GET /api/user/flights", err);
+    res.status(500).json({ error: "Error al obtener los vuelos" });
+  }
+});
+
 { path: '.env' }
