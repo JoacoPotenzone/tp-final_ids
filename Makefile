@@ -1,10 +1,11 @@
-.PHONY: db run start stop deps levantar
+.PHONY: db run move start stop deps levantar
 
 db:
 	docker compose up -d
 
+
 run:
-	npm run dev
+	cd backend && npm run dev
 
 start: db run
 
