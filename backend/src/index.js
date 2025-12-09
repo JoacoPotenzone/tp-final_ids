@@ -162,5 +162,39 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
+app.post("/api/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Faltan datos" });
+  }
+
+  try {
+    const result = await pool.query(
+      "SELECT id_usuario, nombre_usuario, email, password_hash, rol FROM usuarios WHERE email = $1",
+      [email]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(400).json({ error: "Credenciales inválidas" });
+    }
+
+    const user = result.rows[0];
+    const ok = await bcrypt.compare(password, user.password_hash);
+
+    if (!ok) {
+      return res.status(400).json({ error: "Credenciales inválidas" });
+    }
+
+    const token = generateToken(user);
+    delete user.password_hash;
+
+    res.json({ user, token });
+  } catch (err) {
+    console.error("Error en /api/login", err);
+    res.status(500).json({ error: "Error en el servidor" });
+  }
+});
+
 
 { path: '.env' }
