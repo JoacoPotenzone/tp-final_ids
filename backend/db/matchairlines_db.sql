@@ -78,14 +78,56 @@ VALUES
   ('Gol Linhas Aéreas', 'G3'),
   ('Azul Linhas Aéreas', 'AD'),
   ('Viva Air Colombia', 'VV');
+  ('Avianca', 'AV'),
+  ('Copa Airlines', 'CM'),
+  ('Aeromexico', 'AM'),
+  ('American Airlines', 'AA'),
+  ('United Airlines', 'UA'),
+  ('Air Canada', 'AC'),
+  ('Iberia', 'IB'),
+  ('Air Europa', 'UX'),
+  ('Ryanair', 'FR');
 
 INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
 VALUES
+						---Argentina----
   ('Aeropuerto Internacional Ministro Pistarini', 'Buenos Aires', 'Argentina', 'EZE'),
+  ('Aeroparque Jorge Newbery', 'Buenos Aires', 'Argentina', 'AEP'),
+  ('Aeropuerto Internacional Ingeniero Ambrosio LV Taravella', 'Cordoba', 'Argentina', 'COR'),
+  ('Aeropuerto Internacional de Rosario Islas Malvinas', 'Rosario', 'Argentina', 'ROS'),
+  ('Aeropuerto Internacional Martin Miguel de Guemes', 'Salta', 'Argentina', 'SLA'),
+						----LATAM----
   ('Aeropuerto Internacional El Dorado', 'Bogota', 'Colombia', 'BOG'),
   ('Aeropuerto Internacional Jorge Chavez', 'Lima', 'Peru', 'LIM'),
   ('Aeropuerto Internacional Comodoro Arturo Merino Benitez', 'Santiago', 'Chile', 'SCL'),
-  ('Aeropuerto Internacional Guarulhos', 'Sao Paulo', 'Brasil', 'GRU');
+  ('Aeropuerto Internacional Guarulhos', 'Sao Paulo', 'Brasil', 'GRU')
+  ('Aeropuerto Internacional Tocumen', 'Ciudad de Panama', 'Panama', 'PTY'),
+  ('Aeropuerto Internacional de Viracopos', 'Campinas', 'Brasil', 'VCP'),
+  ('Aeropuerto Internacional de Carrasco', 'Montevideo', 'Uruguay', 'MVD'),
+						----USA 2026----
+  ('Hartsfield Jackson Atlanta International Airport', 'Atlanta', 'Estados Unidos', 'ATL'),
+  ('Logan International Airport', 'Boston', 'Estados Unidos', 'BOS'),
+  ('Dallas Fort Worth International Airport', 'Dallas', 'Estados Unidos', 'DFW'),
+  ('George Bush Intercontinental Airport', 'Houston', 'Estados Unidos', 'IAH'),
+  ('Kansas City International Airport', 'Kansas City', 'Estados Unidos', 'MCI'),
+  ('Los Angeles International Airport', 'Los Angeles', 'Estados Unidos', 'LAX'),
+  ('Miami International Airport', 'Miami', 'Estados Unidos', 'MIA'),
+  ('John F Kennedy International Airport', 'Nueva York', 'Estados Unidos', 'JFK'),
+  ('Philadelphia International Airport', 'Filadelfia', 'Estados Unidos', 'PHL'),
+  ('San Francisco International Airport', 'San Francisco', 'Estados Unidos', 'SFO'),
+  ('Seattle Tacoma International Airport', 'Seattle', 'Estados Unidos', 'SEA'),
+						----MEX 2026----
+  ('Aeropuerto Internacional General Mariano Escobedo', 'Monterrey', 'Mexico', 'MTY'),
+  ('Aeropuerto Internacional de Guadalajara', 'Guadalajara', 'Mexico', 'GDL'),
+  ('Aeropuerto Internacional Benito Juarez', 'Ciudad de Mexico', 'Mexico', 'MEX'),
+  ('Aeropuerto Internacional de Cancún', 'Cancun', 'Mexico', 'CUN'),
+						----CAN 2026----
+  ('Vancouver International Airport', 'Vancouver', 'Canada', 'YVR'),
+  ('Toronto Pearson International Airport', 'Toronto', 'Canada', 'YYZ'),
+						----España
+  ('Aeropuerto Adolfo Suarez Madrid-Barajas', 'Madrid', 'Espana', 'MAD'),
+  ('Aeropuerto de Barcelona-El Prat', 'Barcelona', 'Espana', 'BCN');
+  ;
 
 INSERT INTO vuelos (id_aerolinea, id_aeropuerto_origen, id_aeropuerto_destino, fecha_salida, capacidad, precio) 
 VALUES 
