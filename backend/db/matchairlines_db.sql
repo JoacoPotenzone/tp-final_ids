@@ -141,61 +141,61 @@ VALUES
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Aeromexico'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'MEX'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'ATL'),
-   '2024-09-01 07:00:00', 220, 380.00),
+   '2026-09-01 07:00:00', 220, 380.00),
 
   /* Vuelo 7: USA a Canada (Air Canada) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Air Canada'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'LAX'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'YYZ'),
-   '2024-09-02 12:45:00', 190, 450.00),
+   '2025-12-20 12:45:00', 190, 450.00),
 
   /* Vuelo 8: Brasil a Chile (LATAM Airlines) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'LATAM Airlines'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'GRU'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'SCL'),
-   '2024-09-03 16:30:00', 250, 310.00),
+   '2026-02-11 16:30:00', 250, 310.00),
 
   /* Vuelo 9: USA a USA (American Airlines) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'American Airlines'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'DFW'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'MIA'),
-   '2024-09-04 09:15:00', 160, 190.00),
+   '2026-11-30 09:15:00', 160, 190.00),
 
   /* Vuelo 10: España a Mexico (Iberia) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Iberia'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'MAD'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'CUN'),
-   '2024-09-05 21:00:00', 300, 750.00),
+   '2026-09-05 21:00:00', 300, 750.00),
 
   /* Vuelo 11: Panama a Colombia (Copa Airlines) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Copa Airlines'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'PTY'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'BOG'),
-   '2024-09-06 14:00:00', 140, 210.00),
+   '2026-05-06 14:00:00', 140, 210.00),
 
   /* Vuelo 12: Argentina a Peru (Aerolineas Argentinas) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Aerolineas Argentinas'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'AEP'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'LIM'),
-   '2024-09-07 10:30:00', 170, 330.00),
+   '2026-10-07 10:30:00', 170, 330.00),
 
   /* Vuelo 13: USA Costa Oeste a Este (United Airlines) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'United Airlines'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'SFO'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'JFK'),
-   '2024-09-08 18:00:00', 280, 490.00),
+   '2026-11-08 18:00:00', 280, 490.00),
 
   /* Vuelo 14: Canada a USA Mundial (Air Canada) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Air Canada'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'YVR'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'SEA'),
-   '2024-09-09 11:20:00', 120, 150.00),
+   '2026-09-09 11:20:00', 120, 150.00),
 
   /* Vuelo 15: Conexión clave Europea (Ryanair) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Ryanair'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'BCN'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'MAD'),
-   '2024-09-10 13:50:00', 189, 45.00),
+   '2026-06-10 13:50:00', 189, 45.00),
    /* Vuelo 16: España a USA (Iberia) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Iberia'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'MAD'),
@@ -206,55 +206,108 @@ VALUES
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'American Airlines'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'BOS'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'GDL'),
-   '2024-10-02 11:00:00', 180, 420.00),
+   '2026-01-02 11:00:00', 180, 420.00),
 
   /* Vuelo 18: Perú a Argentina (LATAM Airlines) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'LATAM Airlines'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'LIM'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'EZE'),
-   '2024-10-03 08:45:00', 200, 300.00),
+   '2026-11-04 08:45:00', 200, 300.00),
 
   /* Vuelo 19: Colombia a USA (Avianca) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Avianca'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'BOG'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'JFK'),
-   '2024-10-04 13:20:00', 230, 480.00),
+   '2026-12-19 13:20:00', 230, 480.00),
 
   /* Vuelo 20: Canadá a USA (Air Canada) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Air Canada'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'YVR'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'LAX'),
-   '2024-10-05 16:10:00', 150, 250.00),
+   '2026-12-01 16:10:00', 150, 250.00),
 
   /* Vuelo 21: Argentina a Chile (Aerolineas Argentinas) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Aerolineas Argentinas'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'AEP'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'SCL'),
-   '2024-10-06 06:00:00', 170, 190.00),
+   '2026-02-03 06:00:00', 170, 190.00),
 
   /* Vuelo 22: Conexión entre sedes USA (United Airlines) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'United Airlines'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'ATL'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'SEA'),
-   '2024-10-07 19:00:00', 280, 510.00),
+   '2026-06-02 19:00:00', 280, 510.00),
 
   /* Vuelo 23: México a Panamá (Aeromexico) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Aeromexico'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'MTY'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'PTY'),
-   '2024-10-08 10:40:00', 160, 350.00),
+   '2026-10-08 10:40:00', 160, 350.00),
 
   /* Vuelo 24: España a España Low Cost (Ryanair) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Ryanair'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'BCN'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'MAD'),
-   '2024-10-09 14:55:00', 189, 50.00),
+   '2026-10-09 14:55:00', 189, 50.00),
 
   /* Vuelo 25: Brasil Interno (Gol Linhas Aéreas) */
   ((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Gol Linhas Aéreas'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'GRU'),
    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'VCP'),
-   '2024-10-10 18:25:00', 150, 95.00);
+   '2026-10-10 18:25:00', 150, 95.00)
+   /* Vuelos Mundial*/
+   /* ARGENTINA*/
+   	((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Aerolineas Argentinas'),
+	(SELECT id_aeropuerto FROM aeropuerto WHERE nombre_aeropuerto = 'Ezeiza Ministro Pistarini'),
+    (SELECT id_aeropuerto FROM aeropuerto WHERE nombre_aeropuerto = 'Kansas City International Airport'),
+    '2026-06-14 10:00:00',
+    '2026-06-15 06:00:00',
+    850,
+    180),
+	((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Avianca'),
+    (SELECT id_aeropuerto FROM aeropuerto WHERE nombre_aeropuerto = 'Kansas City International Airport'),
+    (SELECT id_aeropuerto FROM aeropuerto WHERE nombre_aeropuerto = 'Dallas/Fort Worth International Airport'),
+    '2026-06-17 14:00:00',
+    '2026-06-17 16:00:00',
+    150,
+    150)
+	/*MEXICO */
+	((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Aeromexico'),
+    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'MEX'),
+    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'GDL'),
+    '2026-06-15 11:00:00',
+    '2026-06-15 13:00:00',
+    110,
+    160),
+	((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Aeromexico'),
+    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'GDL'),
+    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'MEX'),
+    '2026-06-20 17:30:00',
+    '2026-06-20 19:30:00',
+    125,
+    160),
+	((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'LATAM Airlines'),
+    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'GRU'),
+    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'JFK'),
+    '2026-06-11 23:00:00',
+    '2026-06-12 10:00:00',
+    780,
+    300),
+	((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'United Airlines'),
+    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'JFK'),
+    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'BOS'),
+    '2026-06-14 08:30:00',
+    '2026-06-14 09:45:00',
+    95,
+    120),
+	((SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = 'Gol Linhas Aéreas'),
+    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'ATL'),
+    (SELECT id_aeropuerto FROM aeropuertos WHERE codigo_iata = 'GRU'),
+    '2026-06-25 21:30:00',
+    '2026-06-26 10:00:00',
+    690,
+    250)
+   ;
 
 
 INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
