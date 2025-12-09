@@ -60,4 +60,55 @@ CREATE TABLE estadios (
 	id_aeropuerto INT NOT NULL,
 	pais VARCHAR(50) NOT NULL,
 	FOREIGN KEY (id_aeropuerto) REFERENCES aeropuertos (id_aeropuerto)
-)
+);
+
+INSERT INTO usuarios (nombre_usuario, email, password_hash, rol)
+VALUES
+  ('Ignacio Gracia', 'IG18@gmail.com', '$2a$10$mcBPd7Z2RLfbXZ1LpNu2J.1FWxSsar0aiD58JQ4olE5xcYBAuzGf6', 'admin'),
+  ('Joaquin Potenzone', 'J019@gmail.com', '$2a$10$9Lj3sGTNOGnLaxEoYHOZxeWAeUvL5mq4hCOmqymkTJhGvSTh7HAzq', 'admin'),
+  ('Paco Pozo', 'JP20@gmail.com', '$2a$10$dOiwjoolFzqsaGDXmJXJ3OxcI1RRTiLHAjgUCVphuul52/oIuSGj2', 'admin'),
+  ('Anakin Skywalker', 'Chosenone@gmail.com', '$2a$10$tqn7y7HgnhsC6Gt72xc8luY.fknuT8ELScB39qfEdqxOwLAKAvize', 'cliente'),
+  ('Obi Wan Kenobi', 'Benkenobi@gmail.com', '$2a$10$QSC298G/aJOWv63P3OG9D.wUOmDyJOaqejysh3pnlaBNi6aHVnY.y', 'cliente'),
+  ('Han Solo', 'Halonmilenario@gmail.com', '$2a$10$hYsOKkF/66RV2higwOYHtOpIS8hKkw.RE1IlAijm/2IGC9VssUl4q', 'cliente');
+
+INSERT INTO aerolinea (nombre_aerolinea, codigo_iata)
+VALUES
+  ('Aerolineas Argentinas', 'AR'),
+  ('LATAM Airlines', 'LA'),
+  ('Gol Linhas Aéreas', 'G3'),
+  ('Azul Linhas Aéreas', 'AD'),
+  ('Viva Air Colombia', 'VV');
+
+INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
+VALUES
+  ('Aeropuerto Internacional Ministro Pistarini', 'Buenos Aires', 'Argentina', 'EZE'),
+  ('Aeropuerto Internacional El Dorado', 'Bogotá', 'Colombia', 'BOG'),
+  ('Aeropuerto Internacional Jorge Chávez', 'Lima', 'Perú', 'LIM'),
+  ('Aeropuerto Internacional Comodoro Arturo Merino Benítez', 'Santiago', 'Chile', 'SCL'),
+  ('Aeropuerto Internacional Guarulhos', 'São Paulo', 'Brasil', 'GRU');
+
+INSERT INTO vuelos (id_aerolinea, id_aeropuerto_origen, id_aeropuerto_destino, fecha_salida, capacidad, precio) 
+VALUES 
+	(1, 1, 2, '2024-07-01 10:00:00', 180, 250.00),
+	(2, 2, 3, '2024-07-02 15:30:00', 200, 300.00),
+	(3, 3, 4, '2024-07-03 08:45:00', 150, 220.00),
+	(4, 4, 5, '2024-07-04 12:20:00', 170, 280.00),
+	(5, 5, 1, '2024-07-05 18:10:00', 190, 320.00);
+
+
+INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
+VALUES
+  (4, 1, '12A', '2024-06-15 09:00:00'),
+  (5, 2, '14B', '2024-06-16 10:30:00'),
+  (3, 3, '16C', '2024-06-17 11:45:00'),
+  (1, 4, '18D', '2024-06-18 12:00:00'),
+  (5, 5, '20E', '2024-06-19 13:10:00');
+
+INSERT INTO estadios (nombre_estadio, ciudad, id_aeropuerto, pais)
+VALUES
+  ('Estadio Monumental', 'Buenos Aires', 1, 'Argentina'),
+  ('Estadio El Campín', 'Bogotá', 2, 'Colombia'),
+  ('Estadio Nacional', 'Lima', 3, 'Perú'),
+  ('Estadio Nacional de Chile', 'Santiago', 4, 'Chile'),
+  ('Estadio Morumbi', 'São Paulo', 5, 'Brasil');
+
