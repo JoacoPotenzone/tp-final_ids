@@ -136,13 +136,17 @@ async function loadFlights() {
       const div = document.createElement('div');
       div.className = 'flight-item';
 
-      const fechaLocal = new Date(f.fecha_salida).toLocaleString();
+        const salidaLocal  = new Date(f.fecha_salida).toLocaleString();
+        const llegadaLocal = f.fecha_llegada
+        ? new Date(f.fecha_llegada).toLocaleString()
+        : '';
 
-      div.innerHTML = `
+        div.innerHTML = `
         <strong>${f.nombre_aerolinea}</strong> – Asiento ${f.asiento}<br>
         ${f.origen} → ${f.destino}<br>
-        ${fechaLocal} · USD ${Number(f.precio).toFixed(2)}
-      `;
+        Salida: ${salidaLocal}${llegadaLocal ? `<br>Llegada: ${llegadaLocal}` : ''}<br>
+        USD ${Number(f.precio).toFixed(2)}
+        `;
 
       flightsContainer.appendChild(div);
     });
@@ -182,12 +186,13 @@ if (addFlightBtn && flightForm) {
       dest_country:    formData.get('dest_country').trim(),
       dest_code:       formData.get('dest_code').trim().toUpperCase(),
       departure:       formData.get('departure'),
+      arrival:         formData.get('arrival'),
       seat:            formData.get('seat').trim(),
       price:           Number(formData.get('price')),
       capacity:        180  
     };
 
-    if (!body.airline_name || !body.airline_code || !body.origin_name || !body.dest_name || !body.departure || !body.seat || !body.price) {
+    if (!body.airline_name || !body.airline_code || !body.origin_name || !body.dest_name || !body.departure || !body.arrival || !body.seat || !body.price) {
       alert('Completá los campos obligatorios');
       return;
     }
@@ -221,4 +226,3 @@ if (addFlightBtn && flightForm) {
     }
   });
 }
-
