@@ -20,12 +20,30 @@ const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || "Secretomatchairlines";
 const JWT_EXPIRES_IN = "2h";
 
+function authMiddleware(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: "Token requerido" });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ error: "Token inválido" });
+    }
+    req.user = decoded; 
+    next();
+  });
+}
+
 function generateToken(user) {
   return jwt.sign(
     {
       id_usuario: user.id_usuario,
       email: user.email,
       nombre_usuario: user.nombre_usuario,
+      nacionalidad: user.nacionalidad,
       rol: user.rol,
     },
     JWT_SECRET,
@@ -188,7 +206,6 @@ app.post("/api/register", async (req, res) => {
   }
 
   try {
-
     const existing = await pool.query(
       "SELECT 1 FROM usuarios WHERE email = $1 OR nombre_usuario = $2",
       [email, nombre_usuario]
@@ -202,10 +219,11 @@ app.post("/api/register", async (req, res) => {
 
     const password_hash = await bcrypt.hash(password, 10);
 
+
     const result = await pool.query(
       `INSERT INTO usuarios (nombre_usuario, email, password_hash, rol)
        VALUES ($1, $2, $3, 'cliente')
-       RETURNING id_usuario, nombre_usuario, email, rol, fecha_creacion`,
+       RETURNING id_usuario, nombre_usuario, email, rol, nacionalidad, fecha_creacion`,
       [nombre_usuario, email, password_hash]
     );
 
@@ -228,8 +246,8 @@ app.post("/api/login", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT id_usuario, nombre_usuario, email, password_hash, rol FROM usuarios WHERE email = $1",
-      [email]
+    "SELECT id_usuario, nombre_usuario, email, password_hash, rol, nacionalidad FROM usuarios WHERE email = $1",
+    [email]
     );
 
     if (result.rowCount === 0) {
@@ -249,6 +267,42 @@ app.post("/api/login", async (req, res) => {
     res.json({ user, token });
   } catch (err) {
     console.error("Error en /api/login", err);
+    res.status(500).json({ error: "Error en el servidor" });
+  }
+});
+
+app.put("/api/user", authMiddleware, async (req, res) => {
+  const userId = req.user.id_usuario;
+  const { nombre_usuario, email, nacionalidad } = req.body;
+
+  if (!nombre_usuario || !email) {
+    return res.status(400).json({ error: "Nombre y email son obligatorios" });
+  }
+
+  try {
+    const result = await pool.query(
+      `UPDATE usuarios
+       SET nombre_usuario = $1,
+           email = $2,
+           nacionalidad = $3
+       WHERE id_usuario = $4
+       RETURNING id_usuario, nombre_usuario, email, rol, nacionalidad, fecha_creacion`,
+      [nombre_usuario, email, nacionalidad || null, userId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    const updatedUser = result.rows[0];
+    const newToken = generateToken(updatedUser);
+
+    res.json({ user: updatedUser, token: newToken });
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(409).json({ error: "Email o nombre de usuario ya está en uso" });
+    }
+    console.error("Error en /api/user", err);
     res.status(500).json({ error: "Error en el servidor" });
   }
 });
