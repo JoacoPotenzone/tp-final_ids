@@ -64,12 +64,12 @@ CREATE TABLE estadios (
 
 INSERT INTO usuarios (nombre_usuario, email, password_hash, rol)
 VALUES
-  ('Ignacio Gracia', 'IG18@gmail.com', 'contrasle123', 'admin'),
-  ('Joaquin Potenzone', 'J019@gmail.com', 'pass456', 'admin'),
-  ('Paco Pozo', 'JP20@gmail.com', 'secreto89', 'admin'),
-  ('Anakin Skywalker', 'Chosenone@gmail.com', 'Tatooine2', 'cliente'),
-  ('Obi Wan Kenobi', 'Benkenobi@gmail.com', 'RipQuigon', 'cliente'),
-  ('Han Solo', 'Halonmilenario@gmail.com', 'Leiteamo', 'cliente');
+  ('Ignacio Gracia', 'IG18@gmail.com', '$2a$10$mcBPd7Z2RLfbXZ1LpNu2J.1FWxSsar0aiD58JQ4olE5xcYBAuzGf6', 'admin'),
+  ('Joaquin Potenzone', 'J019@gmail.com', '$2a$10$9Lj3sGTNOGnLaxEoYHOZxeWAeUvL5mq4hCOmqymkTJhGvSTh7HAzq', 'admin'),
+  ('Paco Pozo', 'JP20@gmail.com', '$2a$10$dOiwjoolFzqsaGDXmJXJ3OxcI1RRTiLHAjgUCVphuul52/oIuSGj2', 'admin'),
+  ('Anakin Skywalker', 'Chosenone@gmail.com', '$2a$10$tqn7y7HgnhsC6Gt72xc8luY.fknuT8ELScB39qfEdqxOwLAKAvize', 'cliente'),
+  ('Obi Wan Kenobi', 'Benkenobi@gmail.com', '$2a$10$QSC298G/aJOWv63P3OG9D.wUOmDyJOaqejysh3pnlaBNi6aHVnY.y', 'cliente'),
+  ('Han Solo', 'Halonmilenario@gmail.com', '$2a$10$hYsOKkF/66RV2higwOYHtOpIS8hKkw.RE1IlAijm/2IGC9VssUl4q', 'cliente');
 
 INSERT INTO aerolinea (nombre_aerolinea, codigo_iata)
 VALUES
