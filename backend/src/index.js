@@ -1,6 +1,11 @@
 import express from "express";
 import cors from 'cors';
+import dotenv from 'dotenv';
 import { pool } from "./db.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
+dotenv.config();
 
 const app = express();
 
@@ -12,6 +17,24 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
+const JWT_SECRET = process.env.JWT_SECRET || "Secretomatchairlines";
+const JWT_EXPIRES_IN = "2h";
+
+function generateToken(user) {
+  return jwt.sign(
+    {
+      id_usuario: user.id_usuario,
+      email: user.email,
+      nombre_usuario: user.nombre_usuario,
+      rol: user.rol,
+    },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES_IN }
+  );
+}
+
+
+
 app.listen(PORT, () => {
   console.log("Servidor corriendo en http://localhost:" + PORT);
 });
@@ -100,5 +123,7 @@ app.get("/estadios", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}/estadios`);
 });
+
+
 
 { path: '.env' }
