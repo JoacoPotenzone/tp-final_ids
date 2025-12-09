@@ -14,7 +14,7 @@ function mostrarVuelosSimulados(vuelos) {
                             <h5 class="card-title mb-1">
                                 ${vuelo.aerolinea} <span class="badge bg-secondary">${vuelo.numero}</span>
                             </h5>
-                            <p class="mb-0 text-muted">Destino: <strong>${vuelo.destino_ciudad}</strong></p> <p class="card-text mb-0">
+                            <p class="mb-0 text-muted">Desde: <strong>${vuelo.origen_ciudad} </strong><strong> Destino: ${vuelo.destino_ciudad}</strong></p> <p class="card-text mb-0">
                                 <i class="bi bi-clock me-1"></i> 
                                 Salida: <strong>${vuelo.salida}</strong> | Llegada: <strong>${vuelo.llegada || 'N/A'}</strong>
                             </p>

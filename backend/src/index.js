@@ -156,28 +156,30 @@ app.get('/api/vuelos', async (req, res) => {
     let fechaFiltro = fecha ? fecha.trim() : null;
     let fechaActual = new Date().toISOString(); 
 
-    try {
-        const query = `
-            SELECT
-                a.nombre_aerolinea AS aerolinea,
-                v.id_vuelo AS numero, 
-                TO_CHAR(v.fecha_salida, 'HH24:MI') AS salida, 
-                v.precio,
-                v.fecha_salida,
-                apd.ciudad AS destino_ciudad
-            FROM
-                vuelos v
-            INNER JOIN aerolinea a ON v.id_aerolinea = a.id_aerolinea
-            INNER JOIN aeropuertos apo ON v.id_aeropuerto_origen = apo.id_aeropuerto
-            INNER JOIN aeropuertos apd ON v.id_aeropuerto_destino = apd.id_aeropuerto
-            WHERE
-                TRIM(apo.ciudad) ILIKE $1 
-                AND v.fecha_salida >= $3
-            ORDER BY
-                (TRIM(apd.ciudad) ILIKE $2) DESC,
-                ($4::TIMESTAMP IS NOT NULL AND v.fecha_salida::DATE = $4::DATE) DESC,
-                v.fecha_salida ASC
-        `;
+  try {
+      const query = `
+          SELECT
+              a.nombre_aerolinea AS aerolinea,
+              v.id_vuelo AS numero, 
+              TO_CHAR(v.fecha_salida, 'HH24:MI') AS salida, 
+              TO_CHAR(v.fecha_llegada, 'HH24:MI') AS llegada, 
+              v.precio,
+              v.fecha_salida,
+              apd.ciudad AS destino_ciudad,
+              apo.ciudad AS origen_ciudad 
+          FROM
+              vuelos v
+          INNER JOIN aerolinea a ON v.id_aerolinea = a.id_aerolinea
+          INNER JOIN aeropuertos apo ON v.id_aeropuerto_origen = apo.id_aeropuerto
+          INNER JOIN aeropuertos apd ON v.id_aeropuerto_destino = apd.id_aeropuerto
+          WHERE
+              TRIM(apo.ciudad) ILIKE $1 
+              AND v.fecha_salida >= $3
+          ORDER BY
+              (TRIM(apd.ciudad) ILIKE $2) DESC,
+              ($4::TIMESTAMP IS NOT NULL AND v.fecha_salida::DATE = $4::DATE) DESC,
+              v.fecha_salida ASC
+      `;
         
         const result = await pool.query(query, [
             `%${origenBusqueda}%`, 
