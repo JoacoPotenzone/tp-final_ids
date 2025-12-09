@@ -1,3 +1,5 @@
+const API_BASE_URL = 'http://localhost:3001'; 
+
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const origen = params.get('origen');
@@ -13,32 +15,60 @@ document.addEventListener('DOMContentLoaded', () => {
             <strong>Fecha:</strong> ${fecha || 'N/A'} | 
             <strong>Pasajeros:</strong> ${pasajeros || '1'}
         `;
-    }
+        
+        buscarVuelosDesdeBackend(origen, destino, fecha);
 
-
-    if (origen === 'Buenos Aires' && destino === 'Dallas') {
-        mostrarVuelosSimulados([
-            { aerolinea: 'Aerolíneas Match', numero: 'MA101', salida: '08:00', llegada: '18:30', precio: 540.50 },
-            { aerolinea: 'Global Wings', numero: 'GW777', salida: '14:00', llegada: '00:30', precio: 620.00 },
-            { aerolinea: 'Turbo Flight', numero: 'TF222', salida: '20:30', llegada: '06:45', precio: 499.99 }
-        ]);
-    } else if (origen === 'Buenos Aires' && destino === 'Ciudad de México') {
-        mostrarVuelosSimulados([
-            { aerolinea: 'Aerolíneas Match', numero: 'MA300', salida: '10:00', llegada: '15:30', precio: 380.00 },
-            { aerolinea: 'Sky Connect', numero: 'SC456', salida: '19:00', llegada: '01:00', precio: 450.00 }
-        ]);
     } else {
-        // No se encontraron resultados
         document.getElementById('lista-vuelos').innerHTML = `
-            <div class="col-12">
-                <div class="alert alert-danger text-center" role="alert">
-                    <i class="bi bi-x-circle me-2"></i> No se encontraron vuelos para esta ruta.
-                </div>
-            </div>
+            <div class="col-12"><div class="alert alert-warning text-center" role="alert">
+                Realiza una búsqueda desde la página principal.
+            </div></div>
         `;
     }
 });
 
+app.get('/api/vuelos', async (req, res) => {
+    const { origen, destino, fecha } = req.query; 
+
+    if (!origen || !destino || !fecha) {
+        return res.status(400).json({ error: 'Faltan parámetros de búsqueda.' });
+    }
+
+    const origenBusqueda = origen.trim();
+    const destinoBusqueda = destino.trim();
+
+    try {
+        const query = `
+            SELECT
+                a.nombre_aerolinea AS aerolinea,
+                v.id_vuelo AS numero, 
+                TO_CHAR(v.fecha_salida, 'HH24:MI') AS salida, 
+                v.precio,
+                v.fecha_salida 
+            FROM
+                vuelos v
+            INNER JOIN
+                aerolinea a ON v.id_aerolinea = a.id_aerolinea
+            INNER JOIN
+                aeropuertos apo ON v.id_aeropuerto_origen = apo.id_aeropuerto
+            INNER JOIN
+                aeropuertos apd ON v.id_aeropuerto_destino = apd.id_aeropuerto
+            WHERE
+                TRIM(apo.ciudad) ILIKE $1 
+                AND TRIM(apd.ciudad) ILIKE $2
+            ORDER BY
+                (v.fecha_salida::DATE = $3::DATE) DESC,
+                v.fecha_salida ASC
+        `;
+
+        const result = await pool.query(query, [origenBusqueda, destinoBusqueda, fecha]);
+        res.json(result.rows);
+
+    } catch (err) {
+        console.error('Error al ejecutar la consulta SQL:', err); 
+        res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
+    }
+});
 function mostrarVuelosSimulados(vuelos) {
     const container = document.getElementById('lista-vuelos');
     container.innerHTML = ''; 
