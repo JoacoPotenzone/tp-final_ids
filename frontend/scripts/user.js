@@ -213,7 +213,7 @@ if (addFlightBtn && flightForm) {
 
       flightForm.reset();
       flightForm.classList.add('d-none');
-      
+
       loadFlights();
     } catch (err) {
       console.error(err);
@@ -221,3 +221,4 @@ if (addFlightBtn && flightForm) {
     }
   });
 }
+
