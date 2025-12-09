@@ -54,20 +54,18 @@ app.get('/api/vuelos', async (req, res) => {
             INNER JOIN
                 aeropuertos apd ON v.id_aeropuerto_destino = apd.id_aeropuerto
             WHERE
-                -- USAMOS IGUALDAD ESTRICTA (=) con TRIM para coincidencia de nombre exacto
-                TRIM(apo.ciudad) = $1 
-                AND TRIM(apd.ciudad) = $2
+                TRIM(apo.ciudad) ILIKE $1 
+                AND TRIM(apd.ciudad) ILIKE $2
             ORDER BY
                 (v.fecha_salida::DATE = $3::DATE) DESC,
                 v.fecha_salida ASC
         `;
 
-
         const result = await pool.query(query, [origenBusqueda, destinoBusqueda, fecha]);
         res.json(result.rows);
 
     } catch (err) {
-        console.error('Error FATAL al extraer datos:', err);
+        console.error('Error al ejecutar la consulta SQL:', err); 
         res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
     }
 });
