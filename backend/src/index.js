@@ -34,7 +34,6 @@ function generateToken(user) {
 }
 
 
-
 app.listen(PORT, () => {
   console.log("Servidor corriendo en http://localhost:" + PORT);
 });
@@ -124,6 +123,44 @@ app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}/estadios`);
 });
 
+app.post("/api/register", async (req, res) => {
+  const { nombre_usuario, email, password } = req.body;
+
+  if (!nombre_usuario || !email || !password) {
+    return res.status(400).json({ error: "Faltan datos" });
+  }
+
+  try {
+
+    const existing = await pool.query(
+      "SELECT 1 FROM usuarios WHERE email = $1 OR nombre_usuario = $2",
+      [email, nombre_usuario]
+    );
+
+    if (existing.rowCount > 0) {
+      return res
+        .status(409)
+        .json({ error: "El usuario o el email ya existe" });
+    }
+
+    const password_hash = await bcrypt.hash(password, 10);
+
+    const result = await pool.query(
+      `INSERT INTO usuarios (nombre_usuario, email, password_hash, rol)
+       VALUES ($1, $2, $3, 'cliente')
+       RETURNING id_usuario, nombre_usuario, email, rol, fecha_creacion`,
+      [nombre_usuario, email, password_hash]
+    );
+
+    const user = result.rows[0];
+    const token = generateToken(user);
+
+    res.status(201).json({ user, token });
+  } catch (err) {
+    console.error("Error en /api/register", err);
+    res.status(500).json({ error: "Error en el servidor" });
+  }
+});
 
 
 { path: '.env' }
