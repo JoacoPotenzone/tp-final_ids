@@ -82,10 +82,10 @@ VALUES
 INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
 VALUES
   ('Aeropuerto Internacional Ministro Pistarini', 'Buenos Aires', 'Argentina', 'EZE'),
-  ('Aeropuerto Internacional El Dorado', 'Bogotá', 'Colombia', 'BOG'),
-  ('Aeropuerto Internacional Jorge Chávez', 'Lima', 'Perú', 'LIM'),
-  ('Aeropuerto Internacional Comodoro Arturo Merino Benítez', 'Santiago', 'Chile', 'SCL'),
-  ('Aeropuerto Internacional Guarulhos', 'São Paulo', 'Brasil', 'GRU');
+  ('Aeropuerto Internacional El Dorado', 'Bogota', 'Colombia', 'BOG'),
+  ('Aeropuerto Internacional Jorge Chavez', 'Lima', 'Peru', 'LIM'),
+  ('Aeropuerto Internacional Comodoro Arturo Merino Benitez', 'Santiago', 'Chile', 'SCL'),
+  ('Aeropuerto Internacional Guarulhos', 'Sao Paulo', 'Brasil', 'GRU');
 
 INSERT INTO vuelos (id_aerolinea, id_aeropuerto_origen, id_aeropuerto_destino, fecha_salida, capacidad, precio) 
 VALUES 
@@ -107,8 +107,8 @@ VALUES
 INSERT INTO estadios (nombre_estadio, ciudad, id_aeropuerto, pais)
 VALUES
   ('Estadio Monumental', 'Buenos Aires', 1, 'Argentina'),
-  ('Estadio El Campín', 'Bogotá', 2, 'Colombia'),
-  ('Estadio Nacional', 'Lima', 3, 'Perú'),
+  ('Estadio El Campín', 'Bogota', 2, 'Colombia'),
+  ('Estadio Nacional', 'Lima', 3, 'Peru'),
   ('Estadio Nacional de Chile', 'Santiago', 4, 'Chile'),
-  ('Estadio Morumbi', 'São Paulo', 5, 'Brasil');
+  ('Estadio Morumbi', 'Sao Paulo', 5, 'Brasil');
 
