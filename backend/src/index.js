@@ -105,8 +105,12 @@ app.listen(PORT, () => {
 
 app.get('/api/vuelos', async (req, res) => {
     const { origen, destino, fecha } = req.query;
+    
+    const origenBusqueda = `%${origen.trim()}%`; 
+    const destinoBusqueda = `%${destino.trim()}%`; 
+    
     if (!origen || !destino || !fecha) {
-        return res.status(400).json({ error: 'Faltan parámetros de búsqueda (origen, destino o fecha).' });
+         return res.status(400).json({ error: 'Faltan parámetros de búsqueda (origen, destino o fecha).' });
     }
 
     try {
@@ -115,7 +119,8 @@ app.get('/api/vuelos', async (req, res) => {
                 a.nombre_aerolinea AS aerolinea,
                 v.id_vuelo AS numero, 
                 TO_CHAR(v.fecha_salida, 'HH24:MI') AS salida, 
-                v.precio
+                v.precio,
+                v.fecha_salida
             FROM
                 vuelos v
             INNER JOIN
@@ -127,14 +132,29 @@ app.get('/api/vuelos', async (req, res) => {
             WHERE
                 apo.ciudad ILIKE $1 
                 AND apd.ciudad ILIKE $2 
-                AND v.fecha_salida::DATE = $3::DATE;
+            ORDER BY
+                (v.fecha_salida::DATE = $3::DATE) DESC,
+                v.fecha_salida ASC
         `;
         
-        const result = await pool.query(query, [origen, destino, fecha]);
+        const result = await pool.query(query, [origenBusqueda, destinoBusqueda, fecha]);
         res.json(result.rows);
 
     } catch (err) {
         console.error('Error al buscar vuelos:', err);
+        res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
+    }
+});
+
+app.get('/api/ciudades-origen', async (req, res) => {
+    try {
+        const query = `
+            SELECT DISTINCT ciudad, codigo_iata FROM aeropuertos ORDER BY ciudad ASC;
+        `;
+        const result = await pool.query(query);
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error al obtener ciudades:', err);
         res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
     }
 });
