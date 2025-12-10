@@ -98,17 +98,19 @@
                     </form>
                   </div>
                   <div class="tab-pane fade" id="vuelos-panel" role="tabpanel" aria-labelledby="vuelos-tab">
-                      <button id="add-flight-btn" class="btn btn-outline-primary mb-3">
+                    <div class="text-center">
+                      <button id="add-flight-btn" class="btn btn-primary-dark mb-3">
                         Agregar vuelo reservado
                       </button>
+                    </div> 
                       <form id="flight-form" class="card p-3 mb-3 d-none">
                         <h6 class="mb-3">Datos del vuelo</h6>
-                        <div class="row">
+                        <div>
                           <div class="col-md-6 mb-2">
                             <label class="form-label">Aerolínea</label>
                             <input name="airline_name" class="form-control" required>
                           </div>
-                          <div class="col-md-3 mb-2">
+                          <div class="col-md-3 mb-4">
                             <label class="form-label">Código IATA aerolínea</label>
                             <input name="airline_code" class="form-control" maxlength="3" required>
                           </div>
