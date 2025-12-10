@@ -1,6 +1,7 @@
 let mapa = null;
 let capaRuta = null;
 let marcadores = L.featureGroup();
+const API_BASE_URL = 'http://localhost:3001';
 
 const sedesCoordenadas = {
     "Ciudad de Mexico": [19.4326, -99.1332],

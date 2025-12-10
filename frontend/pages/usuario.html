@@ -180,34 +180,36 @@
                         Todavía no tenés vuelos asociados a tu cuenta.
                       </div>
                   </div>
-                  <div class="tab-pane fade" id="config-panel" role="tabpanel" aria-labelledby="config-tab">
+                  <div class="tab-pane fade text-center" id="config-panel" role="tabpanel" aria-labelledby="config-tab">
                     <h3>Administracion de cuenta</h3>
                     <div>
                       <div class="d-flex gap-5 mx-5 px-4 ">
-                        <button id="btn-change-password" type="button" class="btn btn-outline-secondary">
+                        <button id="btn-change-password" type="button" class="btn btn-primary-dark">
                           Cambiar contraseña
                         </button>
                         <button id="btn-delete-account" type="button" class="btn btn-outline-danger">
                           Eliminar cuenta
                         </button>
                       </div>
-                      <form id="change-password-form" class="card p-3 mb-3" style="display:none; max-width:400px;">
-                        <h5 class="mb-3">Cambiar contraseña</h5>
-                        <div class="mb-3">
-                          <label for="current-password" class="form-label">Contraseña actual</label>
-                          <input type="password" class="form-control" id="current-password" required>
-                        </div>
-                        <div class="mb-3">
-                          <label for="new-password" class="form-label">Nueva contraseña</label>
-                          <input type="password" class="form-control" id="new-password" required>
-                        </div>
-                        <div class="mb-3">
-                          <label for="confirm-password" class="form-label">Repetir nueva contraseña</label>
-                          <input type="password" class="form-control" id="confirm-password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Guardar nueva contraseña</button>
-                      </form>
-                      <form id="delete-account-form" class="card p-3" style="display:none; max-width:400px;">
+                      <div class="mt-4">
+                        <form id="change-password-form" class="card p-3 mb-3 text-center mx-auto" style="display:none; max-width:400px;">
+                          <h5 class="mb-3">Cambiar contraseña</h5>
+                          <div class="mb-3">
+                            <label for="current-password" class="form-label">Contraseña actual</label>
+                            <input type="password" class="form-control" id="current-password" required>
+                          </div>
+                          <div class="mb-3">
+                            <label for="new-password" class="form-label">Nueva contraseña</label>
+                            <input type="password" class="form-control" id="new-password" required>
+                          </div>
+                          <div class="mb-3">
+                            <label for="confirm-password" class="form-label">Repetir nueva contraseña</label>
+                            <input type="password" class="form-control" id="confirm-password" required>
+                          </div>
+                          <button type="submit" class="btn btn-primary">Guardar nueva contraseña</button>
+                        </form>
+                      </div>
+                        <form id="delete-account-form" class="card p-3 mx-auto" style="display:none; max-width:400px;">
                         <h5 class="mb-3 text-danger">Eliminar cuenta</h5>
                         <p class="text-muted">
                           Esta acción es permanente. Se eliminarán tus reservas y tu usuario.
