@@ -566,5 +566,44 @@ app.post("/api/user/change-password", authenticateToken, async (req, res) => {
   }
 });
 
+app.delete("/api/user/delete-account", authenticateToken, async (req, res) => {
+  const userId = req.user.id_usuario;
+  const { currentPassword } = req.body;
+
+  if (!currentPassword) {
+    return res.status(400).json({ error: "Falta la contraseña actual" });
+  }
+
+  try {
+    const result = await pool.query(
+      "SELECT password_hash FROM usuarios WHERE id_usuario = $1",
+      [userId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    const { password_hash } = result.rows[0];
+
+    const ok = await bcrypt.compare(currentPassword, password_hash);
+    if (!ok) {
+      return res.status(401).json({ error: "La contraseña actual no es correcta" });
+    }
+    await pool.query("BEGIN");
+
+    await pool.query("DELETE FROM reservas WHERE id_usuario = $1", [userId]);
+
+    await pool.query("DELETE FROM usuarios WHERE id_usuario = $1", [userId]);
+
+    await pool.query("COMMIT");
+
+    res.json({ message: "Cuenta eliminada correctamente" });
+  } catch (err) {
+    console.error("Error en /api/user/delete-account:", err);
+    await pool.query("ROLLBACK");
+    res.status(500).json({ error: "Error al eliminar la cuenta" });
+  }
+});
 
 { path: '.env' }
