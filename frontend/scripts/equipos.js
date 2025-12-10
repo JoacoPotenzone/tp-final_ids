@@ -2,38 +2,30 @@ let mapa = null;
 let capaRuta = null;
 let marcadores = L.featureGroup();
 
-const equiposData = {
-    "Argentina": {
-        descripcion: "Viaja a Dallas, luego a Nueva York para la fase de grupos. ¡El camino a la final es en Los Ángeles!",
-        paradas: ["Dallas, TX", "New York, NY", "Los Angeles, CA"]
-    },
-    "Brasil": {
-        descripcion: "Su camino comienza en Toronto, sigue en Miami y luego a Seattle. Reserva tus vuelos con anticipación.",
-        paradas: ["Toronto, Canada", "Miami, FL", "Seattle, WA"]
-    },
-    "México": {
-        descripcion: "Juega en Ciudad de México y Monterrey, con un posible cruce en Vancouver.",
-        paradas: ["Ciudad de México", "Guadalajara, México", "Vancouver, Canada"]
-    },
-};
-
 const sedesCoordenadas = {
-    "Dallas, TX": [32.7767, -96.7970],
-    "New York, NY": [40.7128, -74.0060],
-    "Los Angeles, CA": [34.0522, -118.2437],
-    "Toronto, Canada": [43.6532, -79.3832],
-    "Miami, FL": [25.7617, -80.1918],
-    "Seattle, WA": [47.6062, -122.3321],
-    "Ciudad de México": [19.4326, -99.1332],
-    "Vancouver, Canada": [49.2827, -123.1207],
-    "Guadalajara, México": [20.6597, -103.3496]
+    "Ciudad de Mexico": [19.4326, -99.1332],
+    "Guadalajara": [20.6597, -103.3496],
+    "Monterrey": [25.6869, -100.3161], 
+    "Toronto": [43.6532, -79.3832],
+    "Vancouver": [49.2827, -123.1207],
+    "Atlanta": [33.7490, -84.3880],
+    "Boston": [42.3601, -71.0589],
+    "Dallas": [32.7767, -96.7970],
+    "Houston": [29.7604, -95.3698], 
+    "Kansas City": [39.0997, -94.5786],
+    "Los Angeles": [34.0522, -118.2437],
+    "Miami": [25.7617, -80.1918],
+    "Nueva York": [40.7128, -74.0060],
+    "Filadelfia": [39.9526, -75.1652], 
+    "San Francisco": [37.7749, -122.4194],
+    "Seattle": [47.6062, -122.3321],
 };
 
 const selector = document.getElementById('equipo-selector');
 const rutaInfo = document.getElementById('ruta-info');
 const tabMundial = document.getElementById('pills-mundial-tab');
 
-
+// Inicialización de Leaflet
 function initializeMap() {
     const containerId = 'mapa-leaflet-container';
     
@@ -56,48 +48,90 @@ if (tabMundial) {
     });
 }
 
-
-function llenarSelector() {
-    const equiposOrdenados = Object.keys(equiposData).sort();
-
-    const defaultOption = document.createElement('option');
-    defaultOption.value = "";
-    defaultOption.textContent = "--- Elige tu equipo ---";
-    selector.appendChild(defaultOption);
-
-    equiposOrdenados.forEach(equipo => {
-        const option = document.createElement('option');
-        option.value = equipo;
-        option.textContent = equipo;
-        selector.appendChild(option);
-    });
-}
-
-function mostrarRuta() {
+// Función para obtener la ruta de partidos (nueva lógica asíncrona)
+async function obtenerRutaPartidos() {
     const equipoSeleccionado = selector.value;
     rutaInfo.innerHTML = ""; 
 
-    if (equipoSeleccionado === "") {
+    if (!equipoSeleccionado || equipoSeleccionado === "") {
         rutaInfo.textContent = "Selecciona un equipo para ver la mejor ruta para alentarlos.";
         rutaInfo.classList.remove('active');
-    } else {
-        const data = equiposData[equipoSeleccionado];
-        rutaInfo.innerHTML = `
-            <h3>🌟 Ruta Recomendada para ${equipoSeleccionado} 🌟</h3>
-            <p>${data.descripcion}</p>
-            <button onclick="verRutaEnMapa('${equipoSeleccionado}')">Vea la mejor ruta aquí</button>
-        `;
-        rutaInfo.classList.add('active');
+        return;
+    } 
+    
+    rutaInfo.innerHTML = '<h3>Cargando ruta y partidos...</h3>';
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/mundial/ruta?pais=${encodeURIComponent(equipoSeleccionado)}`);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            rutaInfo.innerHTML = `<h3 class="text-danger">Error: No se pudo obtener la ruta del ${equipoSeleccionado}: ${errorData.error}</h3>`;
+            return;
+        }
+
+        const partidos = await response.json(); 
+        
+        if (partidos.length === 0) {
+            rutaInfo.innerHTML = `<h3 class="text-info">No se encontraron partidos definidos para ${equipoSeleccionado}.</h3>`;
+            return;
+        }
+        
+        renderizarRutaPartidos(equipoSeleccionado, partidos);
+
+    } catch (error) {
+        console.error("Error de comunicación con el backend:", error);
+        rutaInfo.innerHTML = '<h3 class="text-danger">Error de conexión: Verifica que tu servidor esté corriendo.</h3>';
     }
 }
 
-function verRutaEnMapa(equipo) {
-    const data = equiposData[equipo];
-    const paradasNombres = data.paradas;
+// Función para renderizar la información de los partidos y el botón del mapa
+function renderizarRutaPartidos(equipo, partidos) {
+    let descripcionHTML = `<h3 class="mb-3">🌟 Ruta de Partidos para ${equipo} 🌟</h3>`;
+    let paradasNombres = [];
+    
+    partidos.forEach((p, index) => {
+        descripcionHTML += `
+            <div class="card mb-2">
+                <div class="card-body">
+                    <h5 class="card-title">Partido ${index + 1}</h5>
+                    <p class="mb-1"><strong>Ciudad:</strong> ${p.ciudad}</p>
+                    <p class="mb-1"><strong>Fecha:</strong> ${p.fecha}</p>
+                </div>
+            </div>
+        `;
+        paradasNombres.push(p.ciudad);
+    });
+
+    descripcionHTML += `
+        <p class="mt-3">Visualiza el recorrido y planifica tus vuelos:</p>
+        <button id="btn-ver-mapa" class="btn btn-warning">
+            Ver Ruta en el Mapa
+        </button>
+    `;
+
+    rutaInfo.innerHTML = descripcionHTML;
+    rutaInfo.classList.add('active');
+
+    const btnMapa = document.getElementById('btn-ver-mapa');
+    if (btnMapa) {
+        const ciudadesParaMapa = partidos.map(p => p.ciudad);
+        btnMapa.addEventListener('click', () => {
+             verRutaEnMapaBackend(equipo, ciudadesParaMapa);
+        });
+    }
+
+    rutaInfo.innerHTML = descripcionHTML;
+    rutaInfo.classList.add('active');
+}
+
+
+// Función para dibujar la ruta en el mapa (modificada para usar los datos del backend)
+function verRutaEnMapaBackend(equipo, paradasNombres) {
     const mapaContainerIdString = 'mapa-leaflet-container';
 
     if (mapa === null) {
-         initializeMap();
+        initializeMap();
     }
     
     mapa.invalidateSize();
@@ -125,10 +159,14 @@ function verRutaEnMapa(equipo) {
                 fillColor: colorRelleno,
                 fillOpacity: 0.9
             })
-            .bindPopup(`<b>${ciudadNombre}</b> (${isOrigen ? 'Inicio' : 'Parada ' + index})`)
+            .bindPopup(`<b>${ciudadNombre}</b> (${isOrigen ? 'Primer Partido' : 'Parada ' + (index + 1)})`)
             .addTo(marcadores); 
+        } else {
+            console.warn(`Coordenadas no encontradas para la ciudad: ${ciudadNombre}`);
+            console.error(`ERROR DE COORDENADAS: La ciudad "${ciudadNombre}" no tiene coordenadas definidas.`);
         }
     });
+    console.log("Coordenadas finales para dibujar:", rutaCoordenadas);
 
     if (rutaCoordenadas.length > 1) {
         capaRuta = L.polyline(rutaCoordenadas, {
@@ -144,5 +182,4 @@ function verRutaEnMapa(equipo) {
     document.getElementById(mapaContainerIdString).scrollIntoView({ behavior: 'smooth' });
 }
 
-llenarSelector();
-selector.addEventListener('change', mostrarRuta);
+selector.addEventListener('change', obtenerRutaPartidos);

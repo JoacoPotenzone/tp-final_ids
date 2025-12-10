@@ -81,7 +81,12 @@
                             <h2>Selecciona tu Equipo para el Mundial 2026</h1>
 
                             <label for="equipo-selector">Elige un equipo:</label>
-                            <select id="equipo-selector"></select>
+                            <select id="equipo-selector" class="form-select">
+                                <option selected disabled>--- Elige un equipo ---</option>
+                                <option value="Argentina">Argentina</option>
+                                <option value="Brasil">Brasil</option>
+                                <option value="Mexico">México</option>
+                            </select>
                             <div id="ruta-info" class="ruta-display">
                                 Selecciona un equipo para ver la mejor ruta para alentarlos.
                             </div>
@@ -98,6 +103,7 @@
 
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script src="./scripts/config.js"></script>
         <script src="./scripts/equipos.js"></script>
         <script src="./scripts/vuelos.js"></script>
     </body>

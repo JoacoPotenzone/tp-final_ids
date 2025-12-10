@@ -438,4 +438,36 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
   }
 });
 
+app.get('/api/mundial/ruta', async (req, res) => {
+    const { pais } = req.query;
+
+    if (!pais) {
+        return res.status(400).json({ error: 'Falta el parámetro del país.' });
+    }
+
+    let rutaPartidos = [];
+    if (pais === 'Argentina') {
+         rutaPartidos = [
+            { ciudad: 'Kansas City', fecha: '2026-06-18' },
+            { ciudad: 'Dallas', fecha: '2026-06-25' }
+        ];
+    } else if (pais === 'Brasil') {
+         rutaPartidos = [
+            { ciudad: 'Nueva York', fecha: '2026-06-13' },
+            { ciudad: 'Boston', fecha: '2026-06-20' },
+            { ciudad: 'Atlanta', fecha: '2026-06-24' }
+        ];
+    } else if (pais === 'Mexico') {
+        rutaPartidos = [
+            { ciudad: 'Ciudad de Mexico', fecha: '2026-06-11' },
+            { ciudad: 'Guadalajara', fecha: '2026-06-18' },
+            { ciudad: 'Ciudad de Mexico', fecha: '2026-06-24' }
+        ];
+    } else {
+        return res.status(404).json({ error: 'Ruta no definida para este país.' });
+    }
+    
+    res.json(rutaPartidos);
+});
+
 { path: '.env' }
