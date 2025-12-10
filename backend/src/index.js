@@ -527,4 +527,44 @@ app.get("/api/user/flights", authMiddleware, async (req, res) => {
   }
 });
 
+app.post("/api/user/change-password", authenticateToken, async (req, res) => {
+  const userId = req.user.id_usuario; 
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: "Faltan datos" });
+  }
+
+  try {
+    const result = await pool.query(
+      "SELECT password_hash FROM usuarios WHERE id_usuario = $1",
+      [userId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    const { password_hash } = result.rows[0];
+
+    const ok = await bcrypt.compare(currentPassword, password_hash);
+    if (!ok) {
+      return res.status(401).json({ error: "La contraseña actual no es correcta" });
+    }
+
+    const newHash = await bcrypt.hash(newPassword, 10);
+
+    await pool.query(
+      "UPDATE usuarios SET password_hash = $1 WHERE id_usuario = $2",
+      [newHash, userId]
+    );
+
+    res.json({ message: "Contraseña actualizada correctamente" });
+  } catch (err) {
+    console.error("Error en /api/user/change-password:", err);
+    res.status(500).json({ error: "Error en el servidor" });
+  }
+});
+
+
 { path: '.env' }
