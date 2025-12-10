@@ -329,7 +329,8 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
     dest_city,
     dest_country,
     dest_code,
-    departure,   
+    departure, 
+    arrival,   
     capacity,
     price,
     seat
@@ -339,7 +340,7 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
     !airline_name || !airline_code ||
     !origin_name || !origin_city || !origin_country || !origin_code ||
     !dest_name   || !dest_city   || !dest_country   || !dest_code   ||
-    !departure   || !price       || !seat
+    !departure   || !arrival     || !price         || !seat
   ) {
     return res.status(400).json({ error: "Faltan datos del vuelo" });
   }
@@ -396,17 +397,19 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
         id_aeropuerto_origen,
         id_aeropuerto_destino,
         fecha_salida,
+        fecha_llegada,
         capacidad,
         precio
       )
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id_vuelo, fecha_salida, precio;
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id_vuelo, fecha_salida, fecha_llegada, precio;
       `,
       [
         id_aerolinea,
         id_origen,
         id_destino,
         departure,
+        arrival,
         capacity || 180,
         price
       ]
@@ -468,6 +471,40 @@ app.get('/api/mundial/ruta', async (req, res) => {
     }
     
     res.json(rutaPartidos);
+});
+
+
+app.get("/api/user/flights", authMiddleware, async (req, res) => {
+  const userId = req.user.id_usuario;
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT
+        r.id_reserva,
+        r.asiento,
+        v.fecha_salida,
+        v.fecha_llegada,
+        v.precio,
+        a.nombre_aerolinea,
+        apo.ciudad  || ' (' || apo.codigo_iata || ')' AS origen,
+        apd.ciudad  || ' (' || apd.codigo_iata || ')' AS destino
+      FROM reservas r
+      JOIN vuelos v          ON r.id_vuelo = v.id_vuelo
+      JOIN aerolinea a       ON v.id_aerolinea = a.id_aerolinea
+      JOIN aeropuertos apo   ON v.id_aeropuerto_origen  = apo.id_aeropuerto
+      JOIN aeropuertos apd   ON v.id_aeropuerto_destino = apd.id_aeropuerto
+      WHERE r.id_usuario = $1
+      ORDER BY v.fecha_salida DESC
+      `,
+      [userId]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error en GET /api/user/flights", err);
+    res.status(500).json({ error: "Error al obtener los vuelos" });
+  }
 });
 
 { path: '.env' }
