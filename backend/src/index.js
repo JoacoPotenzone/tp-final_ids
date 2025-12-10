@@ -605,4 +605,43 @@ app.delete("/api/user/delete-account", authMiddleware, async (req, res) => {
   }
 });
 
+app.post("/api/reservas", authMiddleware, async (req, res) => {
+    const userId = req.user.id_usuario; 
+    const { id_vuelo, asiento } = req.body; 
+
+    if (!id_vuelo || !asiento) {
+        return res.status(400).json({ error: "Faltan datos de vuelo o asiento." });
+    }
+
+    try {
+        const asientoCheck = await pool.query(
+            "SELECT 1 FROM reservas WHERE id_vuelo = $1 AND asiento = $2",
+            [id_vuelo, asiento]
+        );
+        
+        if (asientoCheck.rowCount > 0) {
+            return res.status(409).json({ error: "El asiento ya está reservado." });
+        }
+
+        const result = await pool.query(
+            `
+            INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
+            VALUES ($1, $2, $3, NOW())
+            RETURNING id_reserva, id_vuelo, asiento;
+            `,
+            [userId, id_vuelo, asiento]
+        );
+
+        res.status(201).json({
+            message: "Reserva creada con éxito.",
+            reserva: result.rows[0],
+            vuelo: { id_vuelo: id_vuelo } 
+        });
+
+    } catch (err) {
+        console.error("Error en POST /api/reservas", err);
+        res.status(500).json({ error: "Error al crear la reserva." });
+    }
+});
+
 { path: '.env' }
