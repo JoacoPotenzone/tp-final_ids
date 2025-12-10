@@ -88,7 +88,7 @@ async function obtenerRutaPartidos() {
 
 // Función para renderizar la información de los partidos y el botón del mapa
 function renderizarRutaPartidos(equipo, partidos) {
-    let descripcionHTML = `<h3 class="mb-3">🌟 Ruta de Partidos para ${equipo} 🌟</h3>`;
+    let descripcionHTML = `<h3 class="mb-3 text-center">🌟 Ruta de Partidos para ${equipo} 🌟</h3>`;
     let paradasNombres = [];
     
     partidos.forEach((p, index) => {
@@ -105,10 +105,16 @@ function renderizarRutaPartidos(equipo, partidos) {
     });
 
     descripcionHTML += `
-        <p class="mt-3">Visualiza el recorrido y planifica tus vuelos:</p>
-        <button id="btn-ver-mapa" class="btn btn-warning">
-            Ver Ruta en el Mapa
-        </button>
+        <p class="mt-3 text-center">Visualiza el recorrido y planifica tus vuelos:</p>
+        <div class="d-flex justify-content-between"> 
+            <button id="btn-ver-mapa" class="btn btn-warning">
+                Ver Ruta en el Mapa
+            </button>
+            <button class="btn btn-primary-dark"> 
+                Reservar
+            </button> 
+        </div>
+
     `;
 
     rutaInfo.innerHTML = descripcionHTML;
