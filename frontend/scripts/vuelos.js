@@ -50,7 +50,62 @@ function mostrarVuelosSimulados(vuelos) {
     });
 }
 
+function generarCodigoCiudad(ciudad) {
+  if (!ciudad) return 'XXX';
+  return ciudad.trim().substring(0, 3).toUpperCase();
+}
 
+async function reservarVueloDesdeResultados(vuelo) {
+
+  if (!token || !currentUser) {
+    const irLogin = confirm('Tenés que iniciar sesión para reservar un vuelo. ¿Querés ir al login ahora?');
+    if (irLogin) {
+      window.location.href = './login.html';
+    }
+    return;
+  }
+
+  const body = {
+    airline_name: vuelo.aerolinea,
+    airline_code: (vuelo.aerolinea || 'GEN').substring(0, 3).toUpperCase(),
+    origin_name: vuelo.origen_ciudad,
+    origin_city: vuelo.origen_ciudad,
+    origin_country: 'Desconocido',
+    origin_code: generarCodigoCiudad(vuelo.origen_ciudad),
+    dest_name: vuelo.destino_ciudad,
+    dest_city: vuelo.destino_ciudad,
+    dest_country: 'Desconocido',
+    dest_code: generarCodigoCiudad(vuelo.destino_ciudad),
+    departure: vuelo.fecha_salida || vuelo.salida,
+    arrival: vuelo.fecha_llegada || vuelo.llegada || vuelo.fecha_salida,
+    seat: 'WEB',              
+    price: Number(vuelo.precio)
+  };
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/user/flights`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Error al reservar vuelo', errorData);
+      alert(errorData.error || 'No se pudo registrar el vuelo');
+      return;
+    }
+
+    alert('Vuelo reservado correctamente. Lo vas a ver en la sección "Mis vuelos" de tu perfil.');
+
+  } catch (err) {
+    console.error('Error de red al reservar vuelo', err);
+    alert('Error de conexión al intentar reservar el vuelo');
+  }
+}
 
 
 
