@@ -226,3 +226,103 @@ if (addFlightBtn && flightForm) {
     }
   });
 }
+
+const changePasswordBtn = document.getElementById("btn-change-password");
+const deleteAccountBtn = document.getElementById("btn-delete-account");
+const changePasswordForm = document.getElementById("change-password-form");
+const deleteAccountForm = document.getElementById("delete-account-form");
+
+if (changePasswordBtn && changePasswordForm) {
+  changePasswordBtn.addEventListener("click", () => {
+    const visible = changePasswordForm.style.display === "block";
+    changePasswordForm.style.display = visible ? "none" : "block";
+    deleteAccountForm.style.display = "none";
+  });
+}
+
+if (deleteAccountBtn && deleteAccountForm) {
+  deleteAccountBtn.addEventListener("click", () => {
+    const visible = deleteAccountForm.style.display === "block";
+    deleteAccountForm.style.display = visible ? "none" : "block";
+    changePasswordForm.style.display = "none";
+  });
+}
+
+if (changePasswordForm) {
+  changePasswordForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const currentPassword = document.getElementById("current-password").value;
+    const newPassword = document.getElementById("new-password").value;
+    const confirmPassword = document.getElementById("confirm-password").value;
+
+    if (newPassword !== confirmPassword) {
+      alert("Las contraseñas nuevas no coinciden.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3001/api/user/change-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Error al cambiar la contraseña");
+        return;
+      }
+
+      alert("Contraseña actualizada correctamente");
+      changePasswordForm.reset();
+      changePasswordForm.style.display = "none";
+    } catch (err) {
+      console.error(err);
+      alert("Error de red al cambiar la contraseña");
+    }
+  });
+}
+
+if (deleteAccountForm) {
+  deleteAccountForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const currentPassword = document.getElementById("delete-password").value;
+
+    const seguro = confirm(
+      "¿Estás seguro de que querés eliminar tu cuenta? Esta acción es permanente."
+    );
+    if (!seguro) return;
+
+    try {
+      const res = await fetch("http://localhost:3001/api/user/delete-account", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentPassword }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Error al eliminar la cuenta");
+        return;
+      }
+
+      alert("Cuenta eliminada correctamente");
+
+      localStorage.removeItem("token");
+      window.location.href = "/pages/login.html";
+    } catch (err) {
+      console.error(err);
+      alert("Error de red al eliminar la cuenta");
+    }
+  });
+}
