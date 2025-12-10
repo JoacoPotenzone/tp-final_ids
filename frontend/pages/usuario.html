@@ -187,6 +187,33 @@
                         <button class="btn btn-outline-secondary">Cambiar contraseña</button>
                         <button class="btn btn-outline-danger">Eliminar cuenta</button>
                       </div>
+                      <form id="change-password-form" class="card p-3 mb-3" style="display:none; max-width:400px;">
+                        <h5 class="mb-3">Cambiar contraseña</h5>
+                        <div class="mb-3">
+                          <label for="current-password" class="form-label">Contraseña actual</label>
+                          <input type="password" class="form-control" id="current-password" required>
+                        </div>
+                        <div class="mb-3">
+                          <label for="new-password" class="form-label">Nueva contraseña</label>
+                          <input type="password" class="form-control" id="new-password" required>
+                        </div>
+                        <div class="mb-3">
+                          <label for="confirm-password" class="form-label">Repetir nueva contraseña</label>
+                          <input type="password" class="form-control" id="confirm-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar nueva contraseña</button>
+                      </form>
+                      <form id="delete-account-form" class="card p-3" style="display:none; max-width:400px;">
+                        <h5 class="mb-3 text-danger">Eliminar cuenta</h5>
+                        <p class="text-muted">
+                          Esta acción es permanente. Se eliminarán tus reservas y tu usuario.
+                        </p>
+                        <div class="mb-3">
+                          <label for="delete-password" class="form-label">Confirmá tu contraseña</label>
+                          <input type="password" class="form-control" id="delete-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger">Eliminar definitivamente</button>
+                      </form>
                     </div>
                   </div>
                 </div>
