@@ -115,16 +115,11 @@ function renderizarRutaPartidos(equipo, partidos) {
 
     const btnMapa = document.getElementById('btn-ver-mapa');
     if (btnMapa) {
-        const ciudadesParaMapa = partidos.map(p => p.ciudad);
         btnMapa.addEventListener('click', () => {
-             verRutaEnMapaBackend(equipo, ciudadesParaMapa);
+             verRutaEnMapaBackend(equipo, paradasNombres);
         });
     }
-
-    rutaInfo.innerHTML = descripcionHTML;
-    rutaInfo.classList.add('active');
 }
-
 
 // Función para dibujar la ruta en el mapa (modificada para usar los datos del backend)
 function verRutaEnMapaBackend(equipo, paradasNombres) {
