@@ -141,7 +141,6 @@ app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}/estadios`);
 });
 
-{ path: '.env' }
 
 app.get('/api/vuelos', async (req, res) => {
     const { origen, destino, fecha } = req.query; 
