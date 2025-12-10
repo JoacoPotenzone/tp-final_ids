@@ -441,36 +441,56 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
   }
 });
 
+app.get('/api/mundial/equipos', async (req, res) => {
+    try {
+        const query = `
+            SELECT DISTINCT equipo_nombre FROM partidos_mundial ORDER BY equipo_nombre ASC
+        `;
+        const result = await pool.query(query);
+        const equipos = result.rows.map(row => row.equipo_nombre);
+        res.json(equipos);
+    } catch (err) {
+        console.error('Error al obtener equipos:', err);
+        res.status(500).json({ error: 'Error al consultar la lista de equipos.' });
+    }
+});
+
+
 app.get('/api/mundial/ruta', async (req, res) => {
-    const { pais } = req.query;
+    const { pais } = req.query; 
 
     if (!pais) {
         return res.status(400).json({ error: 'Falta el parámetro del país.' });
     }
 
-    let rutaPartidos = [];
-    if (pais === 'Argentina') {
-         rutaPartidos = [
-            { ciudad: 'Kansas City', fecha: '2026-06-18' },
-            { ciudad: 'Dallas', fecha: '2026-06-25' }
-        ];
-    } else if (pais === 'Brasil') {
-         rutaPartidos = [
-            { ciudad: 'Nueva York', fecha: '2026-06-13' },
-            { ciudad: 'Boston', fecha: '2026-06-20' },
-            { ciudad: 'Atlanta', fecha: '2026-06-24' }
-        ];
-    } else if (pais === 'Mexico') {
-        rutaPartidos = [
-            { ciudad: 'Ciudad de Mexico', fecha: '2026-06-11' },
-            { ciudad: 'Guadalajara', fecha: '2026-06-18' },
-            { ciudad: 'Ciudad de Mexico', fecha: '2026-06-24' }
-        ];
-    } else {
-        return res.status(404).json({ error: 'Ruta no definida para este país.' });
+    const paisBusqueda = pais.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+
+    try {
+        const query = `
+            SELECT
+                TO_CHAR(pm.fecha_partido, 'YYYY-MM-DD') AS fecha,
+                e.ciudad
+            FROM
+                partidos_mundial pm
+            JOIN
+                estadios e ON pm.id_estadio = e.id_estadio
+            WHERE
+                pm.equipo_nombre ILIKE $1
+            ORDER BY
+                pm.fecha_partido ASC
+        `;
+        
+        const result = await pool.query(query, [paisBusqueda]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Ruta no definida para este país.' });
+        }
+        
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error al obtener ruta del mundial:', err);
+        res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
     }
-    
-    res.json(rutaPartidos);
 });
 
 

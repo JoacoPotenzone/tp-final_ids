@@ -178,3 +178,27 @@ function verRutaEnMapaBackend(equipo, paradasNombres) {
 }
 
 selector.addEventListener('change', obtenerRutaPartidos);
+
+async function llenarSelectorDinamico() {
+    const selector = document.getElementById('equipo-selector');
+    selector.innerHTML = '<option selected disabled value="">--- Elige un equipo ---</option>';
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/mundial/equipos`);
+        const equipos = await response.json(); 
+        
+        equipos.forEach(equipo => {
+            const option = document.createElement('option');
+            
+            const valorSinAcento = equipo.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+            
+            option.value = valorSinAcento;
+            option.textContent = equipo; 
+            selector.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error al cargar la lista de equipos:", error);
+    }
+}
+
+llenarSelectorDinamico();
