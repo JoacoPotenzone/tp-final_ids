@@ -526,7 +526,7 @@ app.get("/api/user/flights", authMiddleware, async (req, res) => {
   }
 });
 
-app.post("/api/user/change-password", authenticateToken, async (req, res) => {
+app.post("/api/user/change-password", authMiddleware, async (req, res) => {
   const userId = req.user.id_usuario; 
   const { currentPassword, newPassword } = req.body;
 
@@ -565,7 +565,7 @@ app.post("/api/user/change-password", authenticateToken, async (req, res) => {
   }
 });
 
-app.delete("/api/user/delete-account", authenticateToken, async (req, res) => {
+app.delete("/api/user/delete-account", authMiddleware, async (req, res) => {
   const userId = req.user.id_usuario;
   const { currentPassword } = req.body;
 
