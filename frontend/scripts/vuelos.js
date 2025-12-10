@@ -1,4 +1,5 @@
- 
+const API_BASE_URL = 'http://localhost:3001';
+
 function mostrarVuelosSimulados(vuelos) {
     const container = document.getElementById('lista-vuelos');
     container.innerHTML = ''; 
