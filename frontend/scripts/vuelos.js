@@ -1,5 +1,18 @@
 const API_BASE_URL = 'http://localhost:3001';
 
+const userJson = localStorage.getItem("user");
+const token = localStorage.getItem("token");
+let currentUser = null;
+
+if (!userJson || !token) {
+    alert("Tenés que iniciar sesión para reservar vuelos.");
+    window.location.href = "./login.html";
+    console.log("Usuario no logueado, navegación anónima.");
+} else {
+    currentUser = JSON.parse(userJson);
+    console.log("Usuario logueado en vuelos:", currentUser);
+}
+
 function mostrarVuelosSimulados(vuelos) {
     const container = document.getElementById('lista-vuelos');
     container.innerHTML = ''; 
