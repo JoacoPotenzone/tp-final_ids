@@ -34,7 +34,7 @@ function mostrarVuelosSimulados(vuelos) {
                         </div>
                         <div class="flight-price text-end">
                             <span class="d-block fs-4 text-primary fw-bold">$${precioNumero.toFixed(2)}</span>
-                            <button class="btn btn-sm btn-primary mt-1 btn-reservar-vuelo">Reservar</button>
+                            <button class="btn btn-sm btn-primary mt-1 ">Reservar</button>
                         </div>
                     </div>
                 </div>
@@ -42,7 +42,17 @@ function mostrarVuelosSimulados(vuelos) {
         `;
         container.innerHTML += vueloHTML;
     });
+
+    const botones = container.querySelectorAll('.btn-reservar-vuelo');
+    botones.forEach((btn, index) => {
+        const vuelo = vuelos[index];
+        btn.addEventListener('click', () => reservarVueloDesdeResultados(vuelo));
+    });
 }
+
+
+
+
 
 
 async function buscarVuelosDesdeBackend(origen, destino, fecha) {
