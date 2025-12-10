@@ -203,5 +203,34 @@ VALUES
 	(1, 4, '18D', '2024-06-18 12:00:00'),
 	(5, 5, '20E', '2024-06-19 13:10:00');
 
+CREATE TABLE IF NOT EXISTS partidos_mundial (
+    id_partido SERIAL PRIMARY KEY,
+    equipo_nombre VARCHAR(50) NOT NULL,
+    id_estadio INT NOT NULL,
+    fecha_partido DATE NOT NULL,
+    FOREIGN KEY (id_estadio) REFERENCES estadios (id_estadio)
+);
 
-
+INSERT INTO partidos_mundial (equipo_nombre, id_estadio, fecha_partido)
+VALUES
+    ('Argentina', 10, '2026-06-14'),
+    ('Argentina', 8, '2026-06-18'),
+    ('Argentina', 8, '2026-06-25'),
+    ('Brasil', 13, '2026-06-13'),
+    ('Brasil', 7, '2026-06-20'),
+    ('Brasil', 6, '2026-06-24'),
+    ('Mexico', 1, '2026-06-11'),
+    ('Mexico', 2, '2026-06-18'),
+    ('Mexico', 1, '2026-06-24'),
+    ('Estados Unidos', 11, '2026-06-12'),
+    ('Estados Unidos', 16, '2026-06-19'),
+    ('Estados Unidos', 12, '2026-06-25'),
+    ('Canada', 4, '2026-06-14'),
+    ('Canada', 5, '2026-06-20'),
+    ('Canada', 4, '2026-06-26'),
+    ('Colombia', 9, '2026-06-15'),
+    ('Colombia', 8, '2026-06-22'),
+    ('Colombia', 7, '2026-06-27'),
+    ('Espana', 7, '2026-06-13'),
+    ('Espana', 13, '2026-06-20'),
+    ('Espana', 14, '2026-06-24');
