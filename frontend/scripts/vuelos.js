@@ -3,6 +3,8 @@ const API_BASE_URL = 'http://localhost:3001';
 const userJson = localStorage.getItem("user");
 const token = localStorage.getItem("token");
 let currentUser = null;
+const searchParams = new URLSearchParams(window.location.search);
+const fechaBusqueda = searchParams.get("fecha");
 
 if (!userJson || !token) {
     alert("Tenés que iniciar sesión para reservar vuelos.");
@@ -55,6 +57,10 @@ function generarCodigoCiudad(ciudad) {
   return ciudad.trim().substring(0, 3).toUpperCase();
 }
 
+function construirTimestamp(fecha, hora) {
+  return `${fecha} ${hora}:00`;
+}
+
 async function reservarVueloDesdeResultados(vuelo) {
 
   if (!token || !currentUser) {
@@ -65,21 +71,25 @@ async function reservarVueloDesdeResultados(vuelo) {
     return;
   }
 
+  const fechaHoraSalida  = construirTimestamp(fechaBusqueda, vuelo.salida);  
+  const fechaHoraLlegada = construirTimestamp(fechaBusqueda, vuelo.llegada); 
+  console.log("Enviando al backend:", { fechaHoraSalida, fechaHoraLlegada });
+
   const body = {
-    airline_name: vuelo.aerolinea,
-    airline_code: (vuelo.aerolinea || 'GEN').substring(0, 3).toUpperCase(),
-    origin_name: vuelo.origen_ciudad,
-    origin_city: vuelo.origen_ciudad,
-    origin_country: 'Desconocido',
-    origin_code: generarCodigoCiudad(vuelo.origen_ciudad),
-    dest_name: vuelo.destino_ciudad,
-    dest_city: vuelo.destino_ciudad,
-    dest_country: 'Desconocido',
-    dest_code: generarCodigoCiudad(vuelo.destino_ciudad),
-    departure: vuelo.fecha_salida || vuelo.salida,
-    arrival: vuelo.fecha_llegada || vuelo.llegada || vuelo.fecha_salida,
-    seat: 'WEB',              
-    price: Number(vuelo.precio)
+    aerolineaNombre: vuelo.aerolinea,
+    aerolineaCodigo: vuelo.codigoIata,
+    origenNombre: vuelo.origen_aeropuerto,
+    origenCiudad: vuelo.origen_ciudad,
+    origenPais:   vuelo.origen_pais,
+    origenCodigoIata: vuelo.origen_codigo_iata,
+    destinoNombre: vuelo.destino_aeropuerto,
+    destinoCiudad: vuelo.destino_ciudad,
+    destinoPais:   vuelo.destino_pais,
+    destinoCodigoIata: vuelo.destino_codigo_iata,
+    fechaSalida:  fechaHoraSalida,   
+    fechaLlegada: fechaHoraLlegada, 
+    asiento: "WEB",                 
+    precio: Number(vuelo.precio),
   };
 
   try {
