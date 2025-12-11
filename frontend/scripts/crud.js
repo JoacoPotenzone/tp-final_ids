@@ -279,3 +279,28 @@ function buildForm(entityKey, entity, row, token) {
     formContainer.innerHTML = '';
   };
 }
+
+async function deleteRecord(entityKey, entity, id, token) {
+  try {
+    const resp = await fetch(
+      `${API_BASE_URL}${entity.endpoint}/${id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || 'Error borrando registro');
+    }
+
+    alert('Registro borrado');
+    loadEntityList(entityKey, token);
+  } catch (e) {
+    console.error(e);
+    alert(e.message);
+  }
+}
