@@ -152,14 +152,37 @@ async function loadFlights() {
         : '';
 
         div.innerHTML = `
-        <strong>${f.nombre_aerolinea}</strong> – Asiento ${f.asiento}<br>
-        ${f.origen} → ${f.destino}<br>
-        Salida: ${salidaLocal}${llegadaLocal ? `<br>Llegada: ${llegadaLocal}` : ''}<br>
-        USD ${Number(f.precio).toFixed(2)}
-        `;
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <strong>${f.nombre_aerolinea}</strong> – Asiento ${f.asiento}<br>
+              ${f.origen} → ${f.destino}<br>
+              <span class="text-muted small">Reserva #${f.id_reserva}</span>
+              <p class="mt-1 small text-muted mb-0">
+                Salida: ${salidaLocal}${llegadaLocal ? ` | Llegada: ${llegadaLocal}` : ''}
+              </p>
+            </div>
 
+            <div class="text-end">
+              <p class="mb-1 fw-bold text-success">USD ${Number(f.precio).toFixed(2)}</p>
+              <button 
+                class="btn btn-sm btn-danger btn-cancelar-vuelo"
+                data-id-reserva="${f.id_reserva}"
+                data-aerolinea="${f.nombre_aerolinea}"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        `;
       flightsContainer.appendChild(div);
     });
+    flightsContainer.querySelectorAll('.btn-cancelar-vuelo').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idReserva = e.currentTarget.dataset.idReserva;
+        const aerolinea = e.currentTarget.dataset.aerolinea;
+        confirmarCancelacion(idReserva, aerolinea); 
+      });
+    });    
   } catch (err) {
     console.error(err);
     flightsContainer.classList.add('alert', 'alert-danger');
@@ -335,4 +358,39 @@ if (deleteAccountForm) {
       alert("Error de red al eliminar la cuenta");
     }
   });
+}
+
+function confirmarCancelacion(idReserva, aerolinea) {
+  const isMundial = aerolinea.includes('Fan Flight');
+  let mensaje = `¿Estás seguro de que quieres cancelar la reserva #${idReserva} con ${aerolinea}?`;
+  if (isMundial) {
+    mensaje += "\n\nAVISO: Este es un tramo del Paquete Mundial. Solo se cancelará este tramo específico.";
+  }
+  const confirmacion = confirm(mensaje);
+  if (confirmacion) {
+      cancelarReserva(idReserva);
+  }
+}
+
+async function cancelarReserva(idReserva) {
+  const token = localStorage.getItem('token');
+  
+  try {
+    const response = await fetch(`${API_URL}/api/reservas/${idReserva}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    if (response.ok) {
+        alert(`Reserva #${idReserva} cancelada con éxito.`);
+        loadFlights(); 
+    } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(errorData.error || `Error al cancelar la reserva #${idReserva}.`);
+    }
+  } catch (error) {
+      console.error('Error de red al cancelar la reserva:', error);
+      alert('Error de conexión con el servidor.');
+  }
 }
