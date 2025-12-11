@@ -41,9 +41,9 @@ function mostrarVuelosSimulados(vuelos) {
         <div class="card shadow-sm">
           <div class="card-body d-flex justify-content-between align-items-center p-3">
             <div class="flight-details">
-              <h5 class="card-title mb-1">
-                ${vuelo.aerolinea} <span class="badge bg-secondary">${vuelo.numero}</span>
-              </h5>
+              <h4 class="card-title mb-1">
+               <strong>  ${vuelo.aerolinea} </strong>
+              </h4>
               <p class="mb-0 text-muted">
                 Desde: <strong>${vuelo.origen_ciudad} </strong>
                 <strong> Destino: ${vuelo.destino_ciudad}</strong>

@@ -732,7 +732,7 @@ app.get("/api/user/flights", authMiddleware, async (req, res) => {
       JOIN aeropuertos apo   ON v.id_aeropuerto_origen  = apo.id_aeropuerto
       JOIN aeropuertos apd   ON v.id_aeropuerto_destino = apd.id_aeropuerto
       WHERE r.id_usuario = $1
-      ORDER BY v.fecha_salida DESC
+      ORDER BY v.fecha_salida ASC
       `,
       [userId]
     );
