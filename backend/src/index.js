@@ -59,6 +59,23 @@ function generateToken(user) {
   );
 }
 
+function createAdminCrudRoutes({ key, table, idField, fields }) {
+  const basePath = `/api/admin/${key}`;
+
+  app.get(basePath, authMiddleware, requireAdmin, async (req, res) => {
+    try {
+      const result = await pool.query(
+        `SELECT ${idField}, ${fields.join(", ")} FROM ${table} ORDER BY ${idField}`
+      );
+      res.json(result.rows);
+    } catch (err) {
+      console.error(`Error listando ${table}`, err);
+      res.status(500).json({ error: `Error obteniendo ${key}` });
+    }
+  });
+  
+}
+
 
 app.listen(PORT, () => {
   console.log("Servidor corriendo en http://localhost:" + PORT);
