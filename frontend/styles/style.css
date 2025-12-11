@@ -38,6 +38,13 @@ h1 {
     margin-bottom: 25px;
 }
 
+h4 {
+    font-size: 20px;
+}
+h5{
+    font-size: 15px;
+}
+
 #equipo-selector {
     width: 100%;
     padding: 10px;
