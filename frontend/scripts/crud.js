@@ -398,7 +398,6 @@ function buildForm(entityKey, entity, data, token, mode) {
       if (raw === null) return;
 
       if (field.isPassword && raw === '' && isEdit) {
-        // en edición, campo password vacío => no actualizar ese campo
         return;
       }
 
