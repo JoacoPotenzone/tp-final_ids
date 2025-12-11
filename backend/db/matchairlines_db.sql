@@ -58,6 +58,14 @@ CREATE TABLE IF NOT EXISTS estadios (
     FOREIGN KEY (id_aeropuerto) REFERENCES aeropuertos (id_aeropuerto)
  );
 
+CREATE TABLE IF NOT EXISTS partidos_mundial (
+    id_partido SERIAL PRIMARY KEY,
+    equipo_nombre VARCHAR(50) NOT NULL,
+    id_estadio INT NOT NULL,
+    fecha_partido DATE NOT NULL,
+    FOREIGN KEY (id_estadio) REFERENCES estadios (id_estadio)
+);
+
 INSERT INTO usuarios (nombre_usuario, email, password_hash, nacionalidad, rol)
 VALUES
    ('Ignacio Gracia', 'IG18@gmail.com', '$2a$10$mcBPd7Z2RLfbXZ1LpNu2J.1FWxSsar0aiD58JQ4olE5xcYBAuzGf6','Argentina','admin'),
@@ -197,13 +205,6 @@ VALUES
 	(1, 4, '18D', '2024-06-18 12:00:00'),
 	(5, 5, '20E', '2024-06-19 13:10:00');
 
-CREATE TABLE IF NOT EXISTS partidos_mundial (
-    id_partido SERIAL PRIMARY KEY,
-    equipo_nombre VARCHAR(50) NOT NULL,
-    id_estadio INT NOT NULL,
-    fecha_partido DATE NOT NULL,
-    FOREIGN KEY (id_estadio) REFERENCES estadios (id_estadio)
-);
 
 INSERT INTO partidos_mundial (equipo_nombre, id_estadio, fecha_partido)
 VALUES
