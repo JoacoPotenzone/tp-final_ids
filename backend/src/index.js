@@ -290,55 +290,53 @@ app.listen(PORT, () => {
 
 
 app.get('/api/vuelos', async (req, res) => {
-    const { origen, destino, fecha } = req.query; 
+  const { origen, destino, fecha } = req.query; 
 
-    if (!origen || !destino) {
-        return res.status(400).json({ error: 'Faltan parámetros de búsqueda (origen y destino son obligatorios).' });
-    }
-
-    const origenBusqueda = origen.trim();
-    const destinoBusqueda = destino.trim();
-
-    let fechaFiltro = fecha ? fecha.trim() : null;
-    let fechaActual = new Date().toISOString(); 
+  if (!origen || !destino) {
+      return res.status(400).json({ error: 'Faltan parámetros de búsqueda (origen y destino son obligatorios).' });
+  }
+  const origenBusqueda = origen.trim();
+  const destinoBusqueda = destino.trim();
+  let fechaFiltro = fecha ? fecha.trim() : null;
+  let fechaActual = new Date().toISOString(); 
 
   try {
-      const query = `
-          SELECT
-              a.nombre_aerolinea AS aerolinea,
-              v.id_vuelo AS numero, 
-              TO_CHAR(v.fecha_salida, 'HH24:MI') AS salida, 
-              TO_CHAR(v.fecha_llegada, 'HH24:MI') AS llegada, 
-              v.precio,
-              v.fecha_salida,
-              apd.ciudad AS destino_ciudad,
-              apo.ciudad AS origen_ciudad 
-          FROM
-              vuelos v
-          INNER JOIN aerolinea a ON v.id_aerolinea = a.id_aerolinea
-          INNER JOIN aeropuertos apo ON v.id_aeropuerto_origen = apo.id_aeropuerto
-          INNER JOIN aeropuertos apd ON v.id_aeropuerto_destino = apd.id_aeropuerto
-          WHERE
-              TRIM(apo.ciudad) ILIKE $1 
-              AND v.fecha_salida >= $3
-          ORDER BY
-              (TRIM(apd.ciudad) ILIKE $2) DESC,
-              ($4::TIMESTAMP IS NOT NULL AND v.fecha_salida::DATE = $4::DATE) DESC,
-              v.fecha_salida ASC
-      `;
-        
-        const result = await pool.query(query, [
-            `%${origenBusqueda}%`, 
-            `%${destinoBusqueda}%`,
-            fechaActual,
-            fechaFiltro 
-        ]);
-        res.json(result.rows);
+    const query = `
+      SELECT
+          a.nombre_aerolinea AS aerolinea,
+          v.id_vuelo AS numero, 
+          TO_CHAR(v.fecha_salida, 'HH24:MI') AS salida, 
+          TO_CHAR(v.fecha_llegada, 'HH24:MI') AS llegada, 
+          v.precio,
+          v.fecha_salida,
+          apd.ciudad AS destino_ciudad,
+          apo.ciudad AS origen_ciudad 
+      FROM
+          vuelos v
+      INNER JOIN aerolinea a ON v.id_aerolinea = a.id_aerolinea
+      INNER JOIN aeropuertos apo ON v.id_aeropuerto_origen = apo.id_aeropuerto
+      INNER JOIN aeropuertos apd ON v.id_aeropuerto_destino = apd.id_aeropuerto
+      WHERE
+          TRIM(apo.ciudad) ILIKE $1 
+          AND v.fecha_salida >= $3
+      ORDER BY
+          (TRIM(apd.ciudad) ILIKE $2) DESC,
+          ($4::TIMESTAMP IS NOT NULL AND v.fecha_salida::DATE = $4::DATE) DESC,
+          v.fecha_salida ASC
+    `;
+      const result = await pool.query(query, [
+        `%${origenBusqueda}%`, 
+        `%${destinoBusqueda}%`,
+        fechaActual,
+        fechaFiltro 
+      ]);
+      res.json(result.rows);
     } catch (err) {
         console.error('Error al ejecutar la consulta SQL:', err); 
         res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
     }
-});
+  }
+);
 
 app.get('/api/ciudades-origen', async (req, res) => {
     try {
@@ -603,41 +601,38 @@ app.get('/api/mundial/equipos', async (req, res) => {
 
 
 app.get('/api/mundial/ruta', async (req, res) => {
-    const { pais } = req.query; 
-
-    if (!pais) {
-        return res.status(400).json({ error: 'Falta el parámetro del país.' });
+  const { pais } = req.query; 
+  if (!pais) {
+      return res.status(400).json({ error: 'Falta el parámetro del país.' });
+  }
+  const paisBusqueda = pais.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+  try {
+    const query = `
+      SELECT
+          TO_CHAR(pm.fecha_partido, 'YYYY-MM-DD') AS fecha,
+          e.ciudad
+      FROM
+          partidos_mundial pm
+      JOIN
+          estadios e ON pm.id_estadio = e.id_estadio
+      WHERE
+          pm.equipo_nombre ILIKE $1
+      ORDER BY
+          pm.fecha_partido ASC
+    `;
+    const result = await pool.query(query, [paisBusqueda]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Ruta no definida para este país.' });
     }
 
-    const paisBusqueda = pais.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
-
-    try {
-        const query = `
-            SELECT
-                TO_CHAR(pm.fecha_partido, 'YYYY-MM-DD') AS fecha,
-                e.ciudad
-            FROM
-                partidos_mundial pm
-            JOIN
-                estadios e ON pm.id_estadio = e.id_estadio
-            WHERE
-                pm.equipo_nombre ILIKE $1
-            ORDER BY
-                pm.fecha_partido ASC
-        `;
-        
-        const result = await pool.query(query, [paisBusqueda]);
-        
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Ruta no definida para este país.' });
-        }
-        
-        res.json(result.rows);
+    res.json(result.rows);
     } catch (err) {
-        console.error('Error al obtener ruta del mundial:', err);
-        res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
+      console.error('Error al obtener ruta del mundial:', err);
+      res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
     }
-});
+  }
+);
 
 
 app.get("/api/user/flights", authMiddleware, async (req, res) => {
@@ -789,6 +784,28 @@ app.post("/api/reservas", authMiddleware, async (req, res) => {
         console.error("Error en POST /api/reservas", err);
         res.status(500).json({ error: "Error al crear la reserva." });
     }
+});
+
+app.delete("/api/reservas/:id", authMiddleware, async (req, res) => {
+  const userId = req.user.id_usuario;
+  const idReserva = req.params.id; 
+  try {
+    await pool.query("BEGIN"); 
+    const deleteResult = await pool.query(
+      "DELETE FROM reservas WHERE id_reserva = $1 AND id_usuario = $2 RETURNING id_vuelo",
+      [idReserva, userId]
+    );
+    if (deleteResult.rowCount === 0) {
+      await pool.query("ROLLBACK");
+      return res.status(404).json({ error: "Reserva no encontrada o no pertenece al usuario." });
+    }
+    await pool.query("COMMIT");
+    res.json({ message: `Reserva ${idReserva} cancelada correctamente.` });
+  } catch (err) {
+    console.error("Error en DELETE /api/reservas/:id", err);
+    await pool.query("ROLLBACK");
+    res.status(500).json({ error: "Error al cancelar la reserva." });
+  }
 });
 
 { path: '.env' }
