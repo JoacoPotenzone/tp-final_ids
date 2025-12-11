@@ -17,7 +17,7 @@ const ENTITIES = {
 
   aerolinea: {
     label: 'Aerolíneas',
-    endpoint: '/api/admin/aerolinea',
+    endpoint: '/api/admin/aerolineas',
     idField: 'id_aerolinea',
     canCreate: true,
     fields: [
@@ -86,83 +86,73 @@ const ENTITIES = {
   }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-  const token = localStorage.getItem('token');
-  const userJson = localStorage.getItem('user');
+function initAdminPanel(token) {
+  const select = document.getElementById('tabla-select');
+  const newBtn = document.getElementById('btn-nuevo-registro');
+  const tablaTitulo = document.getElementById('tabla-titulo');
+  const tabla = document.getElementById('tabla-admin');
+  const formContainer = document.getElementById('form-container');
+  const cancelBtn = document.getElementById('btn-cancelar-form');
 
-  if (!token || !userJson) {
-    alert('Tenés que iniciar sesión como admin.');
-    window.location.href = './login.html';
+  if (!select || !newBtn || !tabla || !formContainer) {
+    console.error('No se encontraron elementos del DOM para el panel de administración.');
     return;
   }
 
-  const user = JSON.parse(userJson);
-  if (user.rol !== 'admin') {
-    alert('Esta página es solo para administradores.');
-    window.location.href = '../index.html';
-    return;
-  }
+  const thead = tabla.querySelector('thead');
+  const tbody = tabla.querySelector('tbody');
 
-  initAdminPanel(token);
-});
-
-function initAdminPanel() {
-  const token = localStorage.getItem('token');
-  const userJson = localStorage.getItem('user');
-
-  if (!token || !userJson) {
-    alert('Tenés que iniciar sesión como administrador.');
-    window.location.href = './login.html';
-    return;
-  }
-
-  const user = JSON.parse(userJson);
-  if (user.rol !== 'admin') {
-    alert('Esta sección es solo para administradores.');
-    window.location.href = './usuario.html';
-    return;
-  }
-
-  const sideMenu = document.getElementById('admin-entities');
-  const newBtn = document.getElementById('btn-admin-new');
-
-  sideMenu.innerHTML = '';
-
-  Object.entries(ADMIN_ENTITIES).forEach(([key, entity]) => {
-    const li = document.createElement('li');
-    li.className = 'list-group-item admin-entity-item';
-    li.dataset.entity = key;
-    li.textContent = entity.label;
-    sideMenu.appendChild(li);
+  select.innerHTML = '';
+  Object.entries(ENTITIES).forEach(([key, entity]) => {
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = entity.label;
+    select.appendChild(opt);
   });
 
-  const items = sideMenu.querySelectorAll('.admin-entity-item');
+  const actualizarEntidadActual = () => {
+    const entityKey = select.value;
+    const entity = ENTITIES[entityKey];
+    if (!entity) return;
 
-  items.forEach(item => {
-    item.addEventListener('click', () => {
-      items.forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
+    if (tablaTitulo) {
+      tablaTitulo.textContent = `Datos de ${entity.label}`;
+    }
 
-      const entityKey = item.dataset.entity;
-      const entity = ADMIN_ENTITIES[entityKey];
-      newBtn.onclick = () => openCreateForm(entityKey, token);
-      newBtn.disabled = !entity.canCreate;
+    newBtn.disabled = !entity.canCreate;
+    loadEntityList(entityKey, token);
+  };
 
-      loadEntityList(entityKey, token);
+  select.addEventListener('change', actualizarEntidadActual);
+
+  newBtn.addEventListener('click', () => {
+    const entityKey = select.value;
+    if (!entityKey) return;
+    openCreateForm(entityKey, token);
+  });
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      formContainer.classList.add('d-none');
     });
-  });
+  }
 
-  if (items.length > 0) {
-    items[0].click();
+
+  if (select.options.length > 0) {
+    select.selectedIndex = 0;
+    actualizarEntidadActual();
+  } else {
+    if (thead) thead.innerHTML = '';
+    if (tbody) tbody.innerHTML = '';
   }
 }
 
 async function loadEntityList(entityKey, token) {
-  const entity = ADMIN_ENTITIES[entityKey];
+  const entity = ENTITIES[entityKey];
   if (!entity) return;
 
-  const container = document.getElementById('admin-table-container');
-  const formContainer = document.getElementById('admin-form-container');
+  const container = document.getElementById('tabla-admin');
+  const formContainer = document.getElementById('form-container');
 
   container.innerHTML = 'Cargando...';
   formContainer.innerHTML = '';
@@ -390,3 +380,24 @@ async function deleteRecord(entityKey, entity, row, token) {
     alert('No se pudo eliminar el registro.');
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('token');
+  const userJson = localStorage.getItem('user');
+
+  if (!token || !userJson) {
+    alert('Tenés que iniciar sesión como admin.');
+    window.location.href = './login.html';
+    return;
+  }
+
+  const user = JSON.parse(userJson);
+  if (user.rol !== 'admin') {
+    alert('Esta página es solo para administradores.');
+    window.location.href = '../index.html';
+    return;
+  }
+
+  initAdminPanel(token);
+});
+

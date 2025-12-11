@@ -142,6 +142,13 @@ function createAdminCrudRoutes({ key, table, idField, fields }) {
 }
 
 createAdminCrudRoutes({
+  key: "usuarios",
+  table: "usuarios",
+  idField: "id_usuario",
+  fields: ["nombre_usuario", "email", "nacionalidad", "rol"],
+});
+
+createAdminCrudRoutes({
   key: "aerolineas",
   table: "aerolinea",
   idField: "id_aerolinea",
