@@ -18,13 +18,13 @@ La aplicación cuenta con una interfaz de administración (CRUD) donde los admin
 
 # Entidades principales
 
--Usuarios: id_usuario, Correo, Nombre, Contrasenia, Fecha de creacion, ROL(admin/usuario) 
--Vuelos: id_vuelo, id_aerolinea(FK), id_aeropuerto_origen(FK), id_aeropuerto_destino(FK), Fecha de salida, capacidad, precio 
--Aeropuertos: id_aeropuerto, Nombre, Pais, Ciudad, Codigo IATA 
--Aerolinea: id_aerolinea,Nombre, Codigo IATA 
--Estadios: id_estadio, id_aeropuerto(FK), Nombre, Ciudad, Pais 
--Reservas: id_reserva, id_usuario(FK), id_vuelo(FK), asiento, Fecha reserva
--Partidos Mundial: id_partido, id_estadio(FK), Nombre equipos, Fecha partido 
+- Usuarios: id_usuario, Correo, Nombre, Contrasenia, Fecha de creacion, ROL(admin/usuario) 
+- Vuelos: id_vuelo, id_aerolinea(FK), id_aeropuerto_origen(FK), id_aeropuerto_destino(FK), Fecha de salida, capacidad, precio 
+- Aeropuertos: id_aeropuerto, Nombre, Pais, Ciudad, Codigo IATA 
+- Aerolinea: id_aerolinea,Nombre, Codigo IATA 
+- Estadios: id_estadio, id_aeropuerto(FK), Nombre, Ciudad, Pais 
+- Reservas: id_reserva, id_usuario(FK), id_vuelo(FK), asiento, Fecha reserva
+- Partidos Mundial: id_partido, id_estadio(FK), Nombre equipos, Fecha partido 
 
 
 # Páginas de la aplicación
