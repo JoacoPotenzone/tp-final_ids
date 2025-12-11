@@ -15,7 +15,7 @@ const ENTITIES = {
       { name: 'password',label: 'Contraseña',required: true,isPassword: true,onlyOnCreate: true}
     ]
   },
-  
+
   aerolinea: {
     label: 'Aerolíneas',
     endpoint: '/api/admin/aerolineas',
@@ -326,7 +326,10 @@ function buildForm(entityKey, entity, data, token, mode) {
     label.textContent = field.label;
 
     let input;
-    const fieldType = field.type || (field.isPassword ? 'password' : 'text');
+    let fieldType = field.type || 'text';
+    if (field.isPassword && !field.type) {
+      fieldType = 'text'; 
+    }
 
     if (fieldType === 'textarea') {
       input = document.createElement('textarea');
