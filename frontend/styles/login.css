@@ -15,12 +15,17 @@
     font-weight: bold;
 
 }
+html, body{
+    height: 100%;
+}
+
 body {
+    display: flex;
+    flex-direction: column;
     font-family: Arial, sans-serif;
     background-color: var(--color-bg-card);
     margin: 0;
 }
-
 .container {
     background-color: #fff;
     padding: 30px;
@@ -36,6 +41,12 @@ h1 {
     margin-bottom: 25px;
 }
 
+h4 {
+    font-size: 20px;
+}
+h5{
+    font-size: 15px;
+}
 #equipo-selector {
     width: 100%;
     padding: 10px;
@@ -101,12 +112,13 @@ h1 {
     box-shadow: 0 4px 10px black
 
 }
+
 footer{
     background:blue;
     color:white;
     text-align:center;
     padding: 15px;
-    position: fixed;
+    position:static;
     bottom: 0;
     left: 0;
     right: 0;
