@@ -119,7 +119,84 @@ function createAdminCrudRoutes({ key, table, idField, fields }) {
     }
   });
 
+  app.delete(`${basePath}/:id`, authMiddleware, requireAdmin, async (req, res) => {
+    const { id } = req.params;
+    try {
+      const result = await pool.query(
+        `DELETE FROM ${table}
+         WHERE ${idField} = $1
+         RETURNING ${idField}`,
+        [id]
+      );
+
+      if (result.rowCount === 0) {
+        return res.status(404).json({ error: `${key} no encontrado` });
+      }
+
+      res.json({ success: true });
+    } catch (err) {
+      console.error(`Error borrando de ${table}`, err);
+      res.status(409).json({ error: `No se puede borrar porque tiene datos relacionados` });
+    }
+  });
 }
+
+createAdminCrudRoutes({
+  key: "aerolineas",
+  table: "aerolinea",
+  idField: "id_aerolinea",
+  fields: ["nombre_aerolinea", "codigo_iata"],
+});
+
+
+createAdminCrudRoutes({
+  key: "aeropuertos",
+  table: "aeropuertos",
+  idField: "id_aeropuerto",
+  fields: ["nombre_aeropuerto", "ciudad", "pais", "codigo_iata"],
+});
+
+
+createAdminCrudRoutes({
+  key: "vuelos",
+  table: "vuelos",
+  idField: "id_vuelo",
+  fields: [
+    "id_aerolinea",
+    "id_aeropuerto_origen",
+    "id_aeropuerto_destino",
+    "fecha_salida",
+    "fecha_llegada",
+    "capacidad",
+    "precio",
+  ],
+});
+
+
+createAdminCrudRoutes({
+  key: "reservas",
+  table: "reservas",
+  idField: "id_reserva",
+  fields: ["id_usuario", "id_vuelo", "asiento", "fecha_reserva"],
+});
+
+
+createAdminCrudRoutes({
+  key: "estadios",
+  table: "estadios",
+  idField: "id_estadio",
+  fields: ["nombre_estadio", "ciudad", "pais", "id_aeropuerto"],
+});
+
+
+createAdminCrudRoutes({
+  key: "partidos_mundial",
+  table: "partidos_mundial",
+  idField: "id_partido",
+  fields: ["equipo_nombre", "id_estadio", "fecha_partido"],
+});
+
+
 
 
 app.listen(PORT, () => {
