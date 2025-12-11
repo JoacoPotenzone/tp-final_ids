@@ -259,58 +259,109 @@ function openEditForm(entityKey, entity, row, token) {
   buildForm(entityKey, entity, row, token);
 }
 
-function buildForm(entityKey, entity, row, token) {
+function buildForm(entityKey, entity, data, token, mode) {
   const formContainer = document.getElementById('admin-form-container');
+  if (!formContainer) return;
 
-  const isEdit = !!row;
-  const fieldsToShow = entity.fields.filter(
-    (f) => !(f.onlyOnCreate && isEdit)
-  );
+  const isEdit = mode === 'edit';
+  const singular = entity.label.replace(/s$/, ''); 
+  const title = isEdit ? `Editar ${singular}` : `Nuevo ${singular}`;
 
-  let html = `<div class="card">
-    <div class="card-body">
-      <h4 class="h6 mb-3">${isEdit ? 'Editar' : 'Crear'} ${entity.label.slice(0, -1)}</h4>
-      <form id="admin-form">
-  `;
 
-  fieldsToShow.forEach((f) => {
-    const value = row ? row[f.name] ?? '' : '';
-    const type = f.isPassword ? 'password' : 'text';
+  const fieldsToShow = entity.fields.filter(field => {
+    if (field.onlyOnCreate && isEdit) return false;
+    if (field.hideOnForm) return false;
+    return true;
+  });
 
-    html += `
-      <div class="mb-2">
-        <label class="form-label">${f.label}${f.required ? ' *' : ''}</label>
+  const inputsHtml = fieldsToShow.map(field => {
+    const value = data && data[field.name] != null ? data[field.name] : '';
+    const type = field.isPassword ? 'password' : (field.type || 'text');
+    const readOnly = (field.readOnly || (field.isPk && isEdit)) ? 'readonly' : '';
+
+    return `
+      <div class="mb-3">
+        <label class="form-label" for="fld-${field.name}">${field.label}</label>
         <input
+          id="fld-${field.name}"
+          name="${field.name}"
           type="${type}"
-          class="form-control form-control-sm"
-          name="${f.name}"
+          class="form-control"
           value="${value}"
-          ${f.required ? 'required' : ''}
+          ${field.required ? 'required' : ''}
+          ${readOnly}
         />
       </div>
     `;
-  });
+  }).join('');
 
-  html += `
-        <button type="submit" class="btn btn-primary btn-sm">
-          ${isEdit ? 'Guardar cambios' : 'Crear'}
-        </button>
-        <button type="button" class="btn btn-link btn-sm" id="btn-cancel-form">
-          Cancelar
-        </button>
-      </form>
+  formContainer.innerHTML = `
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title mb-3">${title}</h5>
+        <form id="admin-form">
+          ${inputsHtml}
+          <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">
+              ${isEdit ? 'Guardar cambios' : 'Crear registro'}
+            </button>
+            <button type="button" id="btn-admin-cancel" class="btn btn-outline-secondary">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>`;
-
-  formContainer.innerHTML = html;
+  `;
 
   const form = document.getElementById('admin-form');
-  form.addEventListener('submit', (e) => {
+  const btnCancel = document.getElementById('btn-admin-cancel');
+
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    submitForm(entityKey, entity, row, token, form);
+    const formData = new FormData(form);
+    const payload = {};
+
+    fieldsToShow.forEach(field => {
+      const raw = formData.get(field.name);
+      if (raw === null) return;
+
+      if (field.isPassword && raw === '' && isEdit) {
+        return;
+      }
+
+      payload[field.name] = raw;
+    });
+
+    try {
+      const method = isEdit ? 'PUT' : 'POST';
+      const url = isEdit
+        ? `${API_BASE_URL}${entity.endpoint}/${data[entity.idField]}`
+        : `${API_BASE_URL}${entity.endpoint}`;
+
+      const resp = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!resp.ok) {
+        const txt = await resp.text();
+        throw new Error(txt || `Error ${resp.status}`);
+      }
+
+      formContainer.innerHTML = '';
+      await loadEntityList(entityKey, token);
+    } catch (error) {
+      console.error(error);
+      alert('Error al guardar el registro.');
+    }
   });
 
-  document.getElementById('btn-cancel-form').onclick = () => {
+  btnCancel.addEventListener('click', () => {
     formContainer.innerHTML = '';
-  };
+  });
 }
