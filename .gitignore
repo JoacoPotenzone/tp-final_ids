@@ -1,11 +1,5 @@
 
 backend/node_modules
-
-
-#docker
 backend/volumes
-frontend/Dockerfile
-frontend/package.json
-docker-compose.yml
-node_modules
-.volumes
+
+
