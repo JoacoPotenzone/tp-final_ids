@@ -80,6 +80,14 @@ function construirTimestamp(fecha, hora) {
   return `${fecha} ${hora}:00`;
 }
 
+function generarAsientoRandom() {
+    const codigoAscii = Math.floor(Math.random() * (90 - 65 + 1)) + 65;
+    const letra = String.fromCharCode(codigoAscii);
+    const numero = Math.floor(Math.random() * 100);
+    const numeroFormateado = String(numero).padStart(2, '0');
+    return letra + numeroFormateado;
+}
+
 async function reservarVueloDesdeResultados(vuelo) {
   const token = obtenerTokenActual();
   const currentUser = obtenerUsuarioActual();
@@ -115,7 +123,7 @@ async function reservarVueloDesdeResultados(vuelo) {
     dest_code: (vuelo.destino_ciudad || "DES").substring(0, 3).toUpperCase(),
     departure,
     arrival,
-    seat: "WEB",
+    seat: generarAsientoRandom(),
     price: Number(vuelo.precio),
   };
 
