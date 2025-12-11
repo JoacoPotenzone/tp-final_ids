@@ -81,48 +81,48 @@ function construirTimestamp(fecha, hora) {
 }
 
 function generarAsientoRandom() {
-    const codigoAscii = Math.floor(Math.random() * (90 - 65 + 1)) + 65;
-    const letra = String.fromCharCode(codigoAscii);
-    const numero = Math.floor(Math.random() * 100);
-    const numeroFormateado = String(numero).padStart(2, '0');
-    return letra + numeroFormateado;
+  const codigoAscii = Math.floor(Math.random() * (90 - 65 + 1)) + 65;
+  const letra = String.fromCharCode(codigoAscii);
+  const numero = Math.floor(Math.random() * 100);
+  const numeroFormateado = String(numero).padStart(2, '0');
+  return letra + numeroFormateado;
 }
 
 async function reservarVueloDesdeResultados(vuelo) {
   const token = obtenerTokenActual();
   const currentUser = obtenerUsuarioActual();
   if (!token || !currentUser) {
-      const irLogin = confirm(
-          'Tenés que iniciar sesión para reservar un vuelo. ¿Querés ir al login ahora?'
-      );
-      if (irLogin) {
-          window.location.href = './pages/login.html'; 
-      }
-      return;
+    const irLogin = confirm(
+      'Tenés que iniciar sesión para reservar un vuelo. ¿Querés ir al login ahora?'
+    );
+    if (irLogin) {
+      window.location.href = './pages/login.html'; 
+    }
+    return;
   }
   if (vuelo.numero) { 
-      const asientoGenerado = generarAsientoRandom();
-      
-      const simpleBody = {
-          id_vuelo: vuelo.numero,
-          asiento: asientoGenerado,
-      };
-      try {
-          const response = await fetch(`${API_BASE_URL}/api/reservas`, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`,
-              },
-              body: JSON.stringify(simpleBody),
-          });
-          if (response.ok) {
-              alert('Vuelo reservado correctamente. Lo vas a ver en la sección "Mis vuelos" de tu perfil.');
-              return;
-          }
-      } catch (err) {
-          console.error('Error de red al intentar reserva simple:', err);
+    const asientoGenerado = generarAsientoRandom();
+    
+    const simpleBody = {
+      id_vuelo: vuelo.numero,
+      asiento: asientoGenerado,
+    };
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reservas`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(simpleBody),
+      });
+      if (response.ok) {
+        alert('Vuelo reservado correctamente. Lo vas a ver en la sección "Mis vuelos" de tu perfil.');
+        return;
       }
+    } catch (err) {
+      console.error('Error de red al intentar reserva simple:', err);
+    }
   }
   const horaSalida = vuelo.salida;
   const horaLlegada =
@@ -131,40 +131,40 @@ async function reservarVueloDesdeResultados(vuelo) {
   const departure = construirTimestamp(fechaBusqueda, horaSalida);
   const arrival   = construirTimestamp(fechaBusqueda, horaLlegada);
   const body = {
-      airline_name: vuelo.aerolinea,
-      airline_code: (vuelo.aerolinea || "GEN").substring(0, 3).toUpperCase(),
-      origin_name:  vuelo.origen_ciudad,
-      origin_city:  vuelo.origen_ciudad,
-      origin_country: "Desconocido",
-      origin_code: (vuelo.origen_ciudad || "ORI").substring(0, 3).toUpperCase(),
-      dest_name:    vuelo.destino_ciudad,
-      dest_city:    vuelo.destino_ciudad,
-      dest_country: "Desconocido",
-      dest_code: (vuelo.destino_ciudad || "DES").substring(0, 3).toUpperCase(),
-      departure,
-      arrival,
-      seat: generarAsientoRandom(),
-      price: Number(vuelo.precio),
+    airline_name: vuelo.aerolinea,
+    airline_code: (vuelo.aerolinea || "GEN").substring(0, 3).toUpperCase(),
+    origin_name:  vuelo.origen_ciudad,
+    origin_city:  vuelo.origen_ciudad,
+    origin_country: "Desconocido",
+    origin_code: (vuelo.origen_ciudad || "ORI").substring(0, 3).toUpperCase(),
+    dest_name:    vuelo.destino_ciudad,
+    dest_city:    vuelo.destino_ciudad,
+    dest_country: "Desconocido",
+    dest_code: (vuelo.destino_ciudad || "DES").substring(0, 3).toUpperCase(),
+    departure,
+    arrival,
+    seat: generarAsientoRandom(),
+    price: Number(vuelo.precio),
   };
   try {
-      const response = await fetch(`${API_BASE_URL}/api/user/flights`, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify(body),
-      });
-      if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          console.error('Error al reservar vuelo (ruta compleja)', errorData);
-          alert(errorData.error || 'No se pudo registrar el vuelo');
-          return;
-      }
-      alert('Vuelo reservado correctamente. Lo vas a ver en la sección "Mis vuelos" de tu perfil.');
+    const response = await fetch(`${API_BASE_URL}/api/user/flights`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Error al reservar vuelo (ruta compleja)', errorData);
+      alert(errorData.error || 'No se pudo registrar el vuelo');
+      return;
+    }
+    alert('Vuelo reservado correctamente. Lo vas a ver en la sección "Mis vuelos" de tu perfil.');
   } catch (err) {
-      console.error('Error de red al reservar vuelo (ruta compleja)', err);
-      alert('Error de conexión al intentar reservar el vuelo');
+    console.error('Error de red al reservar vuelo (ruta compleja)', err);
+    alert('Error de conexión al intentar reservar el vuelo');
   }
 }
 

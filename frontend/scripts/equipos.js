@@ -21,7 +21,14 @@ const sedesCoordenadas = {
     "San Francisco": [37.7749, -122.4194],
     "Seattle": [47.6062, -122.3321],
 };
-
+function generarPrecioAleatorio() {
+    const min = 300;
+    const max = 600;
+    const precioBruto = Math.random() * (max - min) + min;
+    const precioFinal = Math.round(precioBruto * 100) / 100;
+    
+    return precioFinal;
+}
 const selector = document.getElementById('equipo-selector');
 const rutaInfo = document.getElementById('ruta-info');
 const tabMundial = document.getElementById('pills-mundial-tab');
@@ -134,7 +141,7 @@ function renderizarRutaPartidos(equipo, partidos) {
     const btnMapa = document.getElementById('btn-ver-mapa');
     if (btnMapa) {
         btnMapa.addEventListener('click', () => {
-              verRutaEnMapaBackend(equipo, paradasNombres);
+            verRutaEnMapaBackend(equipo, paradasNombres);
         });
     }
 
@@ -251,6 +258,7 @@ async function manejarReservaMundial(event) {
             console.warn(`Saltando tramo ${i + 1}: Origen y Destino son la misma ciudad (${origenPartido.ciudad}).`);
             continue;
         }
+        const precioAleatorio = generarPrecioAleatorio();
         const tramoBody = {
             airline_name: `Fan Flight - ${equipo}`,
             airline_code: "WCA", 
@@ -268,8 +276,8 @@ async function manejarReservaMundial(event) {
             arrival: `${destinoPartido.fecha} 14:00:00`,
             
             seat: generarAsientoRandom(i), 
-            price: 500.00, 
-            capacity: 100 
+            price: precioAleatorio, 
+            capacity: 180 
         };
 
         try {

@@ -427,6 +427,10 @@ function buildForm(entityKey, entity, data, token, mode) {
         const txt = await resp.text();
         throw new Error(txt || `Error ${resp.status}`);
       }
+      
+      const action = isEdit ? 'actualizado' : 'agregado';
+      const entityLabel = entity.label;
+      alert(`¡Éxito! El registro ha sido ${action} correctamente a la tabla ${entityLabel}.`);
 
       formContainer.classList.add('d-none');
       await loadEntityList(entityKey, token);
