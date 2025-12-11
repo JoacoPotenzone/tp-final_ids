@@ -141,6 +141,62 @@ function createAdminCrudRoutes({ key, table, idField, fields }) {
   });
 }
 
+createAdminCrudRoutes({
+  key: "aerolineas",
+  table: "aerolinea",
+  idField: "id_aerolinea",
+  fields: ["nombre_aerolinea", "codigo_iata"],
+});
+
+
+createAdminCrudRoutes({
+  key: "aeropuertos",
+  table: "aeropuertos",
+  idField: "id_aeropuerto",
+  fields: ["nombre_aeropuerto", "ciudad", "pais", "codigo_iata"],
+});
+
+
+createAdminCrudRoutes({
+  key: "vuelos",
+  table: "vuelos",
+  idField: "id_vuelo",
+  fields: [
+    "id_aerolinea",
+    "id_aeropuerto_origen",
+    "id_aeropuerto_destino",
+    "fecha_salida",
+    "fecha_llegada",
+    "capacidad",
+    "precio",
+  ],
+});
+
+
+createAdminCrudRoutes({
+  key: "reservas",
+  table: "reservas",
+  idField: "id_reserva",
+  fields: ["id_usuario", "id_vuelo", "asiento", "fecha_reserva"],
+});
+
+
+createAdminCrudRoutes({
+  key: "estadios",
+  table: "estadios",
+  idField: "id_estadio",
+  fields: ["nombre_estadio", "ciudad", "pais", "id_aeropuerto"],
+});
+
+
+createAdminCrudRoutes({
+  key: "partidos_mundial",
+  table: "partidos_mundial",
+  idField: "id_partido",
+  fields: ["equipo_nombre", "id_estadio", "fecha_partido"],
+});
+
+
 
 
 app.listen(PORT, () => {
