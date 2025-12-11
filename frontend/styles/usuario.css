@@ -37,7 +37,12 @@ h1 {
     color: #004a99;
     margin-bottom: 25px;
 }
-
+h4 {
+    font-size: 20px;
+}
+h5{
+    font-size: 15px;
+}
 #equipo-selector {
     width: 100%;
     padding: 10px;
@@ -107,8 +112,8 @@ footer{
     background:blue;
     color:white;
     text-align:center;
-    position: fixed;
     padding: 15px;
+    position:static;
     bottom: 0;
     left: 0;
     right: 0;
