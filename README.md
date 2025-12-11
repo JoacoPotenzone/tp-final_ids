@@ -73,6 +73,6 @@ La aplicación cuenta con una interfaz de administración (CRUD) donde los admin
 # Instalar dependencias
   -Ejecutar el comando make instalar
 # Inicializar la base de datos
-  -Ejecutar el comando make run (levanta el docker compose con postgres) y luego ejecutar el comando make levantar (inserta el archivo .sql)
+  -Ejecutar el comando make db (levanta el docker compose con postgres) y luego ejecutar el comando make levantar (inserta el archivo .sql)
 # Levantar backend y frontend al mismo tiempo
   -Ejecutar el comando make start (levanta la db y el backend al mismo tiempo y ademas levanta el frontend)
