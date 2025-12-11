@@ -106,7 +106,10 @@ footer{
     color:white;
     text-align:center;
     padding: 15px;
-    margin-top: 30px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 .form-card {
     background-color: var(--color-bg-card);
@@ -138,11 +141,11 @@ footer{
     border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
-    color: var(--color-text-dark);
+    color: var(--color-text-medium);
     transition: color 0.3s, background-color 0.2s, border-bottom 0.2s;
 }
 .tab-button.active {
-    color: var(--color-text-medium);
+    color: var(--color-text-black);
     border-bottom: 3px solid var(--color-primary-dark); 
     background-color: var(--color-primary-base); 
 }

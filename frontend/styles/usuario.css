@@ -17,13 +17,7 @@
     font-weight: bold;
 
 }
-html, body{
-    height: 100%;
-}
-
 body {
-    display: flex;
-    flex-direction: column;
     font-family: Arial, sans-serif;
     background-color: var(--color-bg-card);
     margin: 0;
@@ -42,13 +36,6 @@ body {
 h1 {
     color: #004a99;
     margin-bottom: 25px;
-}
-
-h4 {
-    font-size: 20px;
-}
-h5{
-    font-size: 15px;
 }
 
 #equipo-selector {
@@ -120,6 +107,7 @@ footer{
     background:blue;
     color:white;
     text-align:center;
+    position: fixed;
     padding: 15px;
     bottom: 0;
     left: 0;
