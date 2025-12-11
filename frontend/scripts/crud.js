@@ -214,3 +214,68 @@ function renderTable(entityKey, entity, rows, token) {
     });
   });
 }
+
+function openCreateForm(entityKey, token) {
+  const entity = ADMIN_ENTITIES[entityKey];
+  buildForm(entityKey, entity, null, token);
+}
+
+function openEditForm(entityKey, entity, row, token) {
+  buildForm(entityKey, entity, row, token);
+}
+
+function buildForm(entityKey, entity, row, token) {
+  const formContainer = document.getElementById('admin-form-container');
+
+  const isEdit = !!row;
+  const fieldsToShow = entity.fields.filter(
+    (f) => !(f.onlyOnCreate && isEdit)
+  );
+
+  let html = `<div class="card">
+    <div class="card-body">
+      <h4 class="h6 mb-3">${isEdit ? 'Editar' : 'Crear'} ${entity.label.slice(0, -1)}</h4>
+      <form id="admin-form">
+  `;
+
+  fieldsToShow.forEach((f) => {
+    const value = row ? row[f.name] ?? '' : '';
+    const type = f.isPassword ? 'password' : 'text';
+
+    html += `
+      <div class="mb-2">
+        <label class="form-label">${f.label}${f.required ? ' *' : ''}</label>
+        <input
+          type="${type}"
+          class="form-control form-control-sm"
+          name="${f.name}"
+          value="${value}"
+          ${f.required ? 'required' : ''}
+        />
+      </div>
+    `;
+  });
+
+  html += `
+        <button type="submit" class="btn btn-primary btn-sm">
+          ${isEdit ? 'Guardar cambios' : 'Crear'}
+        </button>
+        <button type="button" class="btn btn-link btn-sm" id="btn-cancel-form">
+          Cancelar
+        </button>
+      </form>
+    </div>
+  </div>`;
+
+  formContainer.innerHTML = html;
+
+  const form = document.getElementById('admin-form');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    submitForm(entityKey, entity, row, token, form);
+  });
+
+  document.getElementById('btn-cancel-form').onclick = () => {
+    formContainer.innerHTML = '';
+  };
+}
