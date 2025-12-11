@@ -119,7 +119,28 @@ function createAdminCrudRoutes({ key, table, idField, fields }) {
     }
   });
 
+  app.delete(`${basePath}/:id`, authMiddleware, requireAdmin, async (req, res) => {
+    const { id } = req.params;
+    try {
+      const result = await pool.query(
+        `DELETE FROM ${table}
+         WHERE ${idField} = $1
+         RETURNING ${idField}`,
+        [id]
+      );
+
+      if (result.rowCount === 0) {
+        return res.status(404).json({ error: `${key} no encontrado` });
+      }
+
+      res.json({ success: true });
+    } catch (err) {
+      console.error(`Error borrando de ${table}`, err);
+      res.status(409).json({ error: `No se puede borrar porque tiene datos relacionados` });
+    }
+  });
 }
+
 
 
 app.listen(PORT, () => {
