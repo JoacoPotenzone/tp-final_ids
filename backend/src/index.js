@@ -500,8 +500,8 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
       `
       INSERT INTO aerolinea (nombre_aerolinea, codigo_iata)
       VALUES ($1, $2)
-      ON CONFLICT (nombre_aerolinea)
-      DO UPDATE SET codigo_iata = EXCLUDED.codigo_iata
+      ON CONFLICT (codigo_iata)
+      DO UPDATE SET nombre_aerolinea = EXCLUDED.nombre_aerolinea
       RETURNING id_aerolinea;
       `,
       [airline_name, airline_code]
