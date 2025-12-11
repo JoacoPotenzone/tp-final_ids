@@ -1,21 +1,5 @@
 const API_BASE_URL = 'http://localhost:3001';
 
-const userJson = localStorage.getItem('user');
-const token = localStorage.getItem('token');
-
-let currentUser = null;
-
-if (!userJson || !token) {
-  alert('Tenés que iniciar sesión.');
-  window.location.href = './login.html';
-} else {
-  currentUser = JSON.parse(userJson);
-  if (currentUser.rol !== 'admin') {
-    alert('No tenés permisos para acceder al panel de administración.');
-    window.location.href = './index.html';
-  }
-}
-
 const ENTITIES = {
   usuarios: {
     label: 'Usuarios',
@@ -101,3 +85,49 @@ const ENTITIES = {
     ]
   }
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('token');
+  const userJson = localStorage.getItem('user');
+
+  if (!token || !userJson) {
+    alert('Tenés que iniciar sesión como admin.');
+    window.location.href = './login.html';
+    return;
+  }
+
+  const user = JSON.parse(userJson);
+  if (user.rol !== 'admin') {
+    alert('Esta página es solo para administradores.');
+    window.location.href = '../index.html';
+    return;
+  }
+
+  initAdminPanel(token);
+});
+
+function initAdminPanel(token) {
+  const menu = document.getElementById('entity-menu');
+  const items = menu.querySelectorAll('[data-entity]');
+  const newBtn = document.getElementById('btn-new-record');
+
+  items.forEach((item) => {
+    item.addEventListener('click', () => {
+      items.forEach((i) => i.classList.remove('active'));
+      item.classList.add('active');
+
+      const entityKey = item.dataset.entity;
+      const entity = ADMIN_ENTITIES[entityKey];
+
+      document.getElementById('entity-title').textContent = entity.label;
+      loadEntityList(entityKey, token);
+
+      newBtn.onclick = () => openCreateForm(entityKey, token);
+      newBtn.disabled = !entity.canCreate;
+    });
+  });
+
+  if (items.length > 0) {
+    items[0].click();
+  }
+}
