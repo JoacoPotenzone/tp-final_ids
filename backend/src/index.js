@@ -193,6 +193,27 @@ app.post("/api/admin/usuarios", authMiddleware, requireAdmin, async (req, res) =
   }
 });
 
+app.delete("/api/admin/usuarios/:id", authMiddleware, requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      `DELETE FROM usuarios
+       WHERE id_usuario = $1
+       RETURNING id_usuario`,
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error borrando usuario desde admin", err);
+    res.status(409).json({ error: "No se puede borrar porque tiene datos relacionados" });
+  }
+});
+
 createAdminCrudRoutes({
   key: "aerolineas",
   table: "aerolinea",
