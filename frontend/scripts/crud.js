@@ -106,24 +106,49 @@ document.addEventListener('DOMContentLoaded', () => {
   initAdminPanel(token);
 });
 
-function initAdminPanel(token) {
-  const menu = document.getElementById('entity-menu');
-  const items = menu.querySelectorAll('[data-entity]');
-  const newBtn = document.getElementById('btn-new-record');
+function initAdminPanel() {
+  const token = localStorage.getItem('token');
+  const userJson = localStorage.getItem('user');
 
-  items.forEach((item) => {
+  if (!token || !userJson) {
+    alert('Tenés que iniciar sesión como administrador.');
+    window.location.href = './login.html';
+    return;
+  }
+
+  const user = JSON.parse(userJson);
+  if (user.rol !== 'admin') {
+    alert('Esta sección es solo para administradores.');
+    window.location.href = './usuario.html';
+    return;
+  }
+
+  const sideMenu = document.getElementById('admin-entities');
+  const newBtn = document.getElementById('btn-admin-new');
+
+  sideMenu.innerHTML = '';
+
+  Object.entries(ADMIN_ENTITIES).forEach(([key, entity]) => {
+    const li = document.createElement('li');
+    li.className = 'list-group-item admin-entity-item';
+    li.dataset.entity = key;
+    li.textContent = entity.label;
+    sideMenu.appendChild(li);
+  });
+
+  const items = sideMenu.querySelectorAll('.admin-entity-item');
+
+  items.forEach(item => {
     item.addEventListener('click', () => {
-      items.forEach((i) => i.classList.remove('active'));
+      items.forEach(i => i.classList.remove('active'));
       item.classList.add('active');
 
       const entityKey = item.dataset.entity;
       const entity = ADMIN_ENTITIES[entityKey];
-
-      document.getElementById('entity-title').textContent = entity.label;
-      loadEntityList(entityKey, token);
-
       newBtn.onclick = () => openCreateForm(entityKey, token);
       newBtn.disabled = !entity.canCreate;
+
+      loadEntityList(entityKey, token);
     });
   });
 
@@ -133,7 +158,7 @@ function initAdminPanel(token) {
 }
 
 async function loadEntityList(entityKey, token) {
-  const entity = ADMIN_ENTITIES[entityKey];
+  const entity = ENTITIES[entityKey];
   const container = document.getElementById('admin-table-container');
   const formContainer = document.getElementById('admin-form-container');
 
@@ -216,7 +241,7 @@ function renderTable(entityKey, entity, rows, token) {
 }
 
 function openCreateForm(entityKey, token) {
-  const entity = ADMIN_ENTITIES[entityKey];
+  const entity = ENTITIES[entityKey];
   buildForm(entityKey, entity, null, token);
 }
 
@@ -278,29 +303,4 @@ function buildForm(entityKey, entity, row, token) {
   document.getElementById('btn-cancel-form').onclick = () => {
     formContainer.innerHTML = '';
   };
-}
-
-async function deleteRecord(entityKey, entity, id, token) {
-  try {
-    const resp = await fetch(
-      `${API_BASE_URL}${entity.endpoint}/${id}`,
-      {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.error || 'Error borrando registro');
-    }
-
-    alert('Registro borrado');
-    loadEntityList(entityKey, token);
-  } catch (e) {
-    console.error(e);
-    alert(e.message);
-  }
 }
