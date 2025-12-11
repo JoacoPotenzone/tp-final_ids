@@ -7,14 +7,15 @@ const ENTITIES = {
     idField: 'id_usuario',
     canCreate: true,        
     fields: [
-      { name: 'id_usuario', label: 'ID', isPk: true, readOnly: true },
+      { name: 'id_usuario', label: 'ID', isPk: true, readOnly: true, hiddenOnList: true },
       { name: 'nombre_usuario', label: 'Nombre de usuario', required: true },
       { name: 'email', label: 'Email', required: true },
       { name: 'nacionalidad', label: 'Nacionalidad' },
-      { name: 'rol', label: 'Rol (admin / cliente)', required: true }
+      { name: 'rol', label: 'Rol (admin / cliente)', required: true },
+      { name: 'password',label: 'Contraseña',required: true,isPassword: true,onlyOnCreate: true}
     ]
   },
-
+  
   aerolinea: {
     label: 'Aerolíneas',
     endpoint: '/api/admin/aerolineas',
