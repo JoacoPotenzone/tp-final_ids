@@ -26,10 +26,17 @@ const selector = document.getElementById('equipo-selector');
 const rutaInfo = document.getElementById('ruta-info');
 const tabMundial = document.getElementById('pills-mundial-tab');
 
-// Inicialización de Leaflet
+function obtenerTokenActual() { return localStorage.getItem("token"); }
+function generarCodigoCiudad(ciudad) {
+    if (!ciudad) return 'XXX';
+    return ciudad.trim().substring(0, 3).toUpperCase();
+}
+function generarAsientoRandom(tramoIndex) {
+    return `WC${tramoIndex + 1}`;
+}
+
 function initializeMap() {
     const containerId = 'mapa-leaflet-container';
-    
     mapa = L.map(containerId).setView([40, -100], 3);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -49,7 +56,6 @@ if (tabMundial) {
     });
 }
 
-// Función para obtener la ruta de partidos (nueva lógica asíncrona)
 async function obtenerRutaPartidos() {
     const equipoSeleccionado = selector.value;
     rutaInfo.innerHTML = ""; 
@@ -86,14 +92,13 @@ async function obtenerRutaPartidos() {
     }
 }
 
-// Función para renderizar la información de los partidos y el botón del mapa
 function renderizarRutaPartidos(equipo, partidos) {
     let descripcionHTML = `<h3 class="mb-3 text-center">🌟 Ruta de Partidos para ${equipo} 🌟</h3>`;
     let paradasNombres = [];
     
     partidos.forEach((p, index) => {
         descripcionHTML += `
-            <div class="card mb-2">
+            <div class="card mb-2" data-ciudad="${p.ciudad}" data-fecha="${p.fecha}">
                 <div class="card-body">
                     <h5 class="card-title">Partido ${index + 1}</h5>
                     <p class="mb-1"><strong>Ciudad:</strong> ${p.ciudad}</p>
@@ -104,17 +109,23 @@ function renderizarRutaPartidos(equipo, partidos) {
         paradasNombres.push(p.ciudad);
     });
 
+    const partidosJSON = JSON.stringify(partidos);
+
     descripcionHTML += `
         <p class="mt-3 text-center">Visualiza el recorrido y planifica tus vuelos:</p>
         <div class="d-flex justify-content-between"> 
             <button id="btn-ver-mapa" class="btn btn-warning">
                 Ver Ruta en el Mapa
             </button>
-            <button class="btn btn-primary-dark"> 
-                Reservar
+            <button 
+                id="btn-reservar-mundial" 
+                class="btn btn-primary-dark"
+                data-equipo="${equipo}"
+                data-partidos-json='${partidosJSON.replace(/'/g, "\\'")}'
+            > 
+                Reservar Paquete Mundial
             </button> 
         </div>
-
     `;
 
     rutaInfo.innerHTML = descripcionHTML;
@@ -123,12 +134,16 @@ function renderizarRutaPartidos(equipo, partidos) {
     const btnMapa = document.getElementById('btn-ver-mapa');
     if (btnMapa) {
         btnMapa.addEventListener('click', () => {
-             verRutaEnMapaBackend(equipo, paradasNombres);
+              verRutaEnMapaBackend(equipo, paradasNombres);
         });
+    }
+
+    const btnReservar = document.getElementById('btn-reservar-mundial');
+    if (btnReservar) {
+        btnReservar.addEventListener('click', manejarReservaMundial);
     }
 }
 
-// Función para dibujar la ruta en el mapa (modificada para usar los datos del backend)
 function verRutaEnMapaBackend(equipo, paradasNombres) {
     const mapaContainerIdString = 'mapa-leaflet-container';
 
@@ -165,10 +180,8 @@ function verRutaEnMapaBackend(equipo, paradasNombres) {
             .addTo(marcadores); 
         } else {
             console.warn(`Coordenadas no encontradas para la ciudad: ${ciudadNombre}`);
-            console.error(`ERROR DE COORDENADAS: La ciudad "${ciudadNombre}" no tiene coordenadas definidas.`);
         }
     });
-    console.log("Coordenadas finales para dibujar:", rutaCoordenadas);
 
     if (rutaCoordenadas.length > 1) {
         capaRuta = L.polyline(rutaCoordenadas, {
@@ -184,8 +197,6 @@ function verRutaEnMapaBackend(equipo, paradasNombres) {
     document.getElementById(mapaContainerIdString).scrollIntoView({ behavior: 'smooth' });
 }
 
-selector.addEventListener('change', obtenerRutaPartidos);
-
 async function llenarSelectorDinamico() {
     const selector = document.getElementById('equipo-selector');
     selector.innerHTML = '<option selected disabled value="">--- Elige un equipo ---</option>';
@@ -196,7 +207,6 @@ async function llenarSelectorDinamico() {
         
         equipos.forEach(equipo => {
             const option = document.createElement('option');
-            
             const valorSinAcento = equipo.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
             
             option.value = valorSinAcento;
@@ -208,4 +218,96 @@ async function llenarSelectorDinamico() {
     }
 }
 
+async function manejarReservaMundial(event) {
+    const token = obtenerTokenActual();
+    
+    if (!token) {
+        const irLogin = confirm('Debes iniciar sesión para reservar el paquete Mundial. ¿Deseas ir al login ahora?');
+        if (irLogin) {
+            window.location.href = './pages/login.html'; 
+        }
+        return;
+    }
+
+    const target = event.currentTarget;
+    const equipo = target.dataset.equipo;
+    const partidosJSON = target.dataset.partidosJson;
+    const partidos = JSON.parse(partidosJSON);
+    
+    if (partidos.length < 2) {
+        alert('Ruta incompleta: Se necesitan al menos dos partidos para generar tramos de vuelo.');
+        return;
+    }
+    
+    target.textContent = 'Reservando...';
+    target.disabled = true;
+    
+    let reservasExitosas = 0;
+    
+    for (let i = 0; i < partidos.length - 1; i++) {
+        const origenPartido = partidos[i];
+        const destinoPartido = partidos[i + 1];
+        if (origenPartido.ciudad === destinoPartido.ciudad) {
+            console.warn(`Saltando tramo ${i + 1}: Origen y Destino son la misma ciudad (${origenPartido.ciudad}).`);
+            continue;
+        }
+        const tramoBody = {
+            airline_name: `Fan Flight - ${equipo}`,
+            airline_code: "WCA", 
+            origin_name: origenPartido.ciudad,
+            origin_city: origenPartido.ciudad,
+            origin_country: "Mundial Sede",
+            origin_code: generarCodigoCiudad(origenPartido.ciudad), 
+            
+            dest_name: destinoPartido.ciudad,
+            dest_city: destinoPartido.ciudad,
+            dest_country: "Mundial Sede",
+            dest_code: generarCodigoCiudad(destinoPartido.ciudad), 
+            
+            departure: `${destinoPartido.fecha} 10:00:00`, 
+            arrival: `${destinoPartido.fecha} 14:00:00`,
+            
+            seat: generarAsientoRandom(i), 
+            price: 500.00, 
+            capacity: 100 
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/user/flights`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify(tramoBody)
+            });
+
+            if (response.ok) {
+                reservasExitosas++;
+            } else {
+                const errorData = await response.json().catch(() => ({}));
+                alert(`Error en el tramo ${i + 1} (${origenPartido.ciudad} a ${destinoPartido.ciudad}): ${errorData.error || response.statusText}`);
+                console.error('Error al reservar tramo mundial:', errorData);
+                break; 
+            }
+
+        } catch (error) {
+            alert(`Error de red al reservar el tramo ${i + 1}.`);
+            console.error('Error de red:', error);
+            break;
+        }
+    }
+
+    target.disabled = false;
+    target.textContent = 'Reservar Paquete Mundial';
+    
+    if (reservasExitosas > 0) {
+        alert(`¡Paquete ${equipo} reservado! Se crearon ${reservasExitosas} tramos de vuelo. ¡Revisa "Mis vuelos"!`);
+        window.location.href = './pages/usuario.html';
+    } else if (reservasExitosas > 0 && partidos.length > 1) {
+        window.location.href = './pages/usuario.html';
+    }
+}
+
 llenarSelectorDinamico();
+selector.addEventListener('change', obtenerRutaPartidos);
