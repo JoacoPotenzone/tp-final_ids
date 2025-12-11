@@ -462,10 +462,6 @@ app.put("/api/user", authMiddleware, async (req, res) => {
 app.post("/api/user/flights", authMiddleware, async (req, res) => {
   const userId = req.user.id_usuario;
 
-  if (origin_code === dest_code) {
-    return res.status(400).json({ error: "El código IATA del origen no puede ser el mismo que el de destino. Revisa los datos." });
-  }
-
   const {
     airline_name,
     airline_code,

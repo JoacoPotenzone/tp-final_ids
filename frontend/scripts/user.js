@@ -178,11 +178,11 @@ async function loadFlights() {
     });
     flightsContainer.querySelectorAll('.btn-cancelar-vuelo').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const idReserva = e.currentTarget.dataset.idReserva;
+        const idReserva = e.currentTarget.dataset.idReserva; 
         const aerolinea = e.currentTarget.dataset.aerolinea;
         confirmarCancelacion(idReserva, aerolinea); 
       });
-    });    
+    });  
   } catch (err) {
     console.error(err);
     flightsContainer.classList.add('alert', 'alert-danger');
