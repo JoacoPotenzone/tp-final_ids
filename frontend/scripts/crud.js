@@ -158,7 +158,9 @@ function initAdminPanel() {
 }
 
 async function loadEntityList(entityKey, token) {
-  const entity = ENTITIES[entityKey];
+  const entity = ADMIN_ENTITIES[entityKey];
+  if (!entity) return;
+
   const container = document.getElementById('admin-table-container');
   const formContainer = document.getElementById('admin-form-container');
 
@@ -166,20 +168,25 @@ async function loadEntityList(entityKey, token) {
   formContainer.innerHTML = '';
 
   try {
-    const resp = await fetch(`${API_BASE_URL}${entity.endpoint}`, {
-      headers: { Authorization: `Bearer ${token}` },
+    const response = await fetch(`${API_BASE_URL}${entity.endpoint}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      }
     });
 
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.error || 'Error al obtener datos');
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(text || `Error ${response.status}`);
     }
 
-    const rows = await resp.json();
+    const data = await response.json();
+    const rows = Array.isArray(data) ? data : (data.rows || []);
+
     renderTable(entityKey, entity, rows, token);
-  } catch (e) {
-    console.error(e);
-    container.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+  } catch (error) {
+    console.error('Error al cargar datos:', error);
+    container.innerHTML = '<div class="text-danger">Error al cargar los datos.</div>';
   }
 }
 
