@@ -365,3 +365,28 @@ function buildForm(entityKey, entity, data, token, mode) {
     formContainer.innerHTML = '';
   });
 }
+
+async function deleteRecord(entityKey, entity, row, token) {
+  if (!confirm('¿Seguro que querés eliminar este registro?')) return;
+
+  const url = `${API_BASE_URL}${entity.endpoint}/${row[entity.idField]}`;
+
+  try {
+    const resp = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!resp.ok) {
+      const txt = await resp.text();
+      throw new Error(txt || `Error ${resp.status}`);
+    }
+
+    await loadEntityList(entityKey, token);
+  } catch (error) {
+    console.error(error);
+    alert('No se pudo eliminar el registro.');
+  }
+}
