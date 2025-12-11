@@ -306,6 +306,10 @@ function buildForm(entityKey, entity, data, token, mode) {
   formTitle.textContent = isEdit ? `Editar ${singular}` : `Nuevo ${singular}`;
 
   formContainer.classList.remove('d-none');
+  formContainer.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start' 
+  });
   fieldsWrapper.innerHTML = '';
 
   const fieldsToShow = entity.fields.filter(field => {
