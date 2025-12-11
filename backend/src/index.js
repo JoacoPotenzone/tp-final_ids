@@ -141,11 +141,24 @@ function createAdminCrudRoutes({ key, table, idField, fields }) {
   });
 }
 
-createAdminCrudRoutes({
-  key: "usuarios",
-  table: "usuarios",
-  idField: "id_usuario",
-  fields: ["nombre_usuario", "email", "nacionalidad", "rol"],
+app.get("/api/admin/usuarios", authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT 
+         id_usuario,
+         nombre_usuario,
+         email,
+         nacionalidad,
+         rol,
+         fecha_creacion
+       FROM usuarios
+       ORDER BY id_usuario`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error listando usuarios", err);
+    res.status(500).json({ error: "Error obteniendo usuarios" });
+  }
 });
 
 createAdminCrudRoutes({
