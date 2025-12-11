@@ -73,7 +73,24 @@ function createAdminCrudRoutes({ key, table, idField, fields }) {
       res.status(500).json({ error: `Error obteniendo ${key}` });
     }
   });
-  
+
+  app.post(basePath, authMiddleware, requireAdmin, async (req, res) => {
+    try {
+      const values = fields.map((f) => (req.body[f] === "" ? null : req.body[f]));
+      const placeholders = fields.map((_, i) => `$${i + 1}`).join(", ");
+
+      const result = await pool.query(
+        `INSERT INTO ${table} (${fields.join(", ")})
+         VALUES (${placeholders})
+         RETURNING ${idField}, ${fields.join(", ")}`,
+        values
+      );
+      res.status(201).json(result.rows[0]);
+    } catch (err) {
+      console.error(`Error creando en ${table}`, err);
+      res.status(500).json({ error: `Error creando registro en ${key}` });
+    }
+  });
 }
 
 
