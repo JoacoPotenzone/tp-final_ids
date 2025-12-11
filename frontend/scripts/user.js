@@ -35,6 +35,16 @@ if (avatarEl) {
   avatarEl.textContent = getInitials(user.nombre_usuario, user.email);
 }
 
+const adminLinkWrapper = document.getElementById('admin-link-wrapper');
+
+if (adminLinkWrapper) {
+  if (user.rol === 'admin') {
+    adminLinkWrapper.classList.remove('d-none');
+  } else {
+    adminLinkWrapper.classList.add('d-none');
+  }
+}
+
 const inputNombre = document.getElementById('nombre');
 const inputEmail = document.getElementById('email');
 const inputPais = document.getElementById('pais');
