@@ -348,13 +348,13 @@ app.listen(PORT, () => {
 });
 
 app.get("/estadios", async (req, res) => {
-    try {
-        const result = await pool.query("SELECT * FROM estadios");
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "DB error" });
-    }
+  try {
+    const result = await pool.query("SELECT * FROM estadios");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "DB error" });
+  }
 });
 
 app.listen(PORT, () => {
@@ -535,21 +535,21 @@ app.put("/api/user", authMiddleware, async (req, res) => {
 app.post("/api/user/flights", authMiddleware, async (req, res) => {
   const userId = req.user.id_usuario;
   const {
-      airline_name,
-      airline_code,
-      origin_name,
-      origin_city,
-      origin_country,
-      origin_code,
-      dest_name,
-      dest_city,
-      dest_country,
-      dest_code,
-      departure, 
-      arrival,  
-      capacity,
-      price,
-      seat
+    airline_name,
+    airline_code,
+    origin_name,
+    origin_city,
+    origin_country,
+    origin_code,
+    dest_name,
+    dest_city,
+    dest_country,
+    dest_code,
+    departure, 
+    arrival,  
+    capacity,
+    price,
+    seat
   } = req.body;
   if (
       !airline_name || !airline_code ||
@@ -566,112 +566,112 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
   try {
       await client.query("BEGIN");
       const existingAirlineResult = await client.query(
-          `SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = $1 OR codigo_iata = $2`,
-          [airline_name, airline_code]
+        `SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = $1 OR codigo_iata = $2`,
+        [airline_name, airline_code]
       );
       let id_aerolinea;
       if (existingAirlineResult.rowCount > 0) {
-          id_aerolinea = existingAirlineResult.rows[0].id_aerolinea;
-          await client.query(
-              `UPDATE aerolinea SET nombre_aerolinea = $1, codigo_iata = $2 WHERE id_aerolinea = $3`,
-              [airline_name, airline_code, id_aerolinea]
-          );
+        id_aerolinea = existingAirlineResult.rows[0].id_aerolinea;
+        await client.query(
+          `UPDATE aerolinea SET nombre_aerolinea = $1, codigo_iata = $2 WHERE id_aerolinea = $3`,
+          [airline_name, airline_code, id_aerolinea]
+        );
       } else {
           const newAirlineResult = await client.query(
-              `
-              INSERT INTO aerolinea (nombre_aerolinea, codigo_iata)
-              VALUES ($1, $2)
-              RETURNING id_aerolinea;
-              `,
-              [airline_name, airline_code]
+            `
+            INSERT INTO aerolinea (nombre_aerolinea, codigo_iata)
+            VALUES ($1, $2)
+            RETURNING id_aerolinea;
+            `,
+            [airline_name, airline_code]
           );
           id_aerolinea = newAirlineResult.rows[0].id_aerolinea;
       }
       const originResult = await client.query(
-          `
-          INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
-          VALUES ($1, $2, $3, $4)
-          ON CONFLICT (codigo_iata)
-          DO UPDATE SET nombre_aeropuerto = EXCLUDED.nombre_aeropuerto,
-                        ciudad            = EXCLUDED.ciudad,
-                        pais              = EXCLUDED.pais
-          RETURNING id_aeropuerto;
-          `,
-          [origin_name, origin_city, origin_country, origin_code]
+        `
+        INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (codigo_iata)
+        DO UPDATE SET nombre_aeropuerto = EXCLUDED.nombre_aeropuerto,
+                      ciudad            = EXCLUDED.ciudad,
+                      pais              = EXCLUDED.pais
+        RETURNING id_aeropuerto;
+        `,
+        [origin_name, origin_city, origin_country, origin_code]
       );
       const id_origen = originResult.rows[0].id_aeropuerto;
       const destResult = await client.query(
-          `
-          INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
-          VALUES ($1, $2, $3, $4)
-          ON CONFLICT (codigo_iata)
-          DO UPDATE SET nombre_aeropuerto = EXCLUDED.nombre_aeropuerto,
-                        ciudad            = EXCLUDED.ciudad,
-                        pais              = EXCLUDED.pais
-          RETURNING id_aeropuerto;
-          `,
-          [dest_name, dest_city, dest_country, dest_code]
+        `
+        INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (codigo_iata)
+        DO UPDATE SET nombre_aeropuerto = EXCLUDED.nombre_aeropuerto,
+                      ciudad            = EXCLUDED.ciudad,
+                      pais              = EXCLUDED.pais
+        RETURNING id_aeropuerto;
+        `,
+        [dest_name, dest_city, dest_country, dest_code]
       );
       const id_destino = destResult.rows[0].id_aeropuerto;
       const vueloResult = await client.query(
-          `
-          INSERT INTO vuelos (
-              id_aerolinea,
-              id_aeropuerto_origen,
-              id_aeropuerto_destino,
-              fecha_salida,
-              fecha_llegada,
-              capacidad,
-              precio
-          )
-          VALUES ($1, $2, $3, $4, $5, $6, $7)
-          RETURNING id_vuelo, fecha_salida, fecha_llegada, precio;
-          `,
-          [
-              id_aerolinea,
-              id_origen,
-              id_destino,
-              departure,
-              arrival,
-              capacity || 180,
-              price
-          ]
+        `
+        INSERT INTO vuelos (
+          id_aerolinea,
+          id_aeropuerto_origen,
+          id_aeropuerto_destino,
+          fecha_salida,
+          fecha_llegada,
+          capacidad,
+          precio
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING id_vuelo, fecha_salida, fecha_llegada, precio;
+        `,
+        [
+          id_aerolinea,
+          id_origen,
+          id_destino,
+          departure,
+          arrival,
+          capacity || 180,
+          price
+        ]
       );
       const vuelo = vueloResult.rows[0];
       const reservaResult = await client.query(
-          `
-          INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
-          VALUES ($1, $2, $3, NOW())
-          RETURNING id_reserva, asiento;
-          `,
-          [userId, vuelo.id_vuelo, seat]
+        `
+        INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
+        VALUES ($1, $2, $3, NOW())
+        RETURNING id_reserva, asiento;
+        `,
+        [userId, vuelo.id_vuelo, seat]
       );
       await client.query("COMMIT");
       res.status(201).json({
-          message: "Vuelo reservado correctamente",
-          reserva: reservaResult.rows[0],
-          vuelo: vuelo,
+        message: "Vuelo reservado correctamente",
+        reserva: reservaResult.rows[0],
+        vuelo: vuelo,
       });
   } catch (err) {
-      await client.query("ROLLBACK");
-      console.error("Error en POST /api/user/flights", err);
-      res.status(500).json({ error: "Error al registrar el vuelo" });
+    await client.query("ROLLBACK");
+    console.error("Error en POST /api/user/flights", err);
+    res.status(500).json({ error: "Error al registrar el vuelo" });
   } finally {
-      client.release();
+    client.release();
   }
 });
 
 app.get('/api/mundial/equipos', async (req, res) => {
     try {
-        const query = `
-            SELECT DISTINCT equipo_nombre FROM partidos_mundial ORDER BY equipo_nombre ASC
-        `;
-        const result = await pool.query(query);
-        const equipos = result.rows.map(row => row.equipo_nombre);
-        res.json(equipos);
+      const query = `
+          SELECT DISTINCT equipo_nombre FROM partidos_mundial ORDER BY equipo_nombre ASC
+      `;
+      const result = await pool.query(query);
+      const equipos = result.rows.map(row => row.equipo_nombre);
+      res.json(equipos);
     } catch (err) {
-        console.error('Error al obtener equipos:', err);
-        res.status(500).json({ error: 'Error al consultar la lista de equipos.' });
+      console.error('Error al obtener equipos:', err);
+      res.status(500).json({ error: 'Error al consultar la lista de equipos.' });
     }
 });
 
@@ -685,16 +685,16 @@ app.get('/api/mundial/ruta', async (req, res) => {
   try {
     const query = `
       SELECT
-          TO_CHAR(pm.fecha_partido, 'YYYY-MM-DD') AS fecha,
-          e.ciudad
+        TO_CHAR(pm.fecha_partido, 'YYYY-MM-DD') AS fecha,
+        e.ciudad
       FROM
-          partidos_mundial pm
+        partidos_mundial pm
       JOIN
-          estadios e ON pm.id_estadio = e.id_estadio
+        estadios e ON pm.id_estadio = e.id_estadio
       WHERE
-          pm.equipo_nombre ILIKE $1
+        pm.equipo_nombre ILIKE $1
       ORDER BY
-          pm.fecha_partido ASC
+        pm.fecha_partido ASC
     `;
     const result = await pool.query(query, [paisBusqueda]);
     
