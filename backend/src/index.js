@@ -37,6 +37,14 @@ function authMiddleware(req, res, next) {
   });
 }
 
+function requireAdmin(req, res, next) {
+  if (!req.user || req.user.rol !== 'admin') {
+    return res.status(403).json({ error: "Solo administradores pueden acceder a esta ruta" });
+  }
+  next();
+}
+
+
 function generateToken(user) {
   return jwt.sign(
     {
