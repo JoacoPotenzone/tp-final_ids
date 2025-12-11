@@ -210,60 +210,73 @@ async function loadEntityList(entityKey, token) {
 }
 
 function renderTable(entityKey, entity, rows, token) {
-  const container = document.getElementById('admin-table-container');
+  const tabla = document.getElementById('tabla-admin');
+  if (!tabla) return;
+
+  const thead = tabla.querySelector('thead');
+  const tbody = tabla.querySelector('tbody');
 
   const visibleFields =
     entity.listFields ||
     entity.fields.filter(f => !f.isPassword && !f.hiddenOnList);
 
-  const hasRows = rows && rows.length > 0;
-
-  const tableHtml = `
-    <table class="table table-striped table-hover">
-      <thead>
-        <tr>
-          ${visibleFields.map(f => `<th>${f.label}</th>`).join('')}
-          <th class="text-center">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${
-          !hasRows
-            ? `<tr><td colspan="${visibleFields.length + 1}" class="text-center text-muted">No hay registros.</td></tr>`
-            : rows.map(row => `
-                <tr data-id="${row[entity.idField]}">
-                  ${visibleFields
-                    .map(f => `<td>${row[f.name] == null ? '' : row[f.name]}</td>`)
-                    .join('')}
-                  <td class="text-center">
-                    ${entity.canEdit   ? '<button type="button" class="btn btn-sm btn-outline-primary btn-admin-edit">Editar</button>' : ''}
-                    ${entity.canDelete ? '<button type="button" class="btn btn-sm btn-outline-danger ms-2 btn-admin-delete">Eliminar</button>' : ''}
-                  </td>
-                </tr>
-              `).join('')
-        }
-      </tbody>
-    </table>
-  `;
-
-  container.innerHTML = tableHtml;
-
-  if (!hasRows) return;
-
-  if (entity.canEdit) {
-    container.querySelectorAll('.btn-admin-edit').forEach((btn, index) => {
-      btn.addEventListener('click', () => {
-        const row = rows[index];
-        openEditForm(entityKey, entity, row, token);
-      });
-    });
+  if (thead) {
+    thead.innerHTML = `
+      <tr>
+        ${visibleFields.map(f => `<th>${f.label}</th>`).join('')}
+        <th class="text-center">Acciones</th>
+      </tr>
+    `;
   }
 
-  if (entity.canDelete) {
-    container.querySelectorAll('.btn-admin-delete').forEach((btn, index) => {
+  if (!tbody) return;
+
+  if (!rows || rows.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="${visibleFields.length + 1}" class="text-center text-muted">
+          No hay registros.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = rows
+    .map((row, index) => `
+      <tr data-index="${index}">
+        ${visibleFields.map(f => `<td>${row[f.name] ?? ''}</td>`).join('')}
+        <td class="text-center">
+          <button type="button" class="btn btn-sm btn-outline-primary btn-admin-edit">
+            Editar
+          </button>
+          ${entity.canDelete === false ? '' : `
+          <button type="button" class="btn btn-sm btn-outline-danger ms-1 btn-admin-delete">
+            Eliminar
+          </button>`}
+        </td>
+      </tr>
+    `)
+    .join('');
+
+  tbody.querySelectorAll('.btn-admin-edit').forEach((btn) => {
+    const tr = btn.closest('tr');
+    const index = tr ? parseInt(tr.dataset.index, 10) : -1;
+    if (index < 0) return;
+    btn.addEventListener('click', () => {
+      const row = rows[index];
+      openEditForm(entityKey, ENTITIES[entityKey], row, token);
+    });
+  });
+
+  if (entity.canDelete !== false) {
+    tbody.querySelectorAll('.btn-admin-delete').forEach((btn) => {
+      const tr = btn.closest('tr');
+      const index = tr ? parseInt(tr.dataset.index, 10) : -1;
+      if (index < 0) return;
       btn.addEventListener('click', () => {
         const row = rows[index];
-        deleteRecord(entityKey, entity, row, token);
+        deleteRecord(entityKey, ENTITIES[entityKey], row, token);
       });
     });
   }
