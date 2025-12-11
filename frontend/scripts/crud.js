@@ -284,21 +284,28 @@ function renderTable(entityKey, entity, rows, token) {
 
 function openCreateForm(entityKey, token) {
   const entity = ENTITIES[entityKey];
-  buildForm(entityKey, entity, null, token);
+  buildForm(entityKey, entity, null, token, 'create');
 }
 
 function openEditForm(entityKey, entity, row, token) {
-  buildForm(entityKey, entity, row, token);
+  buildForm(entityKey, entity, row, token, 'edit');
 }
 
 function buildForm(entityKey, entity, data, token, mode) {
-  const formContainer = document.getElementById('admin-form-container');
-  if (!formContainer) return;
+  const formContainer = document.getElementById('form-container');
+  const formTitle = document.getElementById('form-titulo');
+  const form = document.getElementById('admin-form');
+  const fieldsWrapper = document.getElementById('admin-form-fields');
+  const cancelBtn = document.getElementById('btn-cancelar-form');
+
+  if (!formContainer || !form || !fieldsWrapper) return;
 
   const isEdit = mode === 'edit';
-  const singular = entity.label.replace(/s$/, ''); 
-  const title = isEdit ? `Editar ${singular}` : `Nuevo ${singular}`;
+  const singular = entity.label.replace(/s$/, '');
+  formTitle.textContent = isEdit ? `Editar ${singular}` : `Nuevo ${singular}`;
 
+  formContainer.classList.remove('d-none');
+  fieldsWrapper.innerHTML = '';
 
   const fieldsToShow = entity.fields.filter(field => {
     if (field.onlyOnCreate && isEdit) return false;
@@ -306,51 +313,75 @@ function buildForm(entityKey, entity, data, token, mode) {
     return true;
   });
 
-  const inputsHtml = fieldsToShow.map(field => {
-    const value = data && data[field.name] != null ? data[field.name] : '';
-    const type = field.isPassword ? 'password' : (field.type || 'text');
-    const readOnly = (field.readOnly || (field.isPk && isEdit)) ? 'readonly' : '';
+  fieldsToShow.forEach(field => {
+    const value = data ? (data[field.name] ?? '') : '';
 
-    return `
-      <div class="mb-3">
-        <label class="form-label" for="fld-${field.name}">${field.label}</label>
-        <input
-          id="fld-${field.name}"
-          name="${field.name}"
-          type="${type}"
-          class="form-control"
-          value="${value}"
-          ${field.required ? 'required' : ''}
-          ${readOnly}
-        />
-      </div>
-    `;
-  }).join('');
+    const colDiv = document.createElement('div');
+    colDiv.className = 'col-md-6';
 
-  formContainer.innerHTML = `
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title mb-3">${title}</h5>
-        <form id="admin-form">
-          ${inputsHtml}
-          <div class="d-flex justify-content-between">
-            <button type="submit" class="btn btn-primary">
-              ${isEdit ? 'Guardar cambios' : 'Crear registro'}
-            </button>
-            <button type="button" id="btn-admin-cancel" class="btn btn-outline-secondary">
-              Cancelar
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  `;
+    const label = document.createElement('label');
+    label.className = 'form-label';
+    label.setAttribute('for', `field-${field.name}`);
+    label.textContent = field.label;
 
-  const form = document.getElementById('admin-form');
-  const btnCancel = document.getElementById('btn-admin-cancel');
+    let input;
+    const fieldType = field.type || (field.isPassword ? 'password' : 'text');
 
-  form.addEventListener('submit', async (e) => {
+    if (fieldType === 'textarea') {
+      input = document.createElement('textarea');
+      input.rows = field.rows || 3;
+      input.className = 'form-control';
+      input.value = value;
+    } else if (fieldType === 'select' && Array.isArray(field.options)) {
+      input = document.createElement('select');
+      input.className = 'form-select';
+      field.options.forEach(optDef => {
+        const opt = document.createElement('option');
+        if (typeof optDef === 'object') {
+          opt.value = optDef.value;
+          opt.textContent = optDef.label;
+        } else {
+          opt.value = optDef;
+          opt.textContent = optDef;
+        }
+        if (String(opt.value) === String(value)) {
+          opt.selected = true;
+        }
+        input.appendChild(opt);
+      });
+    } else {
+      input = document.createElement('input');
+      input.type = fieldType;
+      input.className = 'form-control';
+      input.value = value;
+    }
+
+    input.id = `field-${field.name}`;
+    input.name = field.name;
+
+    if (field.required) {
+      input.required = true;
+    }
+
+    if (field.readOnly || (field.isPk && isEdit)) {
+      input.readOnly = true;
+      input.disabled = true;
+    }
+
+    colDiv.appendChild(label);
+    colDiv.appendChild(input);
+    fieldsWrapper.appendChild(colDiv);
+  });
+
+  if (cancelBtn) {
+    cancelBtn.onclick = () => {
+      formContainer.classList.add('d-none');
+    };
+  }
+
+  form.onsubmit = async (e) => {
     e.preventDefault();
+
     const formData = new FormData(form);
     const payload = {};
 
@@ -359,6 +390,7 @@ function buildForm(entityKey, entity, data, token, mode) {
       if (raw === null) return;
 
       if (field.isPassword && raw === '' && isEdit) {
+        // en edición, campo password vacío => no actualizar ese campo
         return;
       }
 
@@ -366,9 +398,12 @@ function buildForm(entityKey, entity, data, token, mode) {
     });
 
     try {
-      const method = isEdit ? 'PUT' : 'POST';
-      const url = isEdit
-        ? `${API_BASE_URL}${entity.endpoint}/${data[entity.idField]}`
+      const isEditMode = isEdit;
+      const method = isEditMode ? 'PUT' : 'POST';
+      const idValue = data ? data[entity.idField] : null;
+
+      const url = isEditMode
+        ? `${API_BASE_URL}${entity.endpoint}/${idValue}`
         : `${API_BASE_URL}${entity.endpoint}`;
 
       const resp = await fetch(url, {
@@ -385,17 +420,13 @@ function buildForm(entityKey, entity, data, token, mode) {
         throw new Error(txt || `Error ${resp.status}`);
       }
 
-      formContainer.innerHTML = '';
+      formContainer.classList.add('d-none');
       await loadEntityList(entityKey, token);
     } catch (error) {
       console.error(error);
-      alert('Error al guardar el registro.');
+      alert('No se pudo guardar el registro.');
     }
-  });
-
-  btnCancel.addEventListener('click', () => {
-    formContainer.innerHTML = '';
-  });
+  };
 }
 
 async function deleteRecord(entityKey, entity, row, token) {
