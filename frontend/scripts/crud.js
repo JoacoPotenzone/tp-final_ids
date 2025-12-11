@@ -147,22 +147,43 @@ function initAdminPanel(token) {
   }
 }
 
+
 async function loadEntityList(entityKey, token) {
   const entity = ENTITIES[entityKey];
   if (!entity) return;
 
-  const container = document.getElementById('tabla-admin');
+  const tabla = document.getElementById('tabla-admin');
   const formContainer = document.getElementById('form-container');
+  if (!tabla) return;
 
-  container.innerHTML = 'Cargando...';
-  formContainer.innerHTML = '';
+  const thead = tabla.querySelector('thead');
+  const tbody = tabla.querySelector('tbody');
+
+  if (formContainer) {
+    formContainer.classList.add('d-none'); // ocultar el formulario mientras se lista
+  }
+
+  const visibleFields =
+    entity.listFields ||
+    entity.fields.filter(f => !f.isPassword && !f.hiddenOnList);
+
+  const colCount = visibleFields.length + 1; // +1 por la columna de Acciones
+
+  if (thead) thead.innerHTML = '';
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="${colCount}" class="text-center">Cargando...</td>
+      </tr>
+    `;
+  }
 
   try {
     const response = await fetch(`${API_BASE_URL}${entity.endpoint}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
-      }
+      },
     });
 
     if (!response.ok) {
@@ -176,7 +197,15 @@ async function loadEntityList(entityKey, token) {
     renderTable(entityKey, entity, rows, token);
   } catch (error) {
     console.error('Error al cargar datos:', error);
-    container.innerHTML = '<div class="text-danger">Error al cargar los datos.</div>';
+    if (tbody) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="${colCount}" class="text-center text-danger">
+            Error al cargar los datos.
+          </td>
+        </tr>
+      `;
+    }
   }
 }
 
