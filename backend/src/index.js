@@ -73,7 +73,52 @@ function createAdminCrudRoutes({ key, table, idField, fields }) {
       res.status(500).json({ error: `Error obteniendo ${key}` });
     }
   });
-  
+
+  app.post(basePath, authMiddleware, requireAdmin, async (req, res) => {
+    try {
+      const values = fields.map((f) => (req.body[f] === "" ? null : req.body[f]));
+      const placeholders = fields.map((_, i) => `$${i + 1}`).join(", ");
+
+      const result = await pool.query(
+        `INSERT INTO ${table} (${fields.join(", ")})
+         VALUES (${placeholders})
+         RETURNING ${idField}, ${fields.join(", ")}`,
+        values
+      );
+      res.status(201).json(result.rows[0]);
+    } catch (err) {
+      console.error(`Error creando en ${table}`, err);
+      res.status(500).json({ error: `Error creando registro en ${key}` });
+    }
+  });
+
+  app.put(`${basePath}/:id`, authMiddleware, requireAdmin, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const setClauses = fields.map((f, i) => `${f} = $${i + 1}`).join(", ");
+      const values = fields.map((f) => (req.body[f] === "" ? null : req.body[f]));
+      values.push(id);
+
+      const result = await pool.query(
+        `UPDATE ${table}
+         SET ${setClauses}
+         WHERE ${idField} = $${fields.length + 1}
+         RETURNING ${idField}, ${fields.join(", ")}`,
+        values
+      );
+
+      if (result.rowCount === 0) {
+        return res.status(404).json({ error: `${key} no encontrado` });
+      }
+
+      res.json(result.rows[0]);
+    } catch (err) {
+      console.error(`Error actualizando ${table}`, err);
+      res.status(500).json({ error: `Error actualizando ${key}` });
+    }
+  });
+
 }
 
 
