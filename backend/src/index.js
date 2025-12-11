@@ -161,6 +161,38 @@ app.get("/api/admin/usuarios", authMiddleware, requireAdmin, async (req, res) =>
   }
 });
 
+app.post("/api/admin/usuarios", authMiddleware, requireAdmin, async (req, res) => {
+  const { nombre_usuario, email, nacionalidad, rol, password } = req.body;
+
+  if (!nombre_usuario || !email || !rol || !password) {
+    return res.status(400).json({ error: "Faltan datos obligatorios" });
+  }
+
+  try {
+    const existing = await pool.query(
+      "SELECT 1 FROM usuarios WHERE email = $1 OR nombre_usuario = $2",
+      [email, nombre_usuario]
+    );
+    if (existing.rowCount > 0) {
+      return res.status(409).json({ error: "El usuario o el email ya existe" });
+    }
+
+    const password_hash = await bcrypt.hash(password, 10);
+
+    const result = await pool.query(
+      `INSERT INTO usuarios (nombre_usuario, email, password_hash, nacionalidad, rol)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id_usuario, nombre_usuario, email, nacionalidad, rol, fecha_creacion`,
+      [nombre_usuario, email, password_hash, nacionalidad || null, rol]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Error creando usuario desde admin", err);
+    res.status(500).json({ error: "Error creando usuario" });
+  }
+});
+
 createAdminCrudRoutes({
   key: "aerolineas",
   table: "aerolinea",
