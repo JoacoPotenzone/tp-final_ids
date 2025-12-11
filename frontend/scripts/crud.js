@@ -131,3 +131,29 @@ function initAdminPanel(token) {
     items[0].click();
   }
 }
+
+async function loadEntityList(entityKey, token) {
+  const entity = ADMIN_ENTITIES[entityKey];
+  const container = document.getElementById('admin-table-container');
+  const formContainer = document.getElementById('admin-form-container');
+
+  container.innerHTML = 'Cargando...';
+  formContainer.innerHTML = '';
+
+  try {
+    const resp = await fetch(`${API_BASE_URL}${entity.endpoint}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || 'Error al obtener datos');
+    }
+
+    const rows = await resp.json();
+    renderTable(entityKey, entity, rows, token);
+  } catch (e) {
+    console.error(e);
+    container.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+  }
+}
