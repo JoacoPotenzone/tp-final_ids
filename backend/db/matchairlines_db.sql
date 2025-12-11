@@ -6,27 +6,27 @@ DROP TABLE IF EXISTS reservas;
 DROP TABLE IF EXISTS estadios;
 
 CREATE TABLE IF NOT EXISTS usuarios (
-     id_usuario SERIAL PRIMARY KEY,
-     nombre_usuario VARCHAR(20) UNIQUE NOT NULL,
-     email VARCHAR(50) UNIQUE NOT NULL,
-     password_hash VARCHAR(60) NOT NULL,
-     nacionalidad VARCHAR(50),
-     rol VARCHAR(50) NOT NULL CHECK (rol IN ('admin', 'cliente')),
-     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id_usuario SERIAL PRIMARY KEY,
+    nombre_usuario VARCHAR(20) UNIQUE NOT NULL,
+    email VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(60) NOT NULL,
+    nacionalidad VARCHAR(50),
+    rol VARCHAR(50) NOT NULL CHECK (rol IN ('admin', 'cliente')),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
  );
 
 CREATE TABLE IF NOT EXISTS aerolinea (
-     id_aerolinea SERIAL PRIMARY KEY,
-     nombre_aerolinea VARCHAR(100) UNIQUE NOT NULL,
-     codigo_iata VARCHAR(3) UNIQUE NOT NULL
+    id_aerolinea SERIAL PRIMARY KEY,
+    nombre_aerolinea VARCHAR(100) UNIQUE NOT NULL,
+    codigo_iata VARCHAR(3) UNIQUE NOT NULL
  );
 
 CREATE TABLE IF NOT EXISTS aeropuertos (
-     id_aeropuerto SERIAL PRIMARY KEY,
-     nombre_aeropuerto VARCHAR(100) NOT NULL,
-     ciudad VARCHAR(100) NOT NULL,
-     pais VARCHAR(100) NOT NULL,
-     codigo_iata VARCHAR(3) UNIQUE NOT NULL
+    id_aeropuerto SERIAL PRIMARY KEY,
+    nombre_aeropuerto VARCHAR(100) NOT NULL,
+    ciudad VARCHAR(100) NOT NULL,
+    pais VARCHAR(100) NOT NULL,
+    codigo_iata VARCHAR(3) UNIQUE NOT NULL
  );
 
 CREATE TABLE IF NOT EXISTS vuelos (
@@ -56,12 +56,12 @@ CREATE TABLE IF NOT EXISTS reservas (
 );
 
 CREATE TABLE IF NOT EXISTS estadios (
-     id_estadio SERIAL PRIMARY KEY,
-     nombre_estadio VARCHAR(50) UNIQUE NOT NULL,
-     ciudad VARCHAR(50) NOT NULL,
-     id_aeropuerto INT NOT NULL,
-     pais VARCHAR(50) NOT NULL,
-     FOREIGN KEY (id_aeropuerto) REFERENCES aeropuertos (id_aeropuerto)
+    id_estadio SERIAL PRIMARY KEY,
+    nombre_estadio VARCHAR(50) UNIQUE NOT NULL,
+    ciudad VARCHAR(50) NOT NULL,
+    id_aeropuerto INT NOT NULL,
+    pais VARCHAR(50) NOT NULL,
+    FOREIGN KEY (id_aeropuerto) REFERENCES aeropuertos (id_aeropuerto)
  );
 
 INSERT INTO usuarios (nombre_usuario, email, password_hash, nacionalidad, rol)
@@ -92,42 +92,42 @@ VALUES
 
 INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
 VALUES
-     -- Argentina (IDs 1-5) 
-     ('Aeropuerto Internacional Ministro Pistarini', 'Buenos Aires', 'Argentina', 'EZE'),
-     ('Aeroparque Jorge Newbery', 'Buenos Aires', 'Argentina', 'AEP'),
-     ('Aeropuerto Internacional Ingeniero Ambrosio LV Taravella', 'Cordoba', 'Argentina', 'COR'),
-     ('Aeropuerto Internacional de Rosario Islas Malvinas', 'Rosario', 'Argentina', 'ROS'),
-     ('Aeropuerto Internacional Martin Miguel de Guemes', 'Salta', 'Argentina', 'SLA'),
-     -- LATAM (IDs 6-12) 
-     ('Aeropuerto Internacional El Dorado', 'Bogota', 'Colombia', 'BOG'),
-     ('Aeropuerto Internacional Jorge Chavez', 'Lima', 'Peru', 'LIM'),
-     ('Aeropuerto Internacional Comodoro Arturo Merino Benitez', 'Santiago', 'Chile', 'SCL'),
-     ('Aeropuerto Internacional Guarulhos', 'Sao Paulo', 'Brasil', 'GRU'),
-     ('Aeropuerto Internacional Tocumen', 'Ciudad de Panama', 'Panama', 'PTY'),
-     ('Aeropuerto Internacional de Viracopos', 'Campinas', 'Brasil', 'VCP'),
-     ('Aeropuerto Internacional de Carrasco', 'Montevideo', 'Uruguay', 'MVD'),
-     -- USA 2026 (IDs 13-23) 
-     ('Hartsfield Jackson Atlanta International Airport', 'Atlanta', 'Estados Unidos', 'ATL'),
-     ('Logan International Airport', 'Boston', 'Estados Unidos', 'BOS'),
-     ('Dallas Fort Worth International Airport', 'Dallas', 'Estados Unidos', 'DFW'),
-     ('George Bush Intercontinental Airport', 'Houston', 'Estados Unidos', 'IAH'),
-     ('Kansas City International Airport', 'Kansas City', 'Estados Unidos', 'MCI'),
-     ('Los Angeles International Airport', 'Los Angeles', 'Estados Unidos', 'LAX'),
-     ('Miami International Airport', 'Miami', 'Estados Unidos', 'MIA'),
-     ('John F Kennedy International Airport', 'Nueva York', 'Estados Unidos', 'JFK'),
-     ('Philadelphia International Airport', 'Filadelfia', 'Estados Unidos', 'PHL'),
-     ('San Francisco International Airport', 'San Francisco', 'Estados Unidos', 'SFO'),
-     ('Seattle Tacoma International Airport', 'Seattle', 'Estados Unidos', 'SEA'),
-     -- MEX/CAN 2026 (IDs 24-28) 
-     ('Aeropuerto Internacional General Mariano Escobedo', 'Monterrey', 'Mexico', 'MTY'),
-     ('Aeropuerto Internacional de Guadalajara', 'Guadalajara', 'Mexico', 'GDL'),
-     ('Aeropuerto Internacional Benito Juarez', 'Ciudad de Mexico', 'Mexico', 'MEX'),
-     ('Aeropuerto Internacional de Cancun', 'Cancun', 'Mexico', 'CUN'),
-     ('Vancouver International Airport', 'Vancouver', 'Canada', 'YVR'),
-     ('Toronto Pearson International Airport', 'Toronto', 'Canada', 'YYZ'),
-     -- España (IDs 29-30) 
-     ('Aeropuerto Adolfo Suarez Madrid-Barajas', 'Madrid', 'Espana', 'MAD'),
-     ('Aeropuerto de Barcelona-El Prat', 'Barcelona', 'Espana', 'BCN');
+    -- Argentina (IDs 1-5) 
+    ('Aeropuerto Internacional Ministro Pistarini', 'Buenos Aires', 'Argentina', 'EZE'),
+    ('Aeroparque Jorge Newbery', 'Buenos Aires', 'Argentina', 'AEP'),
+    ('Aeropuerto Internacional Ingeniero Ambrosio LV Taravella', 'Cordoba', 'Argentina', 'COR'),
+    ('Aeropuerto Internacional de Rosario Islas Malvinas', 'Rosario', 'Argentina', 'ROS'),
+    ('Aeropuerto Internacional Martin Miguel de Guemes', 'Salta', 'Argentina', 'SLA'),
+    -- LATAM (IDs 6-12) 
+    ('Aeropuerto Internacional El Dorado', 'Bogota', 'Colombia', 'BOG'),
+    ('Aeropuerto Internacional Jorge Chavez', 'Lima', 'Peru', 'LIM'),
+    ('Aeropuerto Internacional Comodoro Arturo Merino Benitez', 'Santiago', 'Chile', 'SCL'),
+    ('Aeropuerto Internacional Guarulhos', 'Sao Paulo', 'Brasil', 'GRU'),
+    ('Aeropuerto Internacional Tocumen', 'Ciudad de Panama', 'Panama', 'PTY'),
+    ('Aeropuerto Internacional de Viracopos', 'Campinas', 'Brasil', 'VCP'),
+    ('Aeropuerto Internacional de Carrasco', 'Montevideo', 'Uruguay', 'MVD'),
+    -- USA 2026 (IDs 13-23) 
+    ('Hartsfield Jackson Atlanta International Airport', 'Atlanta', 'Estados Unidos', 'ATL'),
+    ('Logan International Airport', 'Boston', 'Estados Unidos', 'BOS'),
+    ('Dallas Fort Worth International Airport', 'Dallas', 'Estados Unidos', 'DFW'),
+    ('George Bush Intercontinental Airport', 'Houston', 'Estados Unidos', 'IAH'),
+    ('Kansas City International Airport', 'Kansas City', 'Estados Unidos', 'MCI'),
+    ('Los Angeles International Airport', 'Los Angeles', 'Estados Unidos', 'LAX'),
+    ('Miami International Airport', 'Miami', 'Estados Unidos', 'MIA'),
+    ('John F Kennedy International Airport', 'Nueva York', 'Estados Unidos', 'JFK'),
+    ('Philadelphia International Airport', 'Filadelfia', 'Estados Unidos', 'PHL'),
+    ('San Francisco International Airport', 'San Francisco', 'Estados Unidos', 'SFO'),
+    ('Seattle Tacoma International Airport', 'Seattle', 'Estados Unidos', 'SEA'),
+    -- MEX/CAN 2026 (IDs 24-28) 
+    ('Aeropuerto Internacional General Mariano Escobedo', 'Monterrey', 'Mexico', 'MTY'),
+    ('Aeropuerto Internacional de Guadalajara', 'Guadalajara', 'Mexico', 'GDL'),
+    ('Aeropuerto Internacional Benito Juarez', 'Ciudad de Mexico', 'Mexico', 'MEX'),
+    ('Aeropuerto Internacional de Cancun', 'Cancun', 'Mexico', 'CUN'),
+    ('Vancouver International Airport', 'Vancouver', 'Canada', 'YVR'),
+    ('Toronto Pearson International Airport', 'Toronto', 'Canada', 'YYZ'),
+    -- España (IDs 29-30) 
+    ('Aeropuerto Adolfo Suarez Madrid-Barajas', 'Madrid', 'Espana', 'MAD'),
+    ('Aeropuerto de Barcelona-El Prat', 'Barcelona', 'Espana', 'BCN');
 
 INSERT INTO vuelos (id_aerolinea, id_aeropuerto_origen, id_aeropuerto_destino, fecha_salida, fecha_llegada, capacidad, precio) 
 VALUES 

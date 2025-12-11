@@ -534,127 +534,130 @@ app.put("/api/user", authMiddleware, async (req, res) => {
 
 app.post("/api/user/flights", authMiddleware, async (req, res) => {
   const userId = req.user.id_usuario;
-
   const {
-    airline_name,
-    airline_code,
-    origin_name,
-    origin_city,
-    origin_country,
-    origin_code,
-    dest_name,
-    dest_city,
-    dest_country,
-    dest_code,
-    departure, 
-    arrival,   
-    capacity,
-    price,
-    seat
+      airline_name,
+      airline_code,
+      origin_name,
+      origin_city,
+      origin_country,
+      origin_code,
+      dest_name,
+      dest_city,
+      dest_country,
+      dest_code,
+      departure, 
+      arrival,  
+      capacity,
+      price,
+      seat
   } = req.body;
-
   if (
-    !airline_name || !airline_code ||
-    !origin_name || !origin_city || !origin_country || !origin_code ||
-    !dest_name   || !dest_city   || !dest_country   || !dest_code   ||
-    !departure   || !arrival     || !price         || !seat
+      !airline_name || !airline_code ||
+      !origin_name || !origin_city || !origin_country || !origin_code ||
+      !dest_name   || !dest_city   || !dest_country   || !dest_code   ||
+      !departure   || !arrival     || !price         || !seat
   ) {
-    return res.status(400).json({ error: "Faltan datos del vuelo" });
+      return res.status(400).json({ error: "Faltan datos del vuelo" });
   }
-
+  if (origin_code === dest_code) {
+      return res.status(400).json({ error: "El código IATA del origen no puede ser el mismo que el de destino." });
+  }
   const client = await pool.connect();
-
   try {
-    await client.query("BEGIN");
-
-    const airlineResult = await client.query(
-      `
-      INSERT INTO aerolinea (nombre_aerolinea, codigo_iata)
-      VALUES ($1, $2)
-      ON CONFLICT (codigo_iata)
-      DO UPDATE SET nombre_aerolinea = EXCLUDED.nombre_aerolinea
-      RETURNING id_aerolinea;
-      `,
-      [airline_name, airline_code]
-    );
-    const id_aerolinea = airlineResult.rows[0].id_aerolinea;
-
-    const originResult = await client.query(
-      `
-      INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
-      VALUES ($1, $2, $3, $4)
-      ON CONFLICT (codigo_iata)
-      DO UPDATE SET nombre_aeropuerto = EXCLUDED.nombre_aeropuerto,
-                    ciudad            = EXCLUDED.ciudad,
-                    pais              = EXCLUDED.pais
-      RETURNING id_aeropuerto;
-      `,
-      [origin_name, origin_city, origin_country, origin_code]
-    );
-    const id_origen = originResult.rows[0].id_aeropuerto;
-
-    const destResult = await client.query(
-      `
-      INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
-      VALUES ($1, $2, $3, $4)
-      ON CONFLICT (codigo_iata)
-      DO UPDATE SET nombre_aeropuerto = EXCLUDED.nombre_aeropuerto,
-                    ciudad            = EXCLUDED.ciudad,
-                    pais              = EXCLUDED.pais
-      RETURNING id_aeropuerto;
-      `,
-      [dest_name, dest_city, dest_country, dest_code]
-    );
-    const id_destino = destResult.rows[0].id_aeropuerto;
-
-    const vueloResult = await client.query(
-      `
-      INSERT INTO vuelos (
-        id_aerolinea,
-        id_aeropuerto_origen,
-        id_aeropuerto_destino,
-        fecha_salida,
-        fecha_llegada,
-        capacidad,
-        precio
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-      RETURNING id_vuelo, fecha_salida, fecha_llegada, precio;
-      `,
-      [
-        id_aerolinea,
-        id_origen,
-        id_destino,
-        departure,
-        arrival,
-        capacity || 180,
-        price
-      ]
-    );
-    const vuelo = vueloResult.rows[0];
-
-    const reservaResult = await client.query(
-      `
-      INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
-      VALUES ($1, $2, $3, NOW())
-      RETURNING id_reserva, asiento;
-      `,
-      [userId, vuelo.id_vuelo, seat]
-    );
-
-    await client.query("COMMIT");
-
-    res.status(201).json({
-      message: "Vuelo reservado correctamente",
-      reserva: reservaResult.rows[0],
-      vuelo: vuelo,
-    });
+      await client.query("BEGIN");
+      const existingAirlineResult = await client.query(
+          `SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = $1 OR codigo_iata = $2`,
+          [airline_name, airline_code]
+      );
+      let id_aerolinea;
+      if (existingAirlineResult.rowCount > 0) {
+          id_aerolinea = existingAirlineResult.rows[0].id_aerolinea;
+          await client.query(
+              `UPDATE aerolinea SET nombre_aerolinea = $1, codigo_iata = $2 WHERE id_aerolinea = $3`,
+              [airline_name, airline_code, id_aerolinea]
+          );
+      } else {
+          const newAirlineResult = await client.query(
+              `
+              INSERT INTO aerolinea (nombre_aerolinea, codigo_iata)
+              VALUES ($1, $2)
+              RETURNING id_aerolinea;
+              `,
+              [airline_name, airline_code]
+          );
+          id_aerolinea = newAirlineResult.rows[0].id_aerolinea;
+      }
+      const originResult = await client.query(
+          `
+          INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
+          VALUES ($1, $2, $3, $4)
+          ON CONFLICT (codigo_iata)
+          DO UPDATE SET nombre_aeropuerto = EXCLUDED.nombre_aeropuerto,
+                        ciudad            = EXCLUDED.ciudad,
+                        pais              = EXCLUDED.pais
+          RETURNING id_aeropuerto;
+          `,
+          [origin_name, origin_city, origin_country, origin_code]
+      );
+      const id_origen = originResult.rows[0].id_aeropuerto;
+      const destResult = await client.query(
+          `
+          INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
+          VALUES ($1, $2, $3, $4)
+          ON CONFLICT (codigo_iata)
+          DO UPDATE SET nombre_aeropuerto = EXCLUDED.nombre_aeropuerto,
+                        ciudad            = EXCLUDED.ciudad,
+                        pais              = EXCLUDED.pais
+          RETURNING id_aeropuerto;
+          `,
+          [dest_name, dest_city, dest_country, dest_code]
+      );
+      const id_destino = destResult.rows[0].id_aeropuerto;
+      const vueloResult = await client.query(
+          `
+          INSERT INTO vuelos (
+              id_aerolinea,
+              id_aeropuerto_origen,
+              id_aeropuerto_destino,
+              fecha_salida,
+              fecha_llegada,
+              capacidad,
+              precio
+          )
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+          RETURNING id_vuelo, fecha_salida, fecha_llegada, precio;
+          `,
+          [
+              id_aerolinea,
+              id_origen,
+              id_destino,
+              departure,
+              arrival,
+              capacity || 180,
+              price
+          ]
+      );
+      const vuelo = vueloResult.rows[0];
+      const reservaResult = await client.query(
+          `
+          INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
+          VALUES ($1, $2, $3, NOW())
+          RETURNING id_reserva, asiento;
+          `,
+          [userId, vuelo.id_vuelo, seat]
+      );
+      await client.query("COMMIT");
+      res.status(201).json({
+          message: "Vuelo reservado correctamente",
+          reserva: reservaResult.rows[0],
+          vuelo: vuelo,
+      });
   } catch (err) {
-    await client.query("ROLLBACK");
-    console.error("Error en POST /api/user/flights", err);
-    res.status(500).json({ error: "Error al registrar el vuelo" });
+      await client.query("ROLLBACK");
+      console.error("Error en POST /api/user/flights", err);
+      res.status(500).json({ error: "Error al registrar el vuelo" });
   } finally {
-    client.release();
+      client.release();
   }
 });
 
