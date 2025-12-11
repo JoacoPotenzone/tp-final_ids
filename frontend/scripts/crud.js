@@ -157,3 +157,60 @@ async function loadEntityList(entityKey, token) {
     container.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
   }
 }
+
+function renderTable(entityKey, entity, rows, token) {
+  const container = document.getElementById('admin-table-container');
+
+  if (!rows || rows.length === 0) {
+    container.innerHTML = '<p class="text-muted">No hay registros.</p>';
+    return;
+  }
+
+  const visibleFields = entity.fields.filter((f) => !f.isPassword);
+
+  let thead = `<thead><tr><th>${entity.idField}</th>`;
+  visibleFields.forEach((f) => {
+    thead += `<th>${f.label}</th>`;
+  });
+  thead += '<th>Acciones</th></tr></thead>';
+
+  let tbody = '<tbody>';
+  rows.forEach((row) => {
+    tbody += `<tr>`;
+    tbody += `<td>${row[entity.idField]}</td>`;
+    visibleFields.forEach((f) => {
+      tbody += `<td>${row[f.name] ?? ''}</td>`;
+    });
+    tbody += `<td>
+      <button class="btn btn-sm btn-outline-secondary me-1"
+        data-action="edit" data-entity="${entityKey}" data-id="${row[entity.idField]}">
+        Editar
+      </button>
+      <button class="btn btn-sm btn-outline-danger"
+        data-action="delete" data-entity="${entityKey}" data-id="${row[entity.idField]}">
+        Borrar
+      </button>
+    </td>`;
+    tbody += `</tr>`;
+  });
+  tbody += '</tbody>';
+
+  container.innerHTML = `<table class="table table-sm table-striped">${thead}${tbody}</table>`;
+
+  container.querySelectorAll('button[data-action="edit"]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const row = rows.find((r) => String(r[entity.idField]) === String(id));
+      openEditForm(entityKey, entity, row, token);
+    });
+  });
+
+  container.querySelectorAll('button[data-action="delete"]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      if (confirm('¿Seguro que querés borrar este registro?')) {
+        deleteRecord(entityKey, entity, id, token);
+      }
+    });
+  });
+}
