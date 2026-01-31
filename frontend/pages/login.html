@@ -1,92 +1,101 @@
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-        <title>MatchAirlines</title>
-        <link rel="icon" href="./sources/avion-trayectoria-vuelo-circular.png" type="image/x-icon">
-        <link rel="stylesheet" href="../styles/login.css">
-    </head>
-    <body>
-        <header>
-            <nav class="navbar navbar-expand-lg bg-body-tertiary">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="../index.html">MatchAirlines</a>
-                        <div class="collapse navbar-collapse" id="navbarNav">
-                            <ul class="navbar-nav ms-auto">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="./login.html">Login/Register</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="./usuario.html"><img src="../sources/user_icon_143482.svg" alt="icono-usuario"></a>
-                                </li>
-                            </ul>
-                        </div>
-                </div>
-            </nav>
-        </header>
-        <div class="container my-5 flex-grow-1">
-            <div class="row justify-content-center">
-                <div class="col-lg-6 col-md-8">
-                    <main class="card text-center">
-                        <div class="tabs">
-                            <button class="tab-button active" id="btn-login" onclick="showForm('login')">Iniciar Sesión</button>
-                            <button class="tab-button" id="btn-register" onclick="showForm('register')">Registrarse</button>
-                        </div>
-                        <div class="tab-content" id="myTabContent">
-                                <form id="login-form" class="form-content active" method="post" action="#">
-                                    <div class="mb-3">
-                                        <label for="email" class="mx-4">Email:</label>
-                                        <input type="email" id="email" name="email" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">Contraseña:</label>
-                                        <input type="password" id="password" name="password" required>
-                                    </div>
-                                    <div class="text-center mb-3">
-                                        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
-                                    </div>
 
-                                    <div id="loginError" class="text-danger mb-2"></div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>MatchAirlines</title>
+    <link rel="icon" href="../sources/avion-trayectoria-vuelo-circular.png" type="image/x-icon">
+    <link rel="stylesheet" href="../styles/login.css">
+</head>
 
-                                    <div class="d-grid">
-                                        <button type="submit" class="btn btn-primary-dark">Ingresar</button>
-                                    </div>
-                                </form>
-                                <form id="register-form" class="form-content hidden" method="post" action="#">
-                                    <label for="regUsername">Nombre de Usuario:</label>
-                                    <input type="text" id="regUsername" name="username" required>
-
-                                    <label for="regEmail">Email:</label>
-                                    <input type="email" id="regEmail" name="email" required>
-
-                                    <label for="regPassword">Contraseña:</label>
-                                    <input type="password" id="regPassword" name="password" required>
-
-                                    <div class="checkbox-container">
-                                        <input type="checkbox" id="termsCheck" required style="margin-right: 8px;">
-                                        <label for="termsCheck" style="margin-top: 10px; font-weight: normal; font-size: 14px; display: inline;">
-                                            Acepto los términos y condiciones
-                                        </label>
-                                    </div>
-
-                                    <div id="registerError" class="text-danger mb-2"></div>
-
-                                    <button type="submit" class="btn btn-primary-dark">Crear Cuenta</button>
-                                </form>
-                        </div>
-                    </main>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="../index.html">MatchAirlines</a>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="./login.html">Login/Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="./usuario.html"><img src="../sources/user_icon_143482.svg"
+                                    alt="icono-usuario"></a>
+                        </li>
+                    </ul>
                 </div>
             </div>
+        </nav>
+    </header>
+    <div class="container my-5 flex-grow-1">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <main class="card text-center">
+                    <div class="tabs">
+                        <button class="tab-button active" id="btn-login" onclick="showForm('login')">Iniciar
+                            Sesión</button>
+                        <button class="tab-button" id="btn-register" onclick="showForm('register')">Registrarse</button>
+                    </div>
+                    <div class="tab-content" id="myTabContent">
+                        <form id="login-form" class="form-content active" method="post" action="#">
+                            <div class="mb-3">
+                                <label for="email" class="mx-4">Email:</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Contraseña:</label>
+                                <input type="password" id="password" name="password" required>
+                            </div>
+                            <div class="text-center mb-3">
+                                <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                            </div>
+
+                            <div id="loginError" class="text-danger mb-2"></div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary-dark">Ingresar</button>
+                            </div>
+                        </form>
+                        <form id="register-form" class="form-content hidden" method="post" action="#">
+                            <label for="regUsername">Nombre de Usuario:</label>
+                            <input type="text" id="regUsername" name="username" required>
+
+                            <label for="regEmail">Email:</label>
+                            <input type="email" id="regEmail" name="email" required>
+
+                            <label for="regPassword">Contraseña:</label>
+                            <input type="password" id="regPassword" name="password" required>
+
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="termsCheck" required style="margin-right: 8px;">
+                                <label for="termsCheck"
+                                    style="margin-top: 10px; font-weight: normal; font-size: 14px; display: inline;">
+                                    Acepto los términos y condiciones
+                                </label>
+                            </div>
+
+                            <div id="registerError" class="text-danger mb-2"></div>
+
+                            <button type="submit" class="btn btn-primary-dark">Crear Cuenta</button>
+                        </form>
+                    </div>
+                </main>
+            </div>
         </div>
-        <footer class="bg-dark text-center text-white p-3 mt-3">
-            <h4>2025 MatchAirlines — tp_Final Introducción al desarrollo de software (Camejo) </h4>
-            <h5>Trabajo práctico programado, desarrollado y pensado por:</h5>
-            <h5>Ignacio García, Joaquín Potenzone y Paco Pozo.</h5>
-        </footer>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        <script src="../scripts/login.js"></script>
-        <script src="../scripts/auth.js"></script>
-    </body>
+    </div>
+    <footer class="bg-dark text-center text-white p-3 mt-3">
+        <h4>2025 MatchAirlines — tp_Final Introducción al desarrollo de software (Camejo) </h4>
+        <h5>Trabajo práctico programado, desarrollado y pensado por:</h5>
+        <h5>Ignacio García, Joaquín Potenzone y Paco Pozo.</h5>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="../scripts/login.js"></script>
+    <script src="../scripts/auth.js"></script>
+</body>
+
 </html>
