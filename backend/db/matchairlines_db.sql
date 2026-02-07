@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS vuelos (
 	fecha_llegada TIMESTAMP NOT NULL, 
 	capacidad INT NOT NULL,
 	precio DECIMAL(6,2) NOT NULL,
-	FOREIGN KEY (id_aerolinea) REFERENCES aerolinea (id_aerolinea),
-	FOREIGN KEY (id_aeropuerto_origen) REFERENCES aeropuertos (id_aeropuerto),
-	FOREIGN KEY (id_aeropuerto_destino) REFERENCES aeropuertos (id_aeropuerto),
+	FOREIGN KEY (id_aerolinea) REFERENCES aerolinea (id_aerolinea) ON DELETE CASCADE,
+	FOREIGN KEY (id_aeropuerto_origen) REFERENCES aeropuertos (id_aeropuerto) ON DELETE CASCADE,
+	FOREIGN KEY (id_aeropuerto_destino) REFERENCES aeropuertos (id_aeropuerto) ON DELETE CASCADE,
 	CHECK (id_aeropuerto_origen <> id_aeropuerto_destino)
 );
 
@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS reservas (
     id_vuelo INT NOT NULL,
     asiento VARCHAR(5) NOT NULL,
     fecha_reserva TIMESTAMP NOT NULL,
-    FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario),
-    FOREIGN KEY (id_vuelo) REFERENCES vuelos (id_vuelo),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_vuelo) REFERENCES vuelos (id_vuelo) ON DELETE CASCADE,
     UNIQUE (id_vuelo, asiento)
 );
 
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS estadios (
     ciudad VARCHAR(50) NOT NULL,
     id_aeropuerto INT NOT NULL,
     pais VARCHAR(50) NOT NULL,
-    FOREIGN KEY (id_aeropuerto) REFERENCES aeropuertos (id_aeropuerto)
+    FOREIGN KEY (id_aeropuerto) REFERENCES aeropuertos (id_aeropuerto) ON DELETE CASCADE
  );
 
 CREATE TABLE IF NOT EXISTS partidos_mundial (
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS partidos_mundial (
     equipo_nombre VARCHAR(50) NOT NULL,
     id_estadio INT NOT NULL,
     fecha_partido DATE NOT NULL,
-    FOREIGN KEY (id_estadio) REFERENCES estadios (id_estadio)
+    FOREIGN KEY (id_estadio) REFERENCES estadios (id_estadio) ON DELETE CASCADE
 );
 
 INSERT INTO usuarios (nombre_usuario, email, password_hash, nacionalidad, rol)
