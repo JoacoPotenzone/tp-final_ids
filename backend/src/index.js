@@ -32,7 +32,7 @@ function authMiddleware(req, res, next) {
     if (err) {
       return res.status(403).json({ error: "Token inválido" });
     }
-    req.user = decoded; 
+    req.user = decoded;
     next();
   });
 }
@@ -59,14 +59,13 @@ function generateToken(user) {
   );
 }
 
-function createAdminCrudRoutes({ key, table, idField, fields }) {
+function createAdminCrudRoutes({ key, table, idField, fields, listQuery }) {
   const basePath = `/api/admin/${key}`;
 
   app.get(basePath, authMiddleware, requireAdmin, async (req, res) => {
     try {
-      const result = await pool.query(
-        `SELECT ${idField}, ${fields.join(", ")} FROM ${table} ORDER BY ${idField}`
-      );
+      const query = listQuery || `SELECT ${idField}, ${fields.join(", ")} FROM ${table} ORDER BY ${idField}`;
+      const result = await pool.query(query);
       res.json(result.rows);
     } catch (err) {
       console.error(`Error listando ${table}`, err);
@@ -243,6 +242,22 @@ createAdminCrudRoutes({
     "capacidad",
     "precio",
   ],
+  listQuery: `
+    SELECT 
+      v.id_vuelo, 
+      al.nombre_aerolinea, 
+      ao.nombre_aeropuerto AS aeropuerto_origen, 
+      ad.nombre_aeropuerto AS aeropuerto_destino, 
+      v.fecha_salida, 
+      v.fecha_llegada, 
+      v.capacidad, 
+      v.precio
+    FROM vuelos v
+    LEFT JOIN aerolinea al ON v.id_aerolinea = al.id_aerolinea
+    LEFT JOIN aeropuertos ao ON v.id_aeropuerto_origen = ao.id_aeropuerto
+    LEFT JOIN aeropuertos ad ON v.id_aeropuerto_destino = ad.id_aeropuerto
+    ORDER BY v.id_vuelo
+  `
 });
 
 
@@ -251,6 +266,21 @@ createAdminCrudRoutes({
   table: "reservas",
   idField: "id_reserva",
   fields: ["id_usuario", "id_vuelo", "asiento", "fecha_reserva"],
+  listQuery: `
+    SELECT 
+      r.id_reserva, 
+      u.nombre_usuario, 
+      u.email, 
+      r.id_vuelo, 
+      al.nombre_aerolinea, 
+      r.asiento, 
+      r.fecha_reserva
+    FROM reservas r
+    LEFT JOIN usuarios u ON r.id_usuario = u.id_usuario
+    LEFT JOIN vuelos v ON r.id_vuelo = v.id_vuelo
+    LEFT JOIN aerolinea al ON v.id_aerolinea = al.id_aerolinea
+    ORDER BY r.id_reserva DESC
+  `
 });
 
 
@@ -267,6 +297,16 @@ createAdminCrudRoutes({
   table: "partidos_mundial",
   idField: "id_partido",
   fields: ["equipo_nombre", "id_estadio", "fecha_partido"],
+  listQuery: `
+    SELECT 
+      pm.id_partido, 
+      pm.equipo_nombre, 
+      e.nombre_estadio, 
+      pm.fecha_partido
+    FROM partidos_mundial pm
+    LEFT JOIN estadios e ON pm.id_estadio = e.id_estadio
+    ORDER BY pm.fecha_partido DESC
+  `
 });
 
 
@@ -278,13 +318,13 @@ app.listen(PORT, () => {
 
 
 app.get("/usuarios", async (req, res) => {
-    try {
-        const result = await pool.query("SELECT * FROM usuarios");
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "DB error" });
-    }
+  try {
+    const result = await pool.query("SELECT * FROM usuarios");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "DB error" });
+  }
 });
 
 app.listen(PORT, () => {
@@ -292,13 +332,13 @@ app.listen(PORT, () => {
 });
 
 app.get("/aerolinea", async (req, res) => {
-    try {
-        const result = await pool.query("SELECT * FROM aerolinea");
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "DB error" });
-    }
+  try {
+    const result = await pool.query("SELECT * FROM aerolinea");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "DB error" });
+  }
 });
 
 app.listen(PORT, () => {
@@ -306,13 +346,13 @@ app.listen(PORT, () => {
 });
 
 app.get("/aeropuertos", async (req, res) => {
-    try {
-        const result = await pool.query("SELECT * FROM aeropuertos");
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "DB error" });
-    }
+  try {
+    const result = await pool.query("SELECT * FROM aeropuertos");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "DB error" });
+  }
 });
 
 app.listen(PORT, () => {
@@ -320,13 +360,13 @@ app.listen(PORT, () => {
 });
 
 app.get("/vuelos", async (req, res) => {
-    try {
-        const result = await pool.query("SELECT * FROM vuelos");
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "DB error" });
-    }
+  try {
+    const result = await pool.query("SELECT * FROM vuelos"); //v.id_vuelos,al.nombre_aerolinea,ao.nombre_aeropuerto AS aeropuerto_origen,ad.nombre_aeropuerto AS aeropierto_destino,v.fecha_salida,v.capacidad,v.precio FROM vuelos v JOIN aerolinea al ON v.id_aereolinea = al.id_aereolinea JOIN aeropuertos ao ON v.id_aeropuerto_origen = ao.id_aeropuerto JOIN aeropuertos ad ON v.id_aeropuerto_destino = ad.id_aeropuerto");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "DB error" });
+  }
 });
 
 app.listen(PORT, () => {
@@ -334,13 +374,13 @@ app.listen(PORT, () => {
 });
 
 app.get("/reservas", async (req, res) => {
-    try {
-        const result = await pool.query("SELECT * FROM reservas");
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "DB error" });
-    }
+  try {
+    const result = await pool.query("SELECT * FROM reservas");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "DB error" });
+  }
 });
 
 app.listen(PORT, () => {
@@ -363,15 +403,15 @@ app.listen(PORT, () => {
 
 
 app.get('/api/vuelos', async (req, res) => {
-  const { origen, destino, fecha } = req.query; 
+  const { origen, destino, fecha } = req.query;
 
   if (!origen || !destino) {
-      return res.status(400).json({ error: 'Faltan parámetros de búsqueda (origen y destino son obligatorios).' });
+    return res.status(400).json({ error: 'Faltan parámetros de búsqueda (origen y destino son obligatorios).' });
   }
   const origenBusqueda = origen.trim();
   const destinoBusqueda = destino.trim();
   let fechaFiltro = fecha ? fecha.trim() : null;
-  let fechaActual = new Date().toISOString(); 
+  let fechaActual = new Date().toISOString();
 
   try {
     const query = `
@@ -397,31 +437,31 @@ app.get('/api/vuelos', async (req, res) => {
           ($4::TIMESTAMP IS NOT NULL AND v.fecha_salida::DATE = $4::DATE) DESC,
           v.fecha_salida ASC
     `;
-      const result = await pool.query(query, [
-        `%${origenBusqueda}%`, 
-        `%${destinoBusqueda}%`,
-        fechaActual,
-        fechaFiltro 
-      ]);
-      res.json(result.rows);
-    } catch (err) {
-        console.error('Error al ejecutar la consulta SQL:', err); 
-        res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
-    }
+    const result = await pool.query(query, [
+      `%${origenBusqueda}%`,
+      `%${destinoBusqueda}%`,
+      fechaActual,
+      fechaFiltro
+    ]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error al ejecutar la consulta SQL:', err);
+    res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
   }
+}
 );
 
 app.get('/api/ciudades-origen', async (req, res) => {
-    try {
-        const query = `
+  try {
+    const query = `
             SELECT DISTINCT ciudad, codigo_iata FROM aeropuertos ORDER BY ciudad ASC;
         `;
-        const result = await pool.query(query);
-        res.json(result.rows);
-    } catch (err) {
-        console.error('Error al obtener ciudades:', err);
-        res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
-    }
+    const result = await pool.query(query);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error al obtener ciudades:', err);
+    res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
+  }
 });
 app.post("/api/register", async (req, res) => {
   const { nombre_usuario, email, password } = req.body;
@@ -471,8 +511,8 @@ app.post("/api/login", async (req, res) => {
 
   try {
     const result = await pool.query(
-    "SELECT id_usuario, nombre_usuario, email, password_hash, rol, nacionalidad FROM usuarios WHERE email = $1",
-    [email]
+      "SELECT id_usuario, nombre_usuario, email, password_hash, rol, nacionalidad FROM usuarios WHERE email = $1",
+      [email]
     );
 
     if (result.rowCount === 0) {
@@ -545,50 +585,50 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
     dest_city,
     dest_country,
     dest_code,
-    departure, 
-    arrival,  
+    departure,
+    arrival,
     capacity,
     price,
     seat
   } = req.body;
   if (
-      !airline_name || !airline_code ||
-      !origin_name || !origin_city || !origin_country || !origin_code ||
-      !dest_name   || !dest_city   || !dest_country   || !dest_code   ||
-      !departure   || !arrival     || !price         || !seat
+    !airline_name || !airline_code ||
+    !origin_name || !origin_city || !origin_country || !origin_code ||
+    !dest_name || !dest_city || !dest_country || !dest_code ||
+    !departure || !arrival || !price || !seat
   ) {
-      return res.status(400).json({ error: "Faltan datos del vuelo" });
+    return res.status(400).json({ error: "Faltan datos del vuelo" });
   }
   if (origin_code === dest_code) {
-      return res.status(400).json({ error: "El código IATA del origen no puede ser el mismo que el de destino." });
+    return res.status(400).json({ error: "El código IATA del origen no puede ser el mismo que el de destino." });
   }
   const client = await pool.connect();
   try {
-      await client.query("BEGIN");
-      const existingAirlineResult = await client.query(
-        `SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = $1 OR codigo_iata = $2`,
-        [airline_name, airline_code]
+    await client.query("BEGIN");
+    const existingAirlineResult = await client.query(
+      `SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = $1 OR codigo_iata = $2`,
+      [airline_name, airline_code]
+    );
+    let id_aerolinea;
+    if (existingAirlineResult.rowCount > 0) {
+      id_aerolinea = existingAirlineResult.rows[0].id_aerolinea;
+      await client.query(
+        `UPDATE aerolinea SET nombre_aerolinea = $1, codigo_iata = $2 WHERE id_aerolinea = $3`,
+        [airline_name, airline_code, id_aerolinea]
       );
-      let id_aerolinea;
-      if (existingAirlineResult.rowCount > 0) {
-        id_aerolinea = existingAirlineResult.rows[0].id_aerolinea;
-        await client.query(
-          `UPDATE aerolinea SET nombre_aerolinea = $1, codigo_iata = $2 WHERE id_aerolinea = $3`,
-          [airline_name, airline_code, id_aerolinea]
-        );
-      } else {
-          const newAirlineResult = await client.query(
-            `
+    } else {
+      const newAirlineResult = await client.query(
+        `
             INSERT INTO aerolinea (nombre_aerolinea, codigo_iata)
             VALUES ($1, $2)
             RETURNING id_aerolinea;
             `,
-            [airline_name, airline_code]
-          );
-          id_aerolinea = newAirlineResult.rows[0].id_aerolinea;
-      }
-      const originResult = await client.query(
-        `
+        [airline_name, airline_code]
+      );
+      id_aerolinea = newAirlineResult.rows[0].id_aerolinea;
+    }
+    const originResult = await client.query(
+      `
         INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
         VALUES ($1, $2, $3, $4)
         ON CONFLICT (codigo_iata)
@@ -597,11 +637,11 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
                       pais              = EXCLUDED.pais
         RETURNING id_aeropuerto;
         `,
-        [origin_name, origin_city, origin_country, origin_code]
-      );
-      const id_origen = originResult.rows[0].id_aeropuerto;
-      const destResult = await client.query(
-        `
+      [origin_name, origin_city, origin_country, origin_code]
+    );
+    const id_origen = originResult.rows[0].id_aeropuerto;
+    const destResult = await client.query(
+      `
         INSERT INTO aeropuertos (nombre_aeropuerto, ciudad, pais, codigo_iata)
         VALUES ($1, $2, $3, $4)
         ON CONFLICT (codigo_iata)
@@ -610,11 +650,11 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
                       pais              = EXCLUDED.pais
         RETURNING id_aeropuerto;
         `,
-        [dest_name, dest_city, dest_country, dest_code]
-      );
-      const id_destino = destResult.rows[0].id_aeropuerto;
-      const vueloResult = await client.query(
-        `
+      [dest_name, dest_city, dest_country, dest_code]
+    );
+    const id_destino = destResult.rows[0].id_aeropuerto;
+    const vueloResult = await client.query(
+      `
         INSERT INTO vuelos (
           id_aerolinea,
           id_aeropuerto_origen,
@@ -627,31 +667,31 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id_vuelo, fecha_salida, fecha_llegada, precio;
         `,
-        [
-          id_aerolinea,
-          id_origen,
-          id_destino,
-          departure,
-          arrival,
-          capacity || 180,
-          price
-        ]
-      );
-      const vuelo = vueloResult.rows[0];
-      const reservaResult = await client.query(
-        `
+      [
+        id_aerolinea,
+        id_origen,
+        id_destino,
+        departure,
+        arrival,
+        capacity || 180,
+        price
+      ]
+    );
+    const vuelo = vueloResult.rows[0];
+    const reservaResult = await client.query(
+      `
         INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
         VALUES ($1, $2, $3, NOW())
         RETURNING id_reserva, asiento;
         `,
-        [userId, vuelo.id_vuelo, seat]
-      );
-      await client.query("COMMIT");
-      res.status(201).json({
-        message: "Vuelo reservado correctamente",
-        reserva: reservaResult.rows[0],
-        vuelo: vuelo,
-      });
+      [userId, vuelo.id_vuelo, seat]
+    );
+    await client.query("COMMIT");
+    res.status(201).json({
+      message: "Vuelo reservado correctamente",
+      reserva: reservaResult.rows[0],
+      vuelo: vuelo,
+    });
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Error en POST /api/user/flights", err);
@@ -662,26 +702,26 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
 });
 
 app.get('/api/mundial/equipos', async (req, res) => {
-    try {
-      const query = `
+  try {
+    const query = `
           SELECT DISTINCT equipo_nombre FROM partidos_mundial ORDER BY equipo_nombre ASC
       `;
-      const result = await pool.query(query);
-      const equipos = result.rows.map(row => row.equipo_nombre);
-      res.json(equipos);
-    } catch (err) {
-      console.error('Error al obtener equipos:', err);
-      res.status(500).json({ error: 'Error al consultar la lista de equipos.' });
-    }
+    const result = await pool.query(query);
+    const equipos = result.rows.map(row => row.equipo_nombre);
+    res.json(equipos);
+  } catch (err) {
+    console.error('Error al obtener equipos:', err);
+    res.status(500).json({ error: 'Error al consultar la lista de equipos.' });
+  }
 });
 
 
 app.get('/api/mundial/ruta', async (req, res) => {
-  const { pais } = req.query; 
+  const { pais } = req.query;
   if (!pais) {
-      return res.status(400).json({ error: 'Falta el parámetro del país.' });
+    return res.status(400).json({ error: 'Falta el parámetro del país.' });
   }
-  const paisBusqueda = pais.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+  const paisBusqueda = pais.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   try {
     const query = `
       SELECT
@@ -697,17 +737,17 @@ app.get('/api/mundial/ruta', async (req, res) => {
         pm.fecha_partido ASC
     `;
     const result = await pool.query(query, [paisBusqueda]);
-    
+
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Ruta no definida para este país.' });
     }
 
     res.json(result.rows);
-    } catch (err) {
-      console.error('Error al obtener ruta del mundial:', err);
-      res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
-    }
+  } catch (err) {
+    console.error('Error al obtener ruta del mundial:', err);
+    res.status(500).json({ error: 'Error interno del servidor al consultar la DB.' });
   }
+}
 );
 
 
@@ -745,7 +785,7 @@ app.get("/api/user/flights", authMiddleware, async (req, res) => {
 });
 
 app.post("/api/user/change-password", authMiddleware, async (req, res) => {
-  const userId = req.user.id_usuario; 
+  const userId = req.user.id_usuario;
   const { currentPassword, newPassword } = req.body;
 
   if (!currentPassword || !newPassword) {
@@ -824,49 +864,49 @@ app.delete("/api/user/delete-account", authMiddleware, async (req, res) => {
 });
 
 app.post("/api/reservas", authMiddleware, async (req, res) => {
-    const userId = req.user.id_usuario; 
-    const { id_vuelo, asiento } = req.body; 
+  const userId = req.user.id_usuario;
+  const { id_vuelo, asiento } = req.body;
 
-    if (!id_vuelo || !asiento) {
-        return res.status(400).json({ error: "Faltan datos de vuelo o asiento." });
+  if (!id_vuelo || !asiento) {
+    return res.status(400).json({ error: "Faltan datos de vuelo o asiento." });
+  }
+
+  try {
+    const asientoCheck = await pool.query(
+      "SELECT 1 FROM reservas WHERE id_vuelo = $1 AND asiento = $2",
+      [id_vuelo, asiento]
+    );
+
+    if (asientoCheck.rowCount > 0) {
+      return res.status(409).json({ error: "El asiento ya está reservado." });
     }
 
-    try {
-        const asientoCheck = await pool.query(
-            "SELECT 1 FROM reservas WHERE id_vuelo = $1 AND asiento = $2",
-            [id_vuelo, asiento]
-        );
-        
-        if (asientoCheck.rowCount > 0) {
-            return res.status(409).json({ error: "El asiento ya está reservado." });
-        }
-
-        const result = await pool.query(
-            `
+    const result = await pool.query(
+      `
             INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
             VALUES ($1, $2, $3, NOW())
             RETURNING id_reserva, id_vuelo, asiento;
             `,
-            [userId, id_vuelo, asiento]
-        );
+      [userId, id_vuelo, asiento]
+    );
 
-        res.status(201).json({
-            message: "Reserva creada con éxito.",
-            reserva: result.rows[0],
-            vuelo: { id_vuelo: id_vuelo } 
-        });
+    res.status(201).json({
+      message: "Reserva creada con éxito.",
+      reserva: result.rows[0],
+      vuelo: { id_vuelo: id_vuelo }
+    });
 
-    } catch (err) {
-        console.error("Error en POST /api/reservas", err);
-        res.status(500).json({ error: "Error al crear la reserva." });
-    }
+  } catch (err) {
+    console.error("Error en POST /api/reservas", err);
+    res.status(500).json({ error: "Error al crear la reserva." });
+  }
 });
 
 app.delete("/api/reservas/:id", authMiddleware, async (req, res) => {
   const userId = req.user.id_usuario;
-  const idReserva = req.params.id; 
+  const idReserva = req.params.id;
   try {
-    await pool.query("BEGIN"); 
+    await pool.query("BEGIN");
     const deleteResult = await pool.query(
       "DELETE FROM reservas WHERE id_reserva = $1 AND id_usuario = $2 RETURNING id_vuelo",
       [idReserva, userId]
