@@ -5,14 +5,14 @@ const ENTITIES = {
     label: 'Usuarios',
     endpoint: '/api/admin/usuarios',
     idField: 'id_usuario',
-    canCreate: true,        
+    canCreate: true,
     fields: [
       { name: 'id_usuario', label: 'ID', isPk: true, readOnly: true, hiddenOnList: true },
       { name: 'nombre_usuario', label: 'Nombre de usuario', required: true },
       { name: 'email', label: 'Email', required: true },
       { name: 'nacionalidad', label: 'Nacionalidad' },
       { name: 'rol', label: 'Rol (admin / cliente)', required: true },
-      { name: 'password',label: 'Contraseña',required: true,isPassword: true,onlyOnCreate: true}
+      { name: 'password', label: 'Contraseña', required: true, isPassword: true, onlyOnCreate: true }
     ]
   },
 
@@ -22,7 +22,7 @@ const ENTITIES = {
     idField: 'id_aerolinea',
     canCreate: true,
     fields: [
-      { name: 'id_aerolinea', label: 'ID', isPk: true, readOnly: true },
+      // { name: 'id_aerolinea', label: 'ID', isPk: true, readOnly: true },
       { name: 'nombre_aerolinea', label: 'Nombre aerolínea', required: true },
       { name: 'codigo_iata', label: 'Código IATA', required: true }
     ]
@@ -34,7 +34,7 @@ const ENTITIES = {
     idField: 'id_aeropuerto',
     canCreate: true,
     fields: [
-      { name: 'id_aeropuerto', label: 'ID', isPk: true, readOnly: true },
+      // { name: 'id_aeropuerto', label: 'ID', isPk: true, readOnly: true },
       { name: 'nombre_aeropuerto', label: 'Nombre aeropuerto', required: true },
       { name: 'ciudad', label: 'Ciudad', required: true },
       { name: 'pais', label: 'País', required: true },
@@ -48,14 +48,24 @@ const ENTITIES = {
     idField: 'id_vuelo',
     canCreate: true,
     fields: [
-      { name: 'id_vuelo', label: 'ID', isPk: true, readOnly: true },
-      { name: 'id_aerolinea', label: 'ID aerolínea', required: true },
-      { name: 'id_aeropuerto_origen', label: 'ID aeropuerto origen', required: true },
-      { name: 'id_aeropuerto_destino', label: 'ID aeropuerto destino', required: true },
+      // { name: 'id_vuelo', label: 'ID', isPk: true, readOnly: true },
+      { name: 'nombre_aerolinea', label: 'Nombre Aerolínea', required: true },
+      { name: 'aeropuerto_origen', label: 'Aeropuerto Origen', required: true },
+      { name: 'aeropuerto_destino', label: 'Aeropuerto Destino', required: true },
       { name: 'fecha_salida', label: 'Fecha/hora salida (ISO)', required: true },
       { name: 'fecha_llegada', label: 'Fecha/hora llegada (ISO)', required: true },
       { name: 'capacidad', label: 'Capacidad', required: true },
       { name: 'precio', label: 'Precio', required: true }
+    ],
+    listFields: [
+      // { name: 'id_vuelo', label: 'ID', isPk: true, readOnly: true },
+      { name: 'nombre_aerolinea', label: 'Aerolínea' },
+      { name: 'aeropuerto_origen', label: 'Origen' },
+      { name: 'aeropuerto_destino', label: 'Destino' },
+      { name: 'fecha_salida', label: 'Salida' },
+      { name: 'fecha_llegada', label: 'Llegada' },
+      { name: 'capacidad', label: 'Capacidad' },
+      { name: 'precio', label: 'Precio' }
     ]
   },
 
@@ -63,26 +73,41 @@ const ENTITIES = {
     label: 'Reservas',
     endpoint: '/api/admin/reservas',
     idField: 'id_reserva',
-    canCreate: false, 
+    canCreate: false,
     fields: [
-      { name: 'id_reserva', label: 'ID', isPk: true, readOnly: true },
+      { name: 'id_reserva', label: 'Codigo Reserva', isPk: true, readOnly: true },
       { name: 'id_usuario', label: 'ID usuario', required: true },
       { name: 'id_vuelo', label: 'ID vuelo', required: true },
       { name: 'asiento', label: 'Asiento', required: true },
       { name: 'fecha_reserva', label: 'Fecha reserva', readOnly: true }
+    ],
+    listFields: [
+      { name: 'id_reserva', label: 'Codigo Reserva', isPk: true },
+      { name: 'nombre_usuario', label: 'Usuario' },
+      { name: 'email', label: 'Email' },
+      { name: 'id_vuelo', label: 'ID Vuelo' },
+      { name: 'nombre_aerolinea', label: 'Aerolínea' },
+      { name: 'asiento', label: 'Asiento' },
+      { name: 'fecha_reserva', label: 'Fecha Reserva' }
     ]
   },
 
-   partidos_mundial: {
+  partidos_mundial: {
     label: 'Partidos del Mundial',
     endpoint: '/api/admin/partidos_mundial',
     idField: 'id_partido',
     canCreate: true,
     fields: [
-      { name: 'id_partido', label: 'ID', isPk: true, readOnly: true },
+      // { name: 'id_partido', label: 'ID', isPk: true, readOnly: true },
       { name: 'equipo_nombre', label: 'Equipo', required: true },
-      { name: 'id_estadio', label: 'ID estadio', required: true },
+      { name: 'nombre_estadio', label: 'Nombre Estadio', required: true },
       { name: 'fecha_partido', label: 'Fecha del partido', required: true }
+    ],
+    listFields: [
+      // { name: 'id_partido', label: 'ID', isPk: true },
+      { name: 'equipo_nombre', label: 'Equipo' },
+      { name: 'nombre_estadio', label: 'Estadio' },
+      { name: 'fecha_partido', label: 'Fecha' }
     ]
   }
 };
@@ -308,7 +333,7 @@ function buildForm(entityKey, entity, data, token, mode) {
   formContainer.classList.remove('d-none');
   formContainer.scrollIntoView({
     behavior: 'smooth',
-    block: 'start' 
+    block: 'start'
   });
   fieldsWrapper.innerHTML = '';
 
@@ -332,7 +357,7 @@ function buildForm(entityKey, entity, data, token, mode) {
     let input;
     let fieldType = field.type || 'text';
     if (field.isPassword && !field.type) {
-      fieldType = 'text'; 
+      fieldType = 'text';
     }
 
     if (fieldType === 'textarea') {
@@ -426,7 +451,7 @@ function buildForm(entityKey, entity, data, token, mode) {
         const txt = await resp.text();
         throw new Error(txt || `Error ${resp.status}`);
       }
-      
+
       const action = isEdit ? 'actualizado' : 'agregado';
       const entityLabel = entity.label;
       alert(`¡Éxito! El registro ha sido ${action} correctamente a la tabla ${entityLabel}.`);
