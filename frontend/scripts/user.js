@@ -3,7 +3,7 @@ const token = localStorage.getItem('token');
 const API_URL = 'http://localhost:3001'
 
 if (!userJson || !token) {
-  window.location.href = './login.html';
+  window.location.href = 'frontend/pages/login.html';
 }
 
 const user = JSON.parse(userJson);
@@ -109,7 +109,7 @@ if (logoutBtn) {
   logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-    window.location.href = './login.html';
+    window.location.href = 'frontend/pages/login.html';
   });
 }
 

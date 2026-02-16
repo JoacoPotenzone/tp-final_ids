@@ -204,7 +204,7 @@ async function buscarVuelosDesdeBackend(origen, destino, fecha) {
     console.error('Error en la comunicación con el backend:', error);
     listaVuelosContainer.innerHTML =
       `<div class="col-12"><div class="alert alert-danger text-center" role="alert">
-        Error de conexión: verificá que tu servidor Node.js esté funcionando en ${API_BASE_URL}.
+        Error de conexión: El servidor está caído o no esta funcionando.
        </div></div>`;
   }
 }
