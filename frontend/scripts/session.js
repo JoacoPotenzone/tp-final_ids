@@ -17,7 +17,7 @@ function getSession() {
 function requireSession() {
   const session = getSession();
   if (!session) {
-    window.location.href = 'frontend/pages/login.html';
+    window.location.href = './login.html';
     return null;
   }
   return session;
