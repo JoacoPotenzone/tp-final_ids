@@ -213,6 +213,66 @@ app.delete("/api/admin/usuarios/:id", authMiddleware, requireAdmin, async (req, 
   }
 });
 
+app.put("/api/admin/usuarios/:id", authMiddleware, requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { nombre_usuario, email, nacionalidad, rol, password } = req.body;
+
+  try {
+    const fields = [];
+    const values = [];
+    let paramIndex = 1;
+
+    if (nombre_usuario !== undefined) {
+      fields.push(`nombre_usuario = $${paramIndex++}`);
+      values.push(nombre_usuario);
+    }
+    if (email !== undefined) {
+      fields.push(`email = $${paramIndex++}`);
+      values.push(email);
+    }
+    if (nacionalidad !== undefined) {
+      fields.push(`nacionalidad = $${paramIndex++}`);
+      values.push(nacionalidad || null);
+    }
+    if (rol !== undefined) {
+      fields.push(`rol = $${paramIndex++}`);
+      values.push(rol);
+    }
+    if (password && password.trim() !== "") {
+      const password_hash = await bcrypt.hash(password, 10);
+      fields.push(`password_hash = $${paramIndex++}`);
+      values.push(password_hash);
+    }
+
+    if (fields.length === 0) {
+      return res.status(400).json({ error: "No se enviaron campos para actualizar" });
+    }
+
+    values.push(id);
+
+    const query = `
+      UPDATE usuarios
+      SET ${fields.join(", ")}
+      WHERE id_usuario = $${paramIndex}
+      RETURNING id_usuario, nombre_usuario, email, nacionalidad, rol, fecha_creacion
+    `;
+
+    const result = await pool.query(query, values);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error actualizado usuario desde admin", err);
+    if (err.code === '23505') {
+      return res.status(409).json({ error: "El email o nombre de usuario ya existe" });
+    }
+    res.status(500).json({ error: "Error actualizando usuario" });
+  }
+});
+
 createAdminCrudRoutes({
   key: "aerolineas",
   table: "aerolinea",
