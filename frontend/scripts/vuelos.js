@@ -96,7 +96,7 @@ async function reservarVueloDesdeResultados(vuelo) {
       'Tenés que iniciar sesión para reservar un vuelo. ¿Querés ir al login ahora?'
     );
     if (irLogin) {
-      window.location.href = './pages/login.html'; 
+      window.location.href = "./login.html"; 
     }
     return;
   }
