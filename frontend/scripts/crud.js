@@ -107,7 +107,7 @@ const ENTITIES = {
     canCreate: false,
     fields: [
       { name: 'id_reserva', label: 'Codigo Reserva', isPk: true, readOnly: true },
-      { name: 'id_usuario', label: 'Usuario', required: true, type: 'select', dynamicOptions: 'usuarios' },
+      {name: 'id_usuario',label: 'Usuario',type: 'select',dynamicOptions: 'usuarios',required: true},
       { name: 'id_vuelo', label: 'ID vuelo', required: true },
       { name: 'asiento', label: 'Asiento', required: true },
       { name: 'fecha_reserva', label: 'Fecha reserva', readOnly: true }
@@ -346,8 +346,18 @@ async function openCreateForm(entityKey, token) {
 
 async function openEditForm(entityKey, entity, row, token) {
   const prepared = await prepareEntityForForm(entity, token);
-  buildForm(entityKey, prepared, row, token, 'edit');
 
+  if (!row.id_usuario && row.nombre_usuario) {
+    const usuarios = await loadUsuariosLookup(token);
+    const match = usuarios.find(u =>
+      u.label.includes(row.nombre_usuario)
+    );
+    if (match) {
+      row.id_usuario = match.value;
+    }
+  }
+
+  buildForm(entityKey, prepared, row, token, 'edit');
 }
 
 function buildForm(entityKey, entity, data, token, mode) {
