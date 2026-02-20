@@ -121,7 +121,7 @@ const ENTITIES = {
     label: 'Reservas',
     endpoint: '/api/admin/reservas',
     idField: 'id_reserva',
-    canCreate: false,
+    canCreate: true,
     fields: [
       { name: 'id_reserva', label: 'Codigo Reserva', isPk: true, readOnly: true },
       {name: 'id_usuario',label: 'Usuario',type: 'select',dynamicOptions: 'usuarios',required: true},
@@ -454,7 +454,10 @@ function buildForm(entityKey, entity, data, token, mode) {
 
     if (field.readOnly || (field.isPk && isEdit)) {
       input.readOnly = true;
-      input.disabled = true;
+
+      if (!field.required) {
+        input.disabled = true;
+      }
     }
 
     colDiv.appendChild(label);
