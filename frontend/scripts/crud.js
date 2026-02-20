@@ -24,9 +24,9 @@ async function loadAerolineasLookup(token) {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   const data = await resp.json();
-  return data.map(a => ({ 
-    value: a.nombre_aerolinea, 
-    label: a.nombre_aerolinea 
+  return data.map(a => ({
+    value: a.nombre_aerolinea,
+    label: a.nombre_aerolinea
   }));
 }
 
@@ -35,10 +35,10 @@ async function loadAeropuertosLookup(token) {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   const data = await resp.json();
-  
-  return data.map(a => ({ 
-    value: a.nombre_aeropuerto, 
-    label: `${a.ciudad} - ${a.nombre_aeropuerto}` 
+
+  return data.map(a => ({
+    value: a.nombre_aeropuerto,
+    label: `${a.ciudad} - ${a.nombre_aeropuerto}`
   }));
 }
 
@@ -47,9 +47,9 @@ async function loadEstadiosLookup(token) {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   const data = await resp.json();
-  return data.map(e => ({ 
-    value: e.nombre_estadio, 
-    label: e.nombre_estadio 
+  return data.map(e => ({
+    value: e.nombre_estadio,
+    label: e.nombre_estadio
   }));
 }
 
@@ -113,11 +113,11 @@ const ENTITIES = {
     canCreate: true,
     fields: [
       { name: 'id_vuelo', label: 'ID', isPk: true, readOnly: true },
-      { name: 'nombre_aerolinea', label: 'Aerolínea (Nombre)', required: true }, 
+      { name: 'nombre_aerolinea', label: 'Aerolínea (Nombre)', required: true },
       { name: 'aeropuerto_origen', label: 'Aeropuerto Origen', type: 'select', dynamicOptions: 'aeropuertos', required: true },
       { name: 'aeropuerto_destino', label: 'Aeropuerto Destino', type: 'select', dynamicOptions: 'aeropuertos', required: true },
-      { name: 'fecha_salida', label: 'Salida', required: true },
-      { name: 'fecha_llegada', label: 'Llegada', required: true },
+      { name: 'fecha_salida', label: 'Salida (DD/MM/YYYY HH:mm)', required: true },
+      { name: 'fecha_llegada', label: 'Llegada (DD/MM/YYYY HH:mm)', required: true },
       { name: 'capacidad', label: 'Capacidad', required: true },
       { name: 'precio', label: 'Precio', required: true }
     ],
@@ -140,7 +140,7 @@ const ENTITIES = {
     canCreate: true,
     fields: [
       { name: 'id_reserva', label: 'Codigo Reserva', isPk: true, readOnly: true },
-      {name: 'id_usuario',label: 'Usuario',type: 'select',dynamicOptions: 'usuarios',required: true},
+      { name: 'id_usuario', label: 'Usuario', type: 'select', dynamicOptions: 'usuarios', required: true },
       { name: 'id_vuelo', label: 'ID vuelo', required: true },
       { name: 'asiento', label: 'Asiento', required: true },
     ],

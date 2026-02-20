@@ -270,13 +270,49 @@ app.put("/api/admin/vuelos/:id", authMiddleware, requireAdmin, async (req, res) 
   }
 });
 
+app.post("/api/admin/vuelos", authMiddleware, requireAdmin, async (req, res) => {
+  const { nombre_aerolinea, aeropuerto_origen, aeropuerto_destino, fecha_salida, fecha_llegada, capacidad, precio } = req.body;
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+
+    let resAero = await client.query("SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = $1", [nombre_aerolinea]);
+    let id_aerolinea = resAero.rowCount > 0 ? resAero.rows[0].id_aerolinea : (await client.query("INSERT INTO aerolinea (nombre_aerolinea, codigo_iata) VALUES ($1, $2) RETURNING id_aerolinea", [nombre_aerolinea, Math.random().toString(36).substring(2, 5).toUpperCase()])).rows[0].id_aerolinea;
+
+
+    const resOri = await client.query("SELECT id_aeropuerto FROM aeropuertos WHERE nombre_aeropuerto = $1", [aeropuerto_origen]);
+    const resDest = await client.query("SELECT id_aeropuerto FROM aeropuertos WHERE nombre_aeropuerto = $1", [aeropuerto_destino]);
+
+    if (resOri.rowCount === 0 || resDest.rowCount === 0) throw new Error("Verificá los nombres de los aeropuertos.");
+
+
+    const result = await client.query(
+      `INSERT INTO vuelos(id_aerolinea, id_aeropuerto_origen, id_aeropuerto_destino, fecha_salida, fecha_llegada, capacidad, precio)
+       VALUES($1, $2, $3, TO_TIMESTAMP($4, 'DD/MM/YYYY HH24:MI'), TO_TIMESTAMP($5, 'DD/MM/YYYY HH24:MI'), $6, $7) 
+       RETURNING *`,
+      [id_aerolinea, resOri.rows[0].id_aeropuerto, resDest.rows[0].id_aeropuerto, fecha_salida, fecha_llegada, capacidad, precio]
+    );
+
+    await client.query("COMMIT");
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
 app.put("/api/admin/partidos_mundial/:id", authMiddleware, requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { equipo_nombre, nombre_estadio, fecha_partido } = req.body;
 
   try {
     const resEstadio = await pool.query(
-      "SELECT id_estadio FROM estadios WHERE TRIM(nombre_estadio) ILIKE TRIM($1)", 
+      "SELECT id_estadio FROM estadios WHERE TRIM(nombre_estadio) ILIKE TRIM($1)",
       [nombre_estadio]
     );
 
@@ -948,8 +984,8 @@ app.post("/api/reservas", authMiddleware, async (req, res) => {
       return res.status(409).json({ error: "El asiento ya está reservado." });
     }
 
-        const result = await pool.query(
-            `
+    const result = await pool.query(
+      `
             INSERT INTO reservas (id_usuario, id_vuelo, asiento)
             VALUES ($1, $2, $3)
             RETURNING id_reserva, id_vuelo, asiento;
