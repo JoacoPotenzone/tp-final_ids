@@ -312,7 +312,7 @@ app.put("/api/admin/partidos_mundial/:id", authMiddleware, requireAdmin, async (
 
   try {
     const resEstadio = await pool.query(
-      "SELECT id_estadio FROM estadios WHERE TRIM(nombre_estadio) ILIKE TRIM($1)",
+      "SELECT id_estadio FROM estadios WHERE nombre_estadio ILIKE $1",
       [nombre_estadio]
     );
 
@@ -323,9 +323,9 @@ app.put("/api/admin/partidos_mundial/:id", authMiddleware, requireAdmin, async (
     const id_estadio_numerico = resEstadio.rows[0].id_estadio;
     await pool.query(
       `UPDATE partidos_mundial 
-       SET equipo_nombre = $1, 
-           id_estadio = $2, 
-           fecha_partido = TO_DATE($3, 'DD/MM/YYYY') 
+          SET equipo_nombre = $1, 
+            id_estadio = $2, 
+            fecha_partido = TO_DATE($3, 'DD/MM/YYYY') 
        WHERE id_partido = $4`,
       [equipo_nombre, id_estadio_numerico, fecha_partido, id]
     );
@@ -334,6 +334,34 @@ app.put("/api/admin/partidos_mundial/:id", authMiddleware, requireAdmin, async (
   } catch (err) {
     console.error("Error actualizando partido:", err);
     res.status(500).json({ error: "Error interno al actualizar el partido" });
+  }
+});
+
+app.post("/api/admin/partidos_mundial", authMiddleware, requireAdmin, async (req, res) => {
+  const { equipo_nombre, nombre_estadio, fecha_partido } = req.body;
+  try {
+    
+    const resEstadio = await pool.query(
+      "SELECT id_estadio FROM estadios WHERE nombre_estadio ILIKE $1", 
+      [nombre_estadio]
+    );
+
+    if (resEstadio.rowCount === 0) {
+      return res.status(400).json({ error: `El estadio '${nombre_estadio}' no existe en la DB.` });
+    }
+
+    const id_estadio = resEstadio.rows[0].id_estadio;
+
+    await pool.query(
+      `INSERT INTO partidos_mundial (equipo_nombre, id_estadio, fecha_partido)
+       VALUES ($1, $2, TO_DATE($3, 'DD/MM/YYYY'))`,
+      [equipo_nombre, id_estadio, fecha_partido]
+    );
+
+    res.status(201).json({ message: "Partido creado con éxito" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error interno al crear el partido" });
   }
 });
 

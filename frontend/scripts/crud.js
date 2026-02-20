@@ -161,8 +161,8 @@ const ENTITIES = {
     canCreate: true,
     fields: [
       { name: 'equipo_nombre', label: 'Equipo', required: true },
-      { name: 'id_estadio', label: 'Estadio', type: 'select', dynamicOptions: 'estadios', required: true },
-      { name: 'fecha_partido', label: 'Fecha del partido', required: true }
+      { name: 'nombre_estadio', label: 'Estadio', type: 'select', dynamicOptions: 'estadios', required: true },
+      { name: 'fecha_partido', label: 'Fecha (DD/MM/YYYY)', required: true }
     ],
     listFields: [
       { name: 'equipo_nombre', label: 'Equipo' },
