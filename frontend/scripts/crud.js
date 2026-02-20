@@ -48,7 +48,7 @@ const ENTITIES = {
     idField: 'id_vuelo',
     canCreate: true,
     fields: [
-      // { name: 'id_vuelo', label: 'ID', isPk: true, readOnly: true },
+      { name: 'id_vuelo', label: 'ID', isPk: true, readOnly: true },
       { name: 'nombre_aerolinea', label: 'Nombre Aerolínea', required: true },
       { name: 'aeropuerto_origen', label: 'Aeropuerto Origen', required: true },
       { name: 'aeropuerto_destino', label: 'Aeropuerto Destino', required: true },
@@ -58,7 +58,7 @@ const ENTITIES = {
       { name: 'precio', label: 'Precio', required: true }
     ],
     listFields: [
-      // { name: 'id_vuelo', label: 'ID', isPk: true, readOnly: true },
+      { name: 'id_vuelo', label: 'ID', isPk: true, readOnly: true },
       { name: 'nombre_aerolinea', label: 'Aerolínea' },
       { name: 'aeropuerto_origen', label: 'Origen' },
       { name: 'aeropuerto_destino', label: 'Destino' },
