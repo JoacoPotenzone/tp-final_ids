@@ -113,16 +113,6 @@ h5{
 
 }
 
-footer{
-    background:blue;
-    color:white;
-    text-align:center;
-    padding: 15px;
-    position:static;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
 .form-card {
     background-color: var(--color-bg-card);
     padding: 40px;

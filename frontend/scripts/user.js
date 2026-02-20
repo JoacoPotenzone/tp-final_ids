@@ -352,7 +352,7 @@ if (deleteAccountForm) {
       alert("Cuenta eliminada correctamente");
 
       localStorage.removeItem("token");
-      window.location.href = "/pages/login.html";
+      window.location.href = "./login.html";
     } catch (err) {
       console.error(err);
       alert("Error de red al eliminar la cuenta");

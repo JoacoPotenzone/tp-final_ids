@@ -1,245 +1,229 @@
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-        <title>MatchAirlines</title>
-        <link rel="icon" href="./sources/avion-trayectoria-vuelo-circular.png" type="image/x-icon">
-        <link rel="stylesheet" href="../styles/usuario.css">
-    </head>
-    <body>
-        <header>
-          <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-              <a class="navbar-brand" href="../index.html">MatchAirlines</a>
-              <div class="collapse navbar-collapse " id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                  <li class="nav-item">
-                    <a class="nav-link" href="./login.html">Login/Register</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="./usuario.html"><img src="../sources/user_icon_143482.svg" alt="icono-usuario"></a>
-                  </li>
-                </ul>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="../styles/usuario.css">
+  <link rel="icon" href="../sources/avion-trayectoria-vuelo-circular.png" type="image/x-icon">
+  <title>MatchAirlines</title>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+  <header>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="../index.html">MatchAirlines</a>
+        <div class="collapse navbar-collapse " id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="./login.html">Login/Register</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./usuario.html"><img src="../sources/user_icon_143482.svg"
+                  alt="icono-usuario"></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container my-5 flex-grow-1">
+    <div class="row g-4">
+      <section class="col-12 col-md-4">
+        <div class="card p-4 text-center">
+          <div id="user-avatar" class="usuario-avatar mx-auto mb-3"></div>
+          <h4 id="user-name" class="mb-1">Nombre del Usuario</h4>
+          <p id="user-email" class="text-muted mb-3">usuario@ejemplo.com</p>
+          <button id="logout-btn" class="btn btn-outline-danger w-100">Cerrar sesión</button>
+        </div>
+      </section>
+
+      <section class="col-12 col-md-8">
+        <div class="card p-4">
+          <div class="nav nav-tabs mb-3" id="userTab" role="tablist">
+            <button class="tab-button active" id="datos-tab" data-bs-toggle="tab" data-bs-target="#datos-panel"
+              type="button" role="tab" aria-controls="datos-panel" aria-selected="true">
+              Datos personales
+            </button>
+            <button class="tab-button" id="vuelos-tab" data-bs-toggle="tab" data-bs-target="#vuelos-panel" type="button"
+              role="tab" aria-controls="vuelos-panel" aria-selected="false">
+              Mis vuelos
+            </button>
+            <button class="tab-button " id="config-tab" data-bs-toggle="tab" data-bs-target="#config-panel"
+              type="button" role="tab" aria-controls="config-panel" aria-selected="false">
+              Configuración
+            </button>
+          </div>
+          <div class="tab-content" id="userTabContent">
+            <div class="tab-pane fade show active" id="datos-panel" role="tabpanel" aria-labelledby="datos-tab">
+              <form id="user-form">
+                <div class="mb-3">
+                  <label for="nombre" class="form-label">Nombre completo</label>
+                  <input type="text" class="form-control" id="nombre" />
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="email" />
+                </div>
+                <div class="mb-3">
+                  <label for="pais" class="form-label">Nacionalidad</label>
+                  <input type="text" class="form-control" id="pais" />
+                </div>
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary-dark">Guardar cambios</button>
+                </div>
+              </form>
+            </div>
+            <div class="tab-pane fade" id="vuelos-panel" role="tabpanel" aria-labelledby="vuelos-tab">
+              <div class="text-center">
+                <button id="add-flight-btn" class="btn btn-primary-dark mb-3">
+                  Agregar vuelo reservado
+                </button>
+              </div>
+              <form id="flight-form" class="card p-3 mb-3 d-none">
+                <h6 class="mb-3">Datos del vuelo</h6>
+                <div>
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Aerolínea</label>
+                    <input name="airline_name" class="form-control" required>
+                  </div>
+                  <div class="col-md-3 mb-4">
+                    <label class="form-label">Código IATA aerolínea</label>
+                    <input name="airline_code" class="form-control" maxlength="3" required>
+                  </div>
+                </div>
+                <h6 class="mt-3">Origen</h6>
+                <div class="row">
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Aeropuerto origen</label>
+                    <input name="origin_name" class="form-control" required>
+                  </div>
+                  <div class="col-md-3 mb-2">
+                    <label class="form-label">Ciudad</label>
+                    <input name="origin_city" class="form-control" required>
+                  </div>
+                  <div class="col-md-3 mb-2">
+                    <label class="form-label">País</label>
+                    <input name="origin_country" class="form-control" required>
+                  </div>
+                  <div class="col-md-3 mb-2">
+                    <label class="form-label">Código IATA origen</label>
+                    <input name="origin_code" class="form-control" maxlength="3" required>
+                  </div>
+                </div>
+                <h6 class="mt-3">Destino</h6>
+                <div class="row">
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Aeropuerto destino</label>
+                    <input name="dest_name" class="form-control" required>
+                  </div>
+                  <div class="col-md-3 mb-2">
+                    <label class="form-label">Ciudad</label>
+                    <input name="dest_city" class="form-control" required>
+                  </div>
+                  <div class="col-md-3 mb-2">
+                    <label class="form-label">País</label>
+                    <input name="dest_country" class="form-control" required>
+                  </div>
+                  <div class="col-md-3 mb-2">
+                    <label class="form-label">Código IATA destino</label>
+                    <input name="dest_code" class="form-control" maxlength="3" required>
+                  </div>
+                </div>
+                <h6 class="mt-3">Detalles del vuelo</h6>
+                <div class="row">
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">Fecha y hora de salida</label>
+                    <input type="datetime-local" name="departure" class="form-control" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="arrival" class="form-label">Fecha y hora de llegada</label>
+                    <input type="datetime-local" id="arrival" name="arrival" class="form-control" required>
+                  </div>
+                  <div class="col-md-3 mb-2">
+                    <label class="form-label">Asiento</label>
+                    <input name="seat" class="form-control" required>
+                  </div>
+                  <div class="col-md-3 mb-2">
+                    <label class="form-label">Precio</label>
+                    <input type="number" step="0.01" name="price" class="form-control" required>
+                  </div>
+                </div>
+                <div class="mt-3 text-end">
+                  <button type="submit" class="btn btn-primary-dark">Guardar vuelo</button>
+                </div>
+              </form>
+              <div id="flights-container" class="flights-list alert alert-info">
+                Todavía no tenés vuelos asociados a tu cuenta.
               </div>
             </div>
-          </nav>
-        </header>
-
-        <main class="container my-5 flex-grow-1">
-          <div class="row g-4">
-            <section class="col-12 col-md-4">
-              <div class="card p-4 text-center">
-                <div id="user-avatar" class="usuario-avatar mx-auto mb-3"></div>
-                <h4 id="user-name" class="mb-1">Nombre del Usuario</h4>
-                <p id="user-email" class="text-muted mb-3">usuario@ejemplo.com</p>
-                <button id="logout-btn" class="btn btn-outline-danger w-100">Cerrar sesión</button>
-              </div>
-            </section>
-
-            <section class="col-12 col-md-8">
-              <div class="card p-4">
-                <div class="nav nav-tabs mb-3" id="userTab" role="tablist">
-                    <button
-                      class="tab-button active"
-                      id="datos-tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#datos-panel"
-                      type="button"
-                      role="tab"
-                      aria-controls="datos-panel"
-                      aria-selected="true"
-                    >
-                      Datos personales
-                    </button>
-                    <button
-                      class="tab-button"
-                      id="vuelos-tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#vuelos-panel"
-                      type="button"
-                      role="tab"
-                      aria-controls="vuelos-panel"
-                      aria-selected="false"
-                    >
-                      Mis vuelos
-                    </button>
-                    <button
-                      class="tab-button "
-                      id="config-tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#config-panel"
-                      type="button"
-                      role="tab"
-                      aria-controls="config-panel"
-                      aria-selected="false" 
-                    >
-                      Configuración
-                    </button>
+            <div class="tab-pane fade text-center" id="config-panel" role="tabpanel" aria-labelledby="config-tab">
+              <h3>Administracion de cuenta</h3>
+              <div>
+                <div class="d-flex gap-5 mx-5 px-4 ">
+                  <button id="btn-change-password" type="button" class="btn btn-primary-dark">
+                    Cambiar contraseña
+                  </button>
+                  <button id="btn-delete-account" type="button" class="btn btn-outline-danger">
+                    Eliminar cuenta
+                  </button>
                 </div>
-                <div class="tab-content" id="userTabContent">
-                  <div class="tab-pane fade show active" id="datos-panel" role="tabpanel" aria-labelledby="datos-tab">
-                    <form id="user-form">
-                      <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre completo</label>
-                        <input type="text" class="form-control" id="nombre"/>
-                      </div>
-                      <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email"/>
-                      </div>
-                      <div class="mb-3">
-                        <label for="pais" class="form-label">Nacionalidad</label>
-                        <input type="text" class="form-control" id="pais"/>
-                      </div>
-                      <div class="text-center">
-                        <button type="submit" class="btn btn-primary-dark">Guardar cambios</button>
-                      </div>
-                    </form>
-                  </div>
-                  <div class="tab-pane fade" id="vuelos-panel" role="tabpanel" aria-labelledby="vuelos-tab">
-                    <div class="text-center">
-                      <button id="add-flight-btn" class="btn btn-primary-dark mb-3">
-                        Agregar vuelo reservado
-                      </button>
-                    </div> 
-                      <form id="flight-form" class="card p-3 mb-3 d-none">
-                        <h6 class="mb-3">Datos del vuelo</h6>
-                        <div>
-                          <div class="col-md-6 mb-2">
-                            <label class="form-label">Aerolínea</label>
-                            <input name="airline_name" class="form-control" required>
-                          </div>
-                          <div class="col-md-3 mb-4">
-                            <label class="form-label">Código IATA aerolínea</label>
-                            <input name="airline_code" class="form-control" maxlength="3" required>
-                          </div>
-                        </div>
-                        <h6 class="mt-3">Origen</h6>
-                        <div class="row">
-                          <div class="col-md-6 mb-2">
-                            <label class="form-label">Aeropuerto origen</label>
-                            <input name="origin_name" class="form-control" required>
-                          </div>
-                          <div class="col-md-3 mb-2">
-                            <label class="form-label">Ciudad</label>
-                            <input name="origin_city" class="form-control" required>
-                          </div>
-                          <div class="col-md-3 mb-2">
-                            <label class="form-label">País</label>
-                            <input name="origin_country" class="form-control" required>
-                          </div>
-                          <div class="col-md-3 mb-2">
-                            <label class="form-label">Código IATA origen</label>
-                            <input name="origin_code" class="form-control" maxlength="3" required>
-                          </div>
-                        </div>
-                        <h6 class="mt-3">Destino</h6>
-                        <div class="row">
-                          <div class="col-md-6 mb-2">
-                            <label class="form-label">Aeropuerto destino</label>
-                            <input name="dest_name" class="form-control" required>
-                          </div>
-                          <div class="col-md-3 mb-2">
-                            <label class="form-label">Ciudad</label>
-                            <input name="dest_city" class="form-control" required>
-                          </div>
-                          <div class="col-md-3 mb-2">
-                            <label class="form-label">País</label>
-                            <input name="dest_country" class="form-control" required>
-                          </div>
-                          <div class="col-md-3 mb-2">
-                            <label class="form-label">Código IATA destino</label>
-                            <input name="dest_code" class="form-control" maxlength="3" required>
-                          </div>
-                        </div>
-                        <h6 class="mt-3">Detalles del vuelo</h6>
-                        <div class="row">
-                          <div class="col-md-6 mb-2">
-                            <label class="form-label">Fecha y hora de salida</label>
-                            <input type="datetime-local" name="departure" class="form-control" required>
-                          </div>
-                          <div class="col-md-6">
-                            <label for="arrival" class="form-label">Fecha y hora de llegada</label>
-                            <input type="datetime-local" id="arrival" name="arrival" class="form-control" required>
-                          </div>
-                          <div class="col-md-3 mb-2">
-                            <label class="form-label">Asiento</label>
-                            <input name="seat" class="form-control" required>
-                          </div>
-                          <div class="col-md-3 mb-2">
-                            <label class="form-label">Precio</label>
-                            <input type="number" step="0.01" name="price" class="form-control" required>
-                          </div>
-                        </div>
-                        <div class="mt-3 text-end">
-                          <button type="submit" class="btn btn-primary-dark">Guardar vuelo</button>
-                        </div>
-                      </form>
-                      <div id="flights-container" class="flights-list alert alert-info">
-                        Todavía no tenés vuelos asociados a tu cuenta.
-                      </div>
-                  </div>
-                  <div class="tab-pane fade text-center" id="config-panel" role="tabpanel" aria-labelledby="config-tab">
-                    <h3>Administracion de cuenta</h3>
-                    <div>
-                      <div class="d-flex gap-5 mx-5 px-4 ">
-                        <button id="btn-change-password" type="button" class="btn btn-primary-dark">
-                          Cambiar contraseña
-                        </button>
-                        <button id="btn-delete-account" type="button" class="btn btn-outline-danger">
-                          Eliminar cuenta
-                        </button>
-                      </div>
-                      <div class="mt-4">
-                        <form id="change-password-form" class="card p-3 mb-3 text-center mx-auto" style="display:none; max-width:400px;">
-                          <h5 class="mb-3">Cambiar contraseña</h5>
-                          <div class="mb-3">
-                            <label for="current-password" class="form-label">Contraseña actual</label>
-                            <input type="password" class="form-control" id="current-password" required>
-                          </div>
-                          <div class="mb-3">
-                            <label for="new-password" class="form-label">Nueva contraseña</label>
-                            <input type="password" class="form-control" id="new-password" required>
-                          </div>
-                          <div class="mb-3">
-                            <label for="confirm-password" class="form-label">Repetir nueva contraseña</label>
-                            <input type="password" class="form-control" id="confirm-password" required>
-                          </div>
-                          <button type="submit" class="btn btn-primary-dark">Guardar nueva contraseña</button>
-                        </form>
-                      </div>
-                      <div>
-                        <form id="delete-account-form" class="card p-3 mx-auto" style="display:none; max-width:400px;">
-                          <h5 class="mb-3 text-danger">Eliminar cuenta</h5>
-                          <p class="text-muted">
-                            Esta acción es permanente. Se eliminarán tus reservas y tu usuario.
-                          </p>
-                          <div class="mb-3">
-                            <label for="delete-password" class="form-label">Confirmá tu contraseña</label>
-                            <input type="password" class="form-control" id="delete-password" required>
-                          </div>
-                          <button type="submit" class="btn btn-danger">Eliminar definitivamente</button>
-                        </form>
-                        <div id="admin-link-wrapper" class="mt-4 d-none">
-                          <a href="./crud.html" class="btn btn-warning">Ir al panel de administración</a>
-                        </div>
-                      </div>
+                <div class="mt-4">
+                  <form id="change-password-form" class="card p-3 mb-3 text-center mx-auto"
+                    style="display:none; max-width:400px;">
+                    <h5 class="mb-3">Cambiar contraseña</h5>
+                    <div class="mb-3">
+                      <label for="current-password" class="form-label">Contraseña actual</label>
+                      <input type="password" class="form-control" id="current-password" required>
                     </div>
+                    <div class="mb-3">
+                      <label for="new-password" class="form-label">Nueva contraseña</label>
+                      <input type="password" class="form-control" id="new-password" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="confirm-password" class="form-label">Repetir nueva contraseña</label>
+                      <input type="password" class="form-control" id="confirm-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary-dark">Guardar nueva contraseña</button>
+                  </form>
+                </div>
+                <div>
+                  <form id="delete-account-form" class="card p-3 mx-auto" style="display:none; max-width:400px;">
+                    <h5 class="mb-3 text-danger">Eliminar cuenta</h5>
+                    <p class="text-muted">
+                      Esta acción es permanente. Se eliminarán tus reservas y tu usuario.
+                    </p>
+                    <div class="mb-3">
+                      <label for="delete-password" class="form-label">Confirmá tu contraseña</label>
+                      <input type="password" class="form-control" id="delete-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Eliminar definitivamente</button>
+                  </form>
+                  <div id="admin-link-wrapper" class="mt-4 d-none">
+                    <a href="./crud.html" class="btn btn-warning">Ir al panel de administración</a>
                   </div>
                 </div>
-              </div>  
-            </section>
+              </div>
+            </div>
           </div>
-        </main>
-        <footer class="bg-dark text-center text-white p-3 mt-3">
-            <h4>2025 MatchAirlines — tp_Final Introducción al desarrollo de software (Camejo) </h4>
-            <h5>Trabajo práctico programado, desarrollado y pensado por:</h5>
-            <h5>Ignacio García, Joaquín Potenzone y Paco Pozo.</h5>
-        </footer>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        <script src="../scripts/session.js"></script>
-        <script src="../scripts/user.js"></script>
-      </body>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer class="bg-dark text-center text-white p-3 mt-3">
+    <h4>2025 MatchAirlines — tp_Final Introducción al desarrollo de software (Camejo) </h4>
+    <h5>Trabajo práctico programado, desarrollado y pensado por:</h5>
+    <h5>Ignacio García, Joaquín Potenzone y Paco Pozo.</h5>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script src="../scripts/session.js"></script>
+  <script src="../scripts/user.js"></script>
+</body>
+
 </html>
