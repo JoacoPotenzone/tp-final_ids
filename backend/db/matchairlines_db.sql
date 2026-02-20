@@ -43,7 +43,6 @@ CREATE TABLE IF NOT EXISTS reservas (
     id_usuario INT NOT NULL,
     id_vuelo INT NOT NULL,
     asiento VARCHAR(5) NOT NULL,
-    fecha_reserva TIMESTAMP NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario),
     FOREIGN KEY (id_vuelo) REFERENCES vuelos (id_vuelo),
     UNIQUE (id_vuelo, asiento)
@@ -197,13 +196,13 @@ VALUES
    ('Lumen Field', 'Seattle', 23, 'Estados Unidos');
 
 
-INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
+INSERT INTO reservas (id_usuario, id_vuelo, asiento)
 VALUES
-	(4, 1, '12A', '2024-06-15 09:00:00'),
-	(5, 2, '14B', '2024-06-16 10:30:00'),
-	(3, 3, '16C', '2024-06-17 11:45:00'),
-	(1, 4, '18D', '2024-06-18 12:00:00'),
-	(5, 5, '20E', '2024-06-19 13:10:00');
+	(4, 1, '12A'),
+	(5, 2, '14B'),
+	(3, 3, '16C'),
+	(1, 4, '18D'),
+	(5, 5, '20E');
 
 
 INSERT INTO partidos_mundial (equipo_nombre, id_estadio, fecha_partido)

@@ -250,7 +250,7 @@ createAdminCrudRoutes({
   key: "reservas",
   table: "reservas",
   idField: "id_reserva",
-  fields: ["id_usuario", "id_vuelo", "asiento", "fecha_reserva"],
+  fields: ["id_usuario", "id_vuelo", "asiento"],
 });
 
 
@@ -640,8 +640,8 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
       const vuelo = vueloResult.rows[0];
       const reservaResult = await client.query(
         `
-        INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
-        VALUES ($1, $2, $3, NOW())
+        INSERT INTO reservas (id_usuario, id_vuelo, asiento)
+        VALUES ($1, $2, $3)
         RETURNING id_reserva, asiento;
         `,
         [userId, vuelo.id_vuelo, seat]
@@ -843,8 +843,8 @@ app.post("/api/reservas", authMiddleware, async (req, res) => {
 
         const result = await pool.query(
             `
-            INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
-            VALUES ($1, $2, $3, NOW())
+            INSERT INTO reservas (id_usuario, id_vuelo, asiento)
+            VALUES ($1, $2, $3)
             RETURNING id_reserva, id_vuelo, asiento;
             `,
             [userId, id_vuelo, asiento]
