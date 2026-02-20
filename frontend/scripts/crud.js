@@ -20,21 +20,37 @@ async function loadUsuariosLookup(token) {
 }
 
 async function loadAerolineasLookup(token) {
-  const resp = await fetch(`${API_BASE_URL}/api/admin/aerolineas`, { headers: { 'Authorization': `Bearer ${token}` } });
+  const resp = await fetch(`${API_BASE_URL}/api/admin/aerolineas`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
   const data = await resp.json();
-  return data.map(a => ({ value: a.id_aerolinea, label: a.nombre_aerolinea }));
+  return data.map(a => ({ 
+    value: a.nombre_aerolinea, 
+    label: a.nombre_aerolinea 
+  }));
 }
 
 async function loadAeropuertosLookup(token) {
-  const resp = await fetch(`${API_BASE_URL}/api/admin/aeropuertos`, { headers: { 'Authorization': `Bearer ${token}` } });
+  const resp = await fetch(`${API_BASE_URL}/api/admin/aeropuertos`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
   const data = await resp.json();
-  return data.map(a => ({ value: a.id_aeropuerto, label: `${a.ciudad} - ${a.nombre_aeropuerto}` }));
+  
+  return data.map(a => ({ 
+    value: a.nombre_aeropuerto, 
+    label: `${a.ciudad} - ${a.nombre_aeropuerto}` 
+  }));
 }
 
 async function loadEstadiosLookup(token) {
-  const resp = await fetch(`${API_BASE_URL}/api/admin/estadios`, { headers: { 'Authorization': `Bearer ${token}` } });
+  const resp = await fetch(`${API_BASE_URL}/api/admin/estadios`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
   const data = await resp.json();
-  return data.map(e => ({ value: e.id_estadio, label: e.nombre_estadio }));
+  return data.map(e => ({ 
+    value: e.nombre_estadio, 
+    label: e.nombre_estadio 
+  }));
 }
 
 async function prepareEntityForForm(entity, token) {
@@ -98,8 +114,8 @@ const ENTITIES = {
     fields: [
       { name: 'id_vuelo', label: 'ID', isPk: true, readOnly: true },
       { name: 'nombre_aerolinea', label: 'Aerolínea (Nombre)', required: true }, 
-      { name: 'aeropuerto_origen', label: 'Aeropuerto Origen', required: true },
-      { name: 'aeropuerto_destino', label: 'Aeropuerto Destino', required: true },
+      { name: 'aeropuerto_origen', label: 'Aeropuerto Origen', type: 'select', dynamicOptions: 'aeropuertos', required: true },
+      { name: 'aeropuerto_destino', label: 'Aeropuerto Destino', type: 'select', dynamicOptions: 'aeropuertos', required: true },
       { name: 'fecha_salida', label: 'Salida', required: true },
       { name: 'fecha_llegada', label: 'Llegada', required: true },
       { name: 'capacidad', label: 'Capacidad', required: true },

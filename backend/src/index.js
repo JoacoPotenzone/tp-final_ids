@@ -159,7 +159,7 @@ app.get("/api/admin/usuarios", authMiddleware, requireAdmin, async (req, res) =>
     res.status(500).json({ error: "Error obteniendo usuarios" });
   }
 });
-
+//usuarios
 app.post("/api/admin/usuarios", authMiddleware, requireAdmin, async (req, res) => {
   const { nombre_usuario, email, nacionalidad, rol, password } = req.body;
 
@@ -228,7 +228,7 @@ app.put("/api/admin/usuarios/:id", authMiddleware, requireAdmin, async (req, res
     res.status(500).json({ error: "Error actualizando usuario" });
   }
 });
-
+//vuelos
 app.put("/api/admin/vuelos/:id", authMiddleware, requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { nombre_aerolinea, aeropuerto_origen, aeropuerto_destino, fecha_salida, fecha_llegada, capacidad, precio } = req.body;
@@ -242,10 +242,10 @@ app.put("/api/admin/vuelos/:id", authMiddleware, requireAdmin, async (req, res) 
     if (resAero.rowCount > 0) {
       id_aerolinea = resAero.rows[0].id_aerolinea;
     } else {
-      const iata = nombre_aerolinea.substring(0, 3).toUpperCase();
+      const iataAleatorio = Math.random().toString(36).substring(2, 5).toUpperCase();
       const newAero = await client.query(
         "INSERT INTO aerolinea (nombre_aerolinea, codigo_iata) VALUES ($1, $2) RETURNING id_aerolinea",
-        [nombre_aerolinea, iata]
+        [nombre_aerolinea, iataAleatorio]
       );
       id_aerolinea = newAero.rows[0].id_aerolinea;
     }
@@ -264,9 +264,40 @@ app.put("/api/admin/vuelos/:id", authMiddleware, requireAdmin, async (req, res) 
   } catch (err) {
     await client.query("ROLLBACK");
     console.error(err);
-    res.status(500).json({ error: "Error al actualizar el vuelo" });
+    res.status(500).json({ error: err.message || "Error al crear el vuelo" });
   } finally {
     client.release();
+  }
+});
+
+app.put("/api/admin/partidos_mundial/:id", authMiddleware, requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { equipo_nombre, nombre_estadio, fecha_partido } = req.body;
+
+  try {
+    const resEstadio = await pool.query(
+      "SELECT id_estadio FROM estadios WHERE TRIM(nombre_estadio) ILIKE TRIM($1)", 
+      [nombre_estadio]
+    );
+
+    if (resEstadio.rowCount === 0) {
+      return res.status(400).json({ error: "El estadio seleccionado no existe." });
+    }
+
+    const id_estadio_numerico = resEstadio.rows[0].id_estadio;
+    await pool.query(
+      `UPDATE partidos_mundial 
+       SET equipo_nombre = $1, 
+           id_estadio = $2, 
+           fecha_partido = TO_DATE($3, 'DD/MM/YYYY') 
+       WHERE id_partido = $4`,
+      [equipo_nombre, id_estadio_numerico, fecha_partido, id]
+    );
+
+    res.json({ message: "Partido actualizado correctamente" });
+  } catch (err) {
+    console.error("Error actualizando partido:", err);
+    res.status(500).json({ error: "Error interno al actualizar el partido" });
   }
 });
 
@@ -277,7 +308,6 @@ createAdminCrudRoutes({
   fields: ["nombre_aerolinea", "codigo_iata"],
 });
 
-
 createAdminCrudRoutes({
   key: "aeropuertos",
   table: "aeropuertos",
@@ -285,15 +315,21 @@ createAdminCrudRoutes({
   fields: ["nombre_aeropuerto", "ciudad", "pais", "codigo_iata"],
 });
 
-
 createAdminCrudRoutes({
   key: "vuelos",
   table: "vuelos",
   idField: "id_vuelo",
   fields: ["id_aerolinea", "id_aeropuerto_origen", "id_aeropuerto_destino", "fecha_salida", "fecha_llegada", "capacidad", "precio"],
   listQuery: `
-    SELECT v.id_vuelo, al.nombre_aerolinea, ao.nombre_aeropuerto AS aeropuerto_origen, 
-           ad.nombre_aeropuerto AS aeropuerto_destino, v.fecha_salida, v.fecha_llegada, v.capacidad, v.precio 
+    SELECT 
+      v.id_vuelo, 
+      al.nombre_aerolinea, 
+      ao.nombre_aeropuerto AS aeropuerto_origen, 
+      ad.nombre_aeropuerto AS aeropuerto_destino, 
+      TO_CHAR(v.fecha_salida, 'DD/MM/YYYY HH24:MI') AS fecha_salida, 
+      TO_CHAR(v.fecha_llegada, 'DD/MM/YYYY HH24:MI') AS fecha_llegada, 
+      v.capacidad, 
+      v.precio 
     FROM vuelos v 
     JOIN aerolinea al ON v.id_aerolinea = al.id_aerolinea 
     JOIN aeropuertos ao ON v.id_aeropuerto_origen = ao.id_aeropuerto 
@@ -301,21 +337,25 @@ createAdminCrudRoutes({
     ORDER BY v.id_vuelo`
 });
 
-
 createAdminCrudRoutes({
   key: "reservas",
   table: "reservas",
   idField: "id_reserva",
   fields: ["id_usuario", "id_vuelo", "asiento"],
   listQuery: `
-    SELECT r.id_reserva, u.nombre_usuario, u.email, r.id_vuelo, al.nombre_aerolinea, r.asiento 
+    SELECT 
+      r.id_reserva, 
+      u.nombre_usuario, 
+      u.email, 
+      r.id_vuelo, 
+      al.nombre_aerolinea, 
+      r.asiento 
     FROM reservas r 
     JOIN usuarios u ON r.id_usuario = u.id_usuario 
     JOIN vuelos v ON r.id_vuelo = v.id_vuelo 
     JOIN aerolinea al ON v.id_aerolinea = al.id_aerolinea 
     ORDER BY r.id_reserva`
 });
-
 
 createAdminCrudRoutes({
   key: "estadios",
@@ -324,26 +364,25 @@ createAdminCrudRoutes({
   fields: ["nombre_estadio", "ciudad", "pais", "id_aeropuerto"],
 });
 
-
 createAdminCrudRoutes({
   key: "partidos_mundial",
   table: "partidos_mundial",
   idField: "id_partido",
   fields: ["equipo_nombre", "id_estadio", "fecha_partido"],
   listQuery: `
-    SELECT pm.id_partido, pm.equipo_nombre, e.nombre_estadio, pm.fecha_partido 
+    SELECT 
+      pm.id_partido, 
+      pm.equipo_nombre, 
+      e.nombre_estadio, 
+      TO_CHAR(pm.fecha_partido, 'DD/MM/YYYY') AS fecha_partido 
     FROM partidos_mundial pm 
     JOIN estadios e ON pm.id_estadio = e.id_estadio 
     ORDER BY pm.id_partido`
 });
 
-
-
-
 app.listen(PORT, () => {
   console.log("Servidor corriendo en http://localhost:" + PORT);
 });
-
 
 app.get("/usuarios", async (req, res) => {
   try {
