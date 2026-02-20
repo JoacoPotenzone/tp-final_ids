@@ -1,5 +1,36 @@
 const API_BASE_URL = 'http://localhost:3001';
 
+async function loadUsuariosLookup(token) {
+  const resp = await fetch(`${API_BASE_URL}/api/admin/usuarios`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!resp.ok) {
+    throw new Error('No se pudieron cargar usuarios');
+  }
+
+  const usuarios = await resp.json();
+
+  return usuarios.map(u => ({
+    value: u.id_usuario,
+    label: `${u.id_usuario} - ${u.nombre_usuario} (${u.email})`
+  }));
+}
+
+async function prepareEntityForForm(entity, token) {
+  const cloned = JSON.parse(JSON.stringify(entity));
+
+  for (const field of cloned.fields) {
+    if (field.type === 'select' && field.dynamicOptions === 'usuarios') {
+      field.options = await loadUsuariosLookup(token);
+    }
+  }
+
+  return cloned;
+}
+
 const ENTITIES = {
   usuarios: {
     label: 'Usuarios',
@@ -76,7 +107,7 @@ const ENTITIES = {
     canCreate: false,
     fields: [
       { name: 'id_reserva', label: 'Codigo Reserva', isPk: true, readOnly: true },
-      { name: 'id_usuario', label: 'ID usuario', required: true },
+      { name: 'id_usuario', label: 'Usuario', required: true, type: 'select', dynamicOptions: 'usuarios' },
       { name: 'id_vuelo', label: 'ID vuelo', required: true },
       { name: 'asiento', label: 'Asiento', required: true },
       { name: 'fecha_reserva', label: 'Fecha reserva', readOnly: true }
@@ -308,13 +339,15 @@ function renderTable(entityKey, entity, rows, token) {
   }
 }
 
-function openCreateForm(entityKey, token) {
-  const entity = ENTITIES[entityKey];
+async function openCreateForm(entityKey, token) {
+  const entity = await prepareEntityForForm(ENTITIES[entityKey], token);
   buildForm(entityKey, entity, null, token, 'create');
 }
 
-function openEditForm(entityKey, entity, row, token) {
-  buildForm(entityKey, entity, row, token, 'edit');
+async function openEditForm(entityKey, entity, row, token) {
+  const prepared = await prepareEntityForForm(entity, token);
+  buildForm(entityKey, prepared, row, token, 'edit');
+
 }
 
 function buildForm(entityKey, entity, data, token, mode) {
