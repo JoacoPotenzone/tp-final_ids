@@ -213,66 +213,6 @@ app.delete("/api/admin/usuarios/:id", authMiddleware, requireAdmin, async (req, 
   }
 });
 
-app.put("/api/admin/usuarios/:id", authMiddleware, requireAdmin, async (req, res) => {
-  const { id } = req.params;
-  const { nombre_usuario, email, nacionalidad, rol, password } = req.body;
-
-  try {
-    const fields = [];
-    const values = [];
-    let paramIndex = 1;
-
-    if (nombre_usuario !== undefined) {
-      fields.push(`nombre_usuario = $${paramIndex++}`);
-      values.push(nombre_usuario);
-    }
-    if (email !== undefined) {
-      fields.push(`email = $${paramIndex++}`);
-      values.push(email);
-    }
-    if (nacionalidad !== undefined) {
-      fields.push(`nacionalidad = $${paramIndex++}`);
-      values.push(nacionalidad || null);
-    }
-    if (rol !== undefined) {
-      fields.push(`rol = $${paramIndex++}`);
-      values.push(rol);
-    }
-    if (password && password.trim() !== "") {
-      const password_hash = await bcrypt.hash(password, 10);
-      fields.push(`password_hash = $${paramIndex++}`);
-      values.push(password_hash);
-    }
-
-    if (fields.length === 0) {
-      return res.status(400).json({ error: "No se enviaron campos para actualizar" });
-    }
-
-    values.push(id);
-
-    const query = `
-      UPDATE usuarios
-      SET ${fields.join(", ")}
-      WHERE id_usuario = $${paramIndex}
-      RETURNING id_usuario, nombre_usuario, email, nacionalidad, rol, fecha_creacion
-    `;
-
-    const result = await pool.query(query, values);
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Usuario no encontrado" });
-    }
-
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error("Error actualizado usuario desde admin", err);
-    if (err.code === '23505') {
-      return res.status(409).json({ error: "El email o nombre de usuario ya existe" });
-    }
-    res.status(500).json({ error: "Error actualizando usuario" });
-  }
-});
-
 createAdminCrudRoutes({
   key: "aerolineas",
   table: "aerolinea",
@@ -293,31 +233,15 @@ createAdminCrudRoutes({
   key: "vuelos",
   table: "vuelos",
   idField: "id_vuelo",
-  fields: [
-    "id_aerolinea",
-    "id_aeropuerto_origen",
-    "id_aeropuerto_destino",
-    "fecha_salida",
-    "fecha_llegada",
-    "capacidad",
-    "precio",
-  ],
+  fields: ["id_aerolinea", "id_aeropuerto_origen", "id_aeropuerto_destino", "fecha_salida", "fecha_llegada", "capacidad", "precio"],
   listQuery: `
-    SELECT 
-      v.id_vuelo, 
-      al.nombre_aerolinea, 
-      ao.nombre_aeropuerto AS aeropuerto_origen, 
-      ad.nombre_aeropuerto AS aeropuerto_destino, 
-      v.fecha_salida, 
-      v.fecha_llegada, 
-      v.capacidad, 
-      v.precio
-    FROM vuelos v
-    LEFT JOIN aerolinea al ON v.id_aerolinea = al.id_aerolinea
-    LEFT JOIN aeropuertos ao ON v.id_aeropuerto_origen = ao.id_aeropuerto
-    LEFT JOIN aeropuertos ad ON v.id_aeropuerto_destino = ad.id_aeropuerto
-    ORDER BY v.id_vuelo
-  `
+    SELECT v.id_vuelo, al.nombre_aerolinea, ao.nombre_aeropuerto AS aeropuerto_origen, 
+           ad.nombre_aeropuerto AS aeropuerto_destino, v.fecha_salida, v.fecha_llegada, v.capacidad, v.precio 
+    FROM vuelos v 
+    JOIN aerolinea al ON v.id_aerolinea = al.id_aerolinea 
+    JOIN aeropuertos ao ON v.id_aeropuerto_origen = ao.id_aeropuerto 
+    JOIN aeropuertos ad ON v.id_aeropuerto_destino = ad.id_aeropuerto 
+    ORDER BY v.id_vuelo`
 });
 
 
@@ -325,22 +249,14 @@ createAdminCrudRoutes({
   key: "reservas",
   table: "reservas",
   idField: "id_reserva",
-  fields: ["id_usuario", "id_vuelo", "asiento", "fecha_reserva"],
+  fields: ["id_usuario", "id_vuelo", "asiento"],
   listQuery: `
-    SELECT 
-      r.id_reserva, 
-      u.nombre_usuario, 
-      u.email, 
-      r.id_vuelo, 
-      al.nombre_aerolinea, 
-      r.asiento, 
-      r.fecha_reserva
-    FROM reservas r
-    LEFT JOIN usuarios u ON r.id_usuario = u.id_usuario
-    LEFT JOIN vuelos v ON r.id_vuelo = v.id_vuelo
-    LEFT JOIN aerolinea al ON v.id_aerolinea = al.id_aerolinea
-    ORDER BY r.id_reserva DESC
-  `
+    SELECT r.id_reserva, u.nombre_usuario, u.email, r.id_vuelo, al.nombre_aerolinea, r.asiento 
+    FROM reservas r 
+    JOIN usuarios u ON r.id_usuario = u.id_usuario 
+    JOIN vuelos v ON r.id_vuelo = v.id_vuelo 
+    JOIN aerolinea al ON v.id_aerolinea = al.id_aerolinea 
+    ORDER BY r.id_reserva`
 });
 
 
@@ -358,15 +274,10 @@ createAdminCrudRoutes({
   idField: "id_partido",
   fields: ["equipo_nombre", "id_estadio", "fecha_partido"],
   listQuery: `
-    SELECT 
-      pm.id_partido, 
-      pm.equipo_nombre, 
-      e.nombre_estadio, 
-      pm.fecha_partido
-    FROM partidos_mundial pm
-    LEFT JOIN estadios e ON pm.id_estadio = e.id_estadio
-    ORDER BY pm.fecha_partido DESC
-  `
+    SELECT pm.id_partido, pm.equipo_nombre, e.nombre_estadio, pm.fecha_partido 
+    FROM partidos_mundial pm 
+    JOIN estadios e ON pm.id_estadio = e.id_estadio 
+    ORDER BY pm.id_partido`
 });
 
 
@@ -740,8 +651,8 @@ app.post("/api/user/flights", authMiddleware, async (req, res) => {
     const vuelo = vueloResult.rows[0];
     const reservaResult = await client.query(
       `
-        INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
-        VALUES ($1, $2, $3, NOW())
+        INSERT INTO reservas (id_usuario, id_vuelo, asiento)
+        VALUES ($1, $2, $3)
         RETURNING id_reserva, asiento;
         `,
       [userId, vuelo.id_vuelo, seat]
@@ -941,10 +852,10 @@ app.post("/api/reservas", authMiddleware, async (req, res) => {
       return res.status(409).json({ error: "El asiento ya está reservado." });
     }
 
-    const result = await pool.query(
-      `
-            INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
-            VALUES ($1, $2, $3, NOW())
+        const result = await pool.query(
+            `
+            INSERT INTO reservas (id_usuario, id_vuelo, asiento)
+            VALUES ($1, $2, $3)
             RETURNING id_reserva, id_vuelo, asiento;
             `,
       [userId, id_vuelo, asiento]

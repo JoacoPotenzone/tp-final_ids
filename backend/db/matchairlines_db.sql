@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS vuelos (
 	fecha_llegada TIMESTAMP NOT NULL, 
 	capacidad INT NOT NULL,
 	precio DECIMAL(6,2) NOT NULL,
-	FOREIGN KEY (id_aerolinea) REFERENCES aerolinea (id_aerolinea) ON DELETE CASCADE,
-	FOREIGN KEY (id_aeropuerto_origen) REFERENCES aeropuertos (id_aeropuerto) ON DELETE CASCADE,
-	FOREIGN KEY (id_aeropuerto_destino) REFERENCES aeropuertos (id_aeropuerto) ON DELETE CASCADE,
+	FOREIGN KEY (id_aerolinea) REFERENCES aerolinea (id_aerolinea),
+	FOREIGN KEY (id_aeropuerto_origen) REFERENCES aeropuertos (id_aeropuerto),
+	FOREIGN KEY (id_aeropuerto_destino) REFERENCES aeropuertos (id_aeropuerto),
 	CHECK (id_aeropuerto_origen <> id_aeropuerto_destino)
 );
 
@@ -43,9 +43,8 @@ CREATE TABLE IF NOT EXISTS reservas (
     id_usuario INT NOT NULL,
     id_vuelo INT NOT NULL,
     asiento VARCHAR(5) NOT NULL,
-    fecha_reserva TIMESTAMP NOT NULL,
-    FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_vuelo) REFERENCES vuelos (id_vuelo) ON DELETE CASCADE,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario),
+    FOREIGN KEY (id_vuelo) REFERENCES vuelos (id_vuelo),
     UNIQUE (id_vuelo, asiento)
 );
 
@@ -55,7 +54,7 @@ CREATE TABLE IF NOT EXISTS estadios (
     ciudad VARCHAR(50) NOT NULL,
     id_aeropuerto INT NOT NULL,
     pais VARCHAR(50) NOT NULL,
-    FOREIGN KEY (id_aeropuerto) REFERENCES aeropuertos (id_aeropuerto) ON DELETE CASCADE
+    FOREIGN KEY (id_aeropuerto) REFERENCES aeropuertos (id_aeropuerto)
  );
 
 CREATE TABLE IF NOT EXISTS partidos_mundial (
@@ -63,7 +62,7 @@ CREATE TABLE IF NOT EXISTS partidos_mundial (
     equipo_nombre VARCHAR(50) NOT NULL,
     id_estadio INT NOT NULL,
     fecha_partido DATE NOT NULL,
-    FOREIGN KEY (id_estadio) REFERENCES estadios (id_estadio) ON DELETE CASCADE
+    FOREIGN KEY (id_estadio) REFERENCES estadios (id_estadio)
 );
 
 INSERT INTO usuarios (nombre_usuario, email, password_hash, nacionalidad, rol)
@@ -197,13 +196,13 @@ VALUES
    ('Lumen Field', 'Seattle', 23, 'Estados Unidos');
 
 
-INSERT INTO reservas (id_usuario, id_vuelo, asiento, fecha_reserva)
+INSERT INTO reservas (id_usuario, id_vuelo, asiento)
 VALUES
-	(4, 1, '12A', '2024-06-15 09:00:00'),
-	(5, 2, '14B', '2024-06-16 10:30:00'),
-	(3, 3, '16C', '2024-06-17 11:45:00'),
-	(1, 4, '18D', '2024-06-18 12:00:00'),
-	(5, 5, '20E', '2024-06-19 13:10:00');
+	(4, 1, '12A'),
+	(5, 2, '14B'),
+	(3, 3, '16C'),
+	(1, 4, '18D'),
+	(5, 5, '20E');
 
 
 INSERT INTO partidos_mundial (equipo_nombre, id_estadio, fecha_partido)

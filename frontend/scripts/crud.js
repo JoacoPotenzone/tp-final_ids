@@ -110,7 +110,6 @@ const ENTITIES = {
       {name: 'id_usuario',label: 'Usuario',type: 'select',dynamicOptions: 'usuarios',required: true},
       { name: 'id_vuelo', label: 'ID vuelo', required: true },
       { name: 'asiento', label: 'Asiento', required: true },
-      { name: 'fecha_reserva', label: 'Fecha reserva', readOnly: true }
     ],
     listFields: [
       { name: 'id_reserva', label: 'Codigo Reserva', isPk: true },
@@ -119,7 +118,6 @@ const ENTITIES = {
       { name: 'id_vuelo', label: 'ID Vuelo' },
       { name: 'nombre_aerolinea', label: 'Aerolínea' },
       { name: 'asiento', label: 'Asiento' },
-      { name: 'fecha_reserva', label: 'Fecha Reserva' }
     ]
   },
 
