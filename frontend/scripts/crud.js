@@ -1,18 +1,84 @@
 const API_BASE_URL = 'http://localhost:3001';
 
+async function loadUsuariosLookup(token) {
+  const resp = await fetch(`${API_BASE_URL}/api/admin/usuarios`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!resp.ok) {
+    throw new Error('No se pudieron cargar usuarios');
+  }
+
+  const usuarios = await resp.json();
+
+  return usuarios.map(u => ({
+    value: u.id_usuario,
+    label: `${u.id_usuario} - ${u.nombre_usuario} (${u.email})`
+  }));
+}
+
+async function loadAerolineasLookup(token) {
+  const resp = await fetch(`${API_BASE_URL}/api/admin/aerolineas`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const data = await resp.json();
+  return data.map(a => ({
+    value: a.nombre_aerolinea,
+    label: a.nombre_aerolinea
+  }));
+}
+
+async function loadAeropuertosLookup(token) {
+  const resp = await fetch(`${API_BASE_URL}/api/admin/aeropuertos`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const data = await resp.json();
+
+  return data.map(a => ({
+    value: a.nombre_aeropuerto,
+    label: `${a.ciudad} - ${a.nombre_aeropuerto}`
+  }));
+}
+
+async function loadEstadiosLookup(token) {
+  const resp = await fetch(`${API_BASE_URL}/api/admin/estadios`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const data = await resp.json();
+  return data.map(e => ({
+    value: e.nombre_estadio,
+    label: e.nombre_estadio
+  }));
+}
+
+async function prepareEntityForForm(entity, token) {
+  const cloned = JSON.parse(JSON.stringify(entity));
+  for (const field of cloned.fields) {
+    if (field.type === 'select') {
+      if (field.dynamicOptions === 'usuarios') field.options = await loadUsuariosLookup(token);
+      if (field.dynamicOptions === 'aerolineas') field.options = await loadAerolineasLookup(token);
+      if (field.dynamicOptions === 'aeropuertos') field.options = await loadAeropuertosLookup(token);
+      if (field.dynamicOptions === 'estadios') field.options = await loadEstadiosLookup(token);
+    }
+  }
+  return cloned;
+}
+
 const ENTITIES = {
   usuarios: {
     label: 'Usuarios',
     endpoint: '/api/admin/usuarios',
     idField: 'id_usuario',
-    canCreate: true,        
+    canCreate: true,
     fields: [
       { name: 'id_usuario', label: 'ID', isPk: true, readOnly: true, hiddenOnList: true },
       { name: 'nombre_usuario', label: 'Nombre de usuario', required: true },
       { name: 'email', label: 'Email', required: true },
       { name: 'nacionalidad', label: 'Nacionalidad' },
       { name: 'rol', label: 'Rol (admin / cliente)', required: true },
-      { name: 'password',label: 'Contraseña',required: true,isPassword: true,onlyOnCreate: true}
+      { name: 'password', label: 'Contraseña', required: true, isPassword: true, onlyOnCreate: true }
     ]
   },
 
@@ -22,7 +88,6 @@ const ENTITIES = {
     idField: 'id_aerolinea',
     canCreate: true,
     fields: [
-      { name: 'id_aerolinea', label: 'ID', isPk: true, readOnly: true },
       { name: 'nombre_aerolinea', label: 'Nombre aerolínea', required: true },
       { name: 'codigo_iata', label: 'Código IATA', required: true }
     ]
@@ -34,7 +99,6 @@ const ENTITIES = {
     idField: 'id_aeropuerto',
     canCreate: true,
     fields: [
-      { name: 'id_aeropuerto', label: 'ID', isPk: true, readOnly: true },
       { name: 'nombre_aeropuerto', label: 'Nombre aeropuerto', required: true },
       { name: 'ciudad', label: 'Ciudad', required: true },
       { name: 'pais', label: 'País', required: true },
@@ -49,13 +113,23 @@ const ENTITIES = {
     canCreate: true,
     fields: [
       { name: 'id_vuelo', label: 'ID', isPk: true, readOnly: true },
-      { name: 'id_aerolinea', label: 'ID aerolínea', required: true },
-      { name: 'id_aeropuerto_origen', label: 'ID aeropuerto origen', required: true },
-      { name: 'id_aeropuerto_destino', label: 'ID aeropuerto destino', required: true },
-      { name: 'fecha_salida', label: 'Fecha/hora salida (ISO)', required: true },
-      { name: 'fecha_llegada', label: 'Fecha/hora llegada (ISO)', required: true },
+      { name: 'nombre_aerolinea', label: 'Aerolínea (Nombre)', required: true },
+      { name: 'aeropuerto_origen', label: 'Aeropuerto Origen', type: 'select', dynamicOptions: 'aeropuertos', required: true },
+      { name: 'aeropuerto_destino', label: 'Aeropuerto Destino', type: 'select', dynamicOptions: 'aeropuertos', required: true },
+      { name: 'fecha_salida', label: 'Salida (DD/MM/YYYY HH:mm)', required: true },
+      { name: 'fecha_llegada', label: 'Llegada (DD/MM/YYYY HH:mm)', required: true },
       { name: 'capacidad', label: 'Capacidad', required: true },
       { name: 'precio', label: 'Precio', required: true }
+    ],
+    listFields: [
+      { name: 'id_vuelo', label: 'ID' },
+      { name: 'nombre_aerolinea', label: 'Aerolínea' },
+      { name: 'aeropuerto_origen', label: 'Origen' },
+      { name: 'aeropuerto_destino', label: 'Destino' },
+      { name: 'fecha_salida', label: 'Salida' },
+      { name: 'fecha_llegada', label: 'Llegada' },
+      { name: 'capacidad', label: 'Capacidad' },
+      { name: 'precio', label: 'Precio' }
     ]
   },
 
@@ -63,26 +137,37 @@ const ENTITIES = {
     label: 'Reservas',
     endpoint: '/api/admin/reservas',
     idField: 'id_reserva',
-    canCreate: false, 
+    canCreate: true,
     fields: [
-      { name: 'id_reserva', label: 'ID', isPk: true, readOnly: true },
-      { name: 'id_usuario', label: 'ID usuario', required: true },
+      { name: 'id_reserva', label: 'Codigo Reserva', isPk: true, readOnly: true },
+      { name: 'id_usuario', label: 'Usuario', type: 'select', dynamicOptions: 'usuarios', required: true },
       { name: 'id_vuelo', label: 'ID vuelo', required: true },
       { name: 'asiento', label: 'Asiento', required: true },
-      { name: 'fecha_reserva', label: 'Fecha reserva', readOnly: true }
+    ],
+    listFields: [
+      { name: 'id_reserva', label: 'Codigo Reserva', isPk: true },
+      { name: 'nombre_usuario', label: 'Usuario' },
+      { name: 'email', label: 'Email' },
+      { name: 'id_vuelo', label: 'ID Vuelo' },
+      { name: 'nombre_aerolinea', label: 'Aerolínea' },
+      { name: 'asiento', label: 'Asiento' },
     ]
   },
 
-   partidos_mundial: {
+  partidos_mundial: {
     label: 'Partidos del Mundial',
     endpoint: '/api/admin/partidos_mundial',
     idField: 'id_partido',
     canCreate: true,
     fields: [
-      { name: 'id_partido', label: 'ID', isPk: true, readOnly: true },
       { name: 'equipo_nombre', label: 'Equipo', required: true },
-      { name: 'id_estadio', label: 'ID estadio', required: true },
+      { name: 'id_estadio', label: 'Estadio', type: 'select', dynamicOptions: 'estadios', required: true },
       { name: 'fecha_partido', label: 'Fecha del partido', required: true }
+    ],
+    listFields: [
+      { name: 'equipo_nombre', label: 'Equipo' },
+      { name: 'nombre_estadio', label: 'Estadio' },
+      { name: 'fecha_partido', label: 'Fecha' }
     ]
   }
 };
@@ -283,13 +368,25 @@ function renderTable(entityKey, entity, rows, token) {
   }
 }
 
-function openCreateForm(entityKey, token) {
-  const entity = ENTITIES[entityKey];
+async function openCreateForm(entityKey, token) {
+  const entity = await prepareEntityForForm(ENTITIES[entityKey], token);
   buildForm(entityKey, entity, null, token, 'create');
 }
 
-function openEditForm(entityKey, entity, row, token) {
-  buildForm(entityKey, entity, row, token, 'edit');
+async function openEditForm(entityKey, entity, row, token) {
+  const prepared = await prepareEntityForForm(entity, token);
+
+  if (!row.id_usuario && row.nombre_usuario) {
+    const usuarios = await loadUsuariosLookup(token);
+    const match = usuarios.find(u =>
+      u.label.includes(row.nombre_usuario)
+    );
+    if (match) {
+      row.id_usuario = match.value;
+    }
+  }
+
+  buildForm(entityKey, prepared, row, token, 'edit');
 }
 
 function buildForm(entityKey, entity, data, token, mode) {
@@ -308,7 +405,7 @@ function buildForm(entityKey, entity, data, token, mode) {
   formContainer.classList.remove('d-none');
   formContainer.scrollIntoView({
     behavior: 'smooth',
-    block: 'start' 
+    block: 'start'
   });
   fieldsWrapper.innerHTML = '';
 
@@ -332,7 +429,7 @@ function buildForm(entityKey, entity, data, token, mode) {
     let input;
     let fieldType = field.type || 'text';
     if (field.isPassword && !field.type) {
-      fieldType = 'text'; 
+      fieldType = 'text';
     }
 
     if (fieldType === 'textarea') {
@@ -373,7 +470,10 @@ function buildForm(entityKey, entity, data, token, mode) {
 
     if (field.readOnly || (field.isPk && isEdit)) {
       input.readOnly = true;
-      input.disabled = true;
+
+      if (!field.required) {
+        input.disabled = true;
+      }
     }
 
     colDiv.appendChild(label);
@@ -426,7 +526,7 @@ function buildForm(entityKey, entity, data, token, mode) {
         const txt = await resp.text();
         throw new Error(txt || `Error ${resp.status}`);
       }
-      
+
       const action = isEdit ? 'actualizado' : 'agregado';
       const entityLabel = entity.label;
       alert(`¡Éxito! El registro ha sido ${action} correctamente a la tabla ${entityLabel}.`);

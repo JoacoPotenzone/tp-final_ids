@@ -108,16 +108,7 @@ h5{
     box-shadow: 0 4px 10px black
 
 }
-footer{
-    background:blue;
-    color:white;
-    text-align:center;
-    padding: 15px;
-    position:static;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
+
 /* LOGIN y REGISTER */
 /* ----------------- */
 .form-card {
