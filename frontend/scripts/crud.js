@@ -19,15 +19,34 @@ async function loadUsuariosLookup(token) {
   }));
 }
 
+async function loadAerolineasLookup(token) {
+  const resp = await fetch(`${API_BASE_URL}/api/admin/aerolineas`, { headers: { 'Authorization': `Bearer ${token}` } });
+  const data = await resp.json();
+  return data.map(a => ({ value: a.id_aerolinea, label: a.nombre_aerolinea }));
+}
+
+async function loadAeropuertosLookup(token) {
+  const resp = await fetch(`${API_BASE_URL}/api/admin/aeropuertos`, { headers: { 'Authorization': `Bearer ${token}` } });
+  const data = await resp.json();
+  return data.map(a => ({ value: a.id_aeropuerto, label: `${a.ciudad} - ${a.nombre_aeropuerto}` }));
+}
+
+async function loadEstadiosLookup(token) {
+  const resp = await fetch(`${API_BASE_URL}/api/admin/estadios`, { headers: { 'Authorization': `Bearer ${token}` } });
+  const data = await resp.json();
+  return data.map(e => ({ value: e.id_estadio, label: e.nombre_estadio }));
+}
+
 async function prepareEntityForForm(entity, token) {
   const cloned = JSON.parse(JSON.stringify(entity));
-
   for (const field of cloned.fields) {
-    if (field.type === 'select' && field.dynamicOptions === 'usuarios') {
-      field.options = await loadUsuariosLookup(token);
+    if (field.type === 'select') {
+      if (field.dynamicOptions === 'usuarios') field.options = await loadUsuariosLookup(token);
+      if (field.dynamicOptions === 'aerolineas') field.options = await loadAerolineasLookup(token);
+      if (field.dynamicOptions === 'aeropuertos') field.options = await loadAeropuertosLookup(token);
+      if (field.dynamicOptions === 'estadios') field.options = await loadEstadiosLookup(token);
     }
   }
-
   return cloned;
 }
 
@@ -53,7 +72,6 @@ const ENTITIES = {
     idField: 'id_aerolinea',
     canCreate: true,
     fields: [
-      // { name: 'id_aerolinea', label: 'ID', isPk: true, readOnly: true },
       { name: 'nombre_aerolinea', label: 'Nombre aerolínea', required: true },
       { name: 'codigo_iata', label: 'Código IATA', required: true }
     ]
@@ -65,7 +83,6 @@ const ENTITIES = {
     idField: 'id_aeropuerto',
     canCreate: true,
     fields: [
-      // { name: 'id_aeropuerto', label: 'ID', isPk: true, readOnly: true },
       { name: 'nombre_aeropuerto', label: 'Nombre aeropuerto', required: true },
       { name: 'ciudad', label: 'Ciudad', required: true },
       { name: 'pais', label: 'País', required: true },
@@ -80,16 +97,16 @@ const ENTITIES = {
     canCreate: true,
     fields: [
       { name: 'id_vuelo', label: 'ID', isPk: true, readOnly: true },
-      { name: 'nombre_aerolinea', label: 'Nombre Aerolínea', required: true },
+      { name: 'nombre_aerolinea', label: 'Aerolínea (Nombre)', required: true }, 
       { name: 'aeropuerto_origen', label: 'Aeropuerto Origen', required: true },
       { name: 'aeropuerto_destino', label: 'Aeropuerto Destino', required: true },
-      { name: 'fecha_salida', label: 'Fecha/hora salida (ISO)', required: true },
-      { name: 'fecha_llegada', label: 'Fecha/hora llegada (ISO)', required: true },
+      { name: 'fecha_salida', label: 'Salida', required: true },
+      { name: 'fecha_llegada', label: 'Llegada', required: true },
       { name: 'capacidad', label: 'Capacidad', required: true },
       { name: 'precio', label: 'Precio', required: true }
     ],
     listFields: [
-      { name: 'id_vuelo', label: 'ID', isPk: true, readOnly: true },
+      { name: 'id_vuelo', label: 'ID' },
       { name: 'nombre_aerolinea', label: 'Aerolínea' },
       { name: 'aeropuerto_origen', label: 'Origen' },
       { name: 'aeropuerto_destino', label: 'Destino' },
@@ -127,13 +144,11 @@ const ENTITIES = {
     idField: 'id_partido',
     canCreate: true,
     fields: [
-      // { name: 'id_partido', label: 'ID', isPk: true, readOnly: true },
       { name: 'equipo_nombre', label: 'Equipo', required: true },
-      { name: 'nombre_estadio', label: 'Nombre Estadio', required: true },
+      { name: 'id_estadio', label: 'Estadio', type: 'select', dynamicOptions: 'estadios', required: true },
       { name: 'fecha_partido', label: 'Fecha del partido', required: true }
     ],
     listFields: [
-      // { name: 'id_partido', label: 'ID', isPk: true },
       { name: 'equipo_nombre', label: 'Equipo' },
       { name: 'nombre_estadio', label: 'Estadio' },
       { name: 'fecha_partido', label: 'Fecha' }

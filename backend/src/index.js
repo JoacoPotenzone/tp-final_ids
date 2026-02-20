@@ -213,6 +213,63 @@ app.delete("/api/admin/usuarios/:id", authMiddleware, requireAdmin, async (req, 
   }
 });
 
+app.put("/api/admin/usuarios/:id", authMiddleware, requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { nombre_usuario, email, nacionalidad, rol } = req.body;
+  try {
+    const result = await pool.query(
+      `UPDATE usuarios 
+       SET nombre_usuario = $1, email = $2, nacionalidad = $3, rol = $4
+       WHERE id_usuario = $5 RETURNING *`,
+      [nombre_usuario, email, nacionalidad, rol, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: "Error actualizando usuario" });
+  }
+});
+
+app.put("/api/admin/vuelos/:id", authMiddleware, requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { nombre_aerolinea, aeropuerto_origen, aeropuerto_destino, fecha_salida, fecha_llegada, capacidad, precio } = req.body;
+
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    let resAero = await client.query("SELECT id_aerolinea FROM aerolinea WHERE nombre_aerolinea = $1", [nombre_aerolinea]);
+    let id_aerolinea;
+
+    if (resAero.rowCount > 0) {
+      id_aerolinea = resAero.rows[0].id_aerolinea;
+    } else {
+      const iata = nombre_aerolinea.substring(0, 3).toUpperCase();
+      const newAero = await client.query(
+        "INSERT INTO aerolinea (nombre_aerolinea, codigo_iata) VALUES ($1, $2) RETURNING id_aerolinea",
+        [nombre_aerolinea, iata]
+      );
+      id_aerolinea = newAero.rows[0].id_aerolinea;
+    }
+    const resOri = await client.query("SELECT id_aeropuerto FROM aeropuertos WHERE nombre_aeropuerto = $1", [aeropuerto_origen]);
+    const resDest = await client.query("SELECT id_aeropuerto FROM aeropuertos WHERE nombre_aeropuerto = $1", [aeropuerto_destino]);
+    await client.query(
+      `UPDATE vuelos SET 
+        id_aerolinea = $1, id_aeropuerto_origen = $2, id_aeropuerto_destino = $3, 
+        fecha_salida = $4, fecha_llegada = $5, capacidad = $6, precio = $7
+       WHERE id_vuelo = $8`,
+      [id_aerolinea, resOri.rows[0].id_aeropuerto, resDest.rows[0].id_aeropuerto, fecha_salida, fecha_llegada, capacidad, precio, id]
+    );
+
+    await client.query("COMMIT");
+    res.json({ message: "Vuelo actualizado correctamente" });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error(err);
+    res.status(500).json({ error: "Error al actualizar el vuelo" });
+  } finally {
+    client.release();
+  }
+});
+
 createAdminCrudRoutes({
   key: "aerolineas",
   table: "aerolinea",
